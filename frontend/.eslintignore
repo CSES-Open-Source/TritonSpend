@@ -1,8 +1,0 @@
-# Do not run ESLint on these paths. Customize as needed.
-.next/
-build/
-dist/
-out/
-public/
-next.config.js
-vite.config.ts
