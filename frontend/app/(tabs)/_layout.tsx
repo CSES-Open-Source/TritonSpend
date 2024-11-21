@@ -26,14 +26,26 @@ export default function TabLayout() {
         drawerContent={(props) => <DrawerContent {...props} />}
       >
         <Drawer.Screen
+            name="index"
+            options={{
+              drawerLabel: "Home",
+              headerTitle: (props) => <Header />,
+              headerRight: () => (
+                  <Ionicons name="notifications-outline" size={25} style={styles.Logo}/> 
+
+              ),
+            }}
+        />
+        <Drawer.Screen
             name="explore"
             options={{
-                headerTitle: (props) => <Header />,
-                headerRight: () => (
-                    <Ionicons name="notifications-outline" size={25} style={styles.Logo}/> 
+              drawerLabel: "Profile/Account",
+              headerTitle: (props) => <Header />,
+              headerRight: () => (
+                  <Ionicons name="notifications-outline" size={25} style={styles.Logo}/> 
 
-                ),
-              }}
+              ),
+            }}
         />
       </Drawer>
   );
