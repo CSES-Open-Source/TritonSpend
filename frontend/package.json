@@ -11,7 +11,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "lint-check": "npm run check-git-hooks && expo lint --cache --report-unused-disable-directives && prettier --check .",
+    "lint-check": "npm run check-git-hooks && expo lint && prettier --check .",
     "prepare": "cd .. && husky"
   },
   "jest": {
@@ -20,6 +20,9 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/native": "^6.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "eslint-plugin-react": "^7.37.2",
     "expo": "~51.0.28",
     "expo-constants": "~16.0.2",
     "expo-font": "~12.0.9",
