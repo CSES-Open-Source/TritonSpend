@@ -7,7 +7,6 @@ import { View, Text, StyleSheet, Image } from "react-native";
 const CustomDrawerHeader = () => {
   return (
     <View style={styles.headerContainer}>
-
       <Image
         source={{ uri: "(profile picture)" }}
         style={styles.profileImage}
