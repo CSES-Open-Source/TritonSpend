@@ -22,6 +22,7 @@ function DrawerContent(props: any) {
   
       </View>
    );
+
 }
 /*
 This function is the structure of the content inside the drawer(Home, Profile/Account, ...etc)
@@ -65,6 +66,7 @@ export default function TabLayout() {
             }}
         />
       </Drawer>
+
   );
 }
 
@@ -75,11 +77,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    padding:20,
+    padding: 20,
   },
   Logo:{
     marginRight:20,
   }
 });
+

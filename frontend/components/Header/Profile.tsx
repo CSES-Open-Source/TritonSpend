@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 
 /*
   Custom drawer header function that has profile picture, username, and account settings
@@ -7,8 +7,9 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 const CustomDrawerHeader = () => {
   return (
     <View style={styles.headerContainer}>
-      <Image 
-        source={{ uri: '(profile picture)' }}
+
+      <Image
+        source={{ uri: "(profile picture)" }}
         style={styles.profileImage}
       />
       <Text style={styles.headerText}>Welcome, (username)</Text>
@@ -19,25 +20,25 @@ const CustomDrawerHeader = () => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#2196f3',
+    backgroundColor: "#2196f3",
   },
   profileImage: {
     width: 80,
     height: 80,
     borderRadius: 40,
     marginBottom: 10,
-    backgroundColor: 'white' //delete later
+    backgroundColor: "white", //delete later
   },
   headerText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontWeight: "bold",
+    color: "#fff",
   },
   subHeaderText: {
     fontSize: 14,
-    color: '#fff',
+    color: "#fff",
   },
 });
 
