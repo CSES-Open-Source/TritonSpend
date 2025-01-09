@@ -1,35 +1,52 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import {DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import 'react-native-gesture-handler';
-import TabTwoScreen from './explore';
 import {Drawer} from "expo-router/drawer";
 import CustomDrawerHeader from '@/components/Header/Profile';
-import Header from '@/components/Header/Header';
 import { Ionicons } from '@expo/vector-icons';
+/*
+This function is the structure of the drawer(the menu that appears when you swipe to the right)
+parameters:
+props - all props are shared by navigators in order to share navigation data. (refer to docs: https://reactnavigation.org/docs/drawer-navigator/)
+*/
 function DrawerContent(props: any) {
   return (
-    <View >
-      <CustomDrawerHeader />
+    <View > 
+      {/* Custom Drawer Header that contains profile picture and says "Welcome (Username)"  */}
+      <CustomDrawerHeader /> 
+      {/* Drawer contents: Home, Profile/Account */}
       <DrawerContentScrollView { ...props}>
           <DrawerItemList {...props}/>
-      </DrawerContentScrollView>
+      </DrawerContentScrollView> 
   
       </View>
    );
 }
+/*
+This function is the structure of the content inside the drawer(Home, Profile/Account, ...etc)
+
+*/
 export default function TabLayout() {
   return(
       <Drawer
         screenOptions={{ headerShown: true }}
         drawerContent={(props) => <DrawerContent {...props} />}
       >
+      {/* 
+        Each Drawer.Screen points to a tab in the drawer
+        parameters:
+        name - the name of the file we are pointing to
+        drawerLabel - the label that shows in the drawer
+        title - the label that shows in the header
+        headerRight - the icon that shows in top right of the header (notification icon for now)
+
+      */}
         <Drawer.Screen
             name="index"
             options={{
               drawerLabel: "Home",
-              headerTitle: (props) => <Header />,
+              title: "Home",
               headerRight: () => (
                   <Ionicons name="notifications-outline" size={25} style={styles.Logo}/> 
 
@@ -40,7 +57,7 @@ export default function TabLayout() {
             name="explore"
             options={{
               drawerLabel: "Profile/Account",
-              headerTitle: (props) => <Header />,
+              title: "Profile/Account",
               headerRight: () => (
                   <Ionicons name="notifications-outline" size={25} style={styles.Logo}/> 
 
@@ -63,6 +80,6 @@ const styles = StyleSheet.create({
     padding:20,
   },
   Logo:{
-    marginRight:20
+    marginRight:20,
   }
 });

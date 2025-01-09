@@ -1,10 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
+/*
+  Custom drawer header function that has profile picture, username, and account settings
+*/
 const CustomDrawerHeader = () => {
   return (
     <View style={styles.headerContainer}>
-      <Image
+      <Image 
         source={{ uri: '(profile picture)' }}
         style={styles.profileImage}
       />
