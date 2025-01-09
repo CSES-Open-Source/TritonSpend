@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-const { width } = Dimensions.get('window'); // Get screen width
 
 // Basic header that haws logo, name of tab, and notifications button
 export default function Header() {

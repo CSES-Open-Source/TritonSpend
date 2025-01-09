@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import 'react-native-gesture-handler';
 import {Drawer} from "expo-router/drawer";
