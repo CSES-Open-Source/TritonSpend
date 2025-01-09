@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 // Basic header that haws logo, name of tab, and notifications button
 export default function Header() {
