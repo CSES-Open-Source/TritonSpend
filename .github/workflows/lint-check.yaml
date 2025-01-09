@@ -3,7 +3,7 @@ name: Lint and style checks
 on:
   pull_request:
     branches:
-      main
+      - '**'
 
 jobs:
   backend:
