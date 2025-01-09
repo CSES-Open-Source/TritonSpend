@@ -1,14 +1,9 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import {
-  createDrawerNavigator,
   DrawerContentScrollView,
-  DrawerItem,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { NavigationContainer } from "@react-navigation/native";
 import "react-native-gesture-handler";
-import TabTwoScreen from "./explore";
 import { Drawer } from "expo-router/drawer";
 import CustomDrawerHeader from "@/components/Header/Profile";
 import Header from "@/components/Header/Header";
@@ -33,7 +28,7 @@ export default function TabLayout() {
         name="index"
         options={{
           drawerLabel: "Home",
-          headerTitle: (props) => <Header />,
+          headerTitle: () => <Header />,
           headerRight: () => (
             <Ionicons
               name="notifications-outline"
@@ -47,7 +42,7 @@ export default function TabLayout() {
         name="explore"
         options={{
           drawerLabel: "Profile/Account",
-          headerTitle: (props) => <Header />,
+          headerTitle: () => <Header />,
           headerRight: () => (
             <Ionicons
               name="notifications-outline"

@@ -1,7 +1,5 @@
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import Ionicons from "react-native-vector-icons/Ionicons";
 
-const { width } = Dimensions.get("window"); // Get screen width
 export default function Header() {
   return (
     <View style={styles.headerContainer}>
