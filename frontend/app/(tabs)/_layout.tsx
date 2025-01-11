@@ -15,7 +15,7 @@ props - all props are shared by navigators in order to share navigation data. (r
 */
 function DrawerContent(props: any) {
   return (
-    <View>
+    <View style={{height:'100%'}}>
       {/* Custom Drawer Header that contains profile picture and says "Welcome (Username)"  */}
       <CustomDrawerHeader />
       {/* Drawer contents: Home, Profile/Account */}
@@ -49,20 +49,6 @@ export default function TabLayout() {
         options={{
           drawerLabel: "Home",
           title: "Home",
-          headerRight: () => (
-            <Ionicons
-              name="notifications-outline"
-              size={25}
-              style={styles.Logo}
-            />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="explore"
-        options={{
-          drawerLabel: "Profile/Account",
-          title: "Profile/Account",
           headerRight: () => (
             <Ionicons
               name="notifications-outline"
