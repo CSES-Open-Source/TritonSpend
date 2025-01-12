@@ -2,16 +2,22 @@ import { View, StyleSheet, Text, Animated, Pressable, TextInput } from "react-na
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
 
+//button that expands and shows a text input for recent transactions
 export default function NewTransactionButton() {
+  //usestate for expanding button, if true, button is expanded, initially set to false
   const [inputVisible, setInputVisible] = useState(false)
+  //refs for animation(X icon rotating, button expanding... etc)
   const rotation = useRef(new Animated.Value(0)).current
   const inputShow = useRef(new Animated.Value(-20)).current
   const expand = useRef(new Animated.Value(50)).current
   const animatedOpacity = useRef(new Animated.Value(0)).current;
+  //rotation iterpolate for X icon
   const interpolate = rotation.interpolate({
     inputRange:[0,1],
     outputRange: ["0deg", "45deg"],
   })
+
+  //toggle function for buttion, starts all animation when toggled and sets inputVisible accordingly
   function toggle(){
     setInputVisible(!inputVisible)
     Animated.spring(rotation, {

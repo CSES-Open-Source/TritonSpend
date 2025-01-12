@@ -2,7 +2,9 @@ import { View, StyleSheet, Text } from "react-native";
 import TransactionRow from "./TransactionRow";
 import { FontAwesome } from "@expo/vector-icons";
 
+//container for the recent transaction history.
 export default function TransactionHistory() {
+    //place holder array for us to map through
     const ThreeTransactions = [
         {
             id : 1,
@@ -29,7 +31,6 @@ export default function TransactionHistory() {
             <View style={styles.header}>
                 <Text style = {{fontWeight:'bold'}}>Recent Transactions</Text>
                 <FontAwesome name = "angle-right" size={20}/>
-                {/* <Text>See All</Text> */}
             </View>
             <View style = {styles.recentTranactions}>
                 {ThreeTransactions.map((row) => (

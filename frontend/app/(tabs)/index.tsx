@@ -1,15 +1,22 @@
 import { View, StyleSheet, Text } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
+
+/* 
+  this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
+*/
 export default function HomeScreen() {
     return(
         <View style={styles.homeContainer}>
-            <Text style = {styles.Title}>Hello</Text>
+            <Text style = {styles.Title}>Hello User</Text>
             <View style = {styles.graphContainer}>
             <Text style={{fontSize:30, fontWeight:"600"}}>$4201</Text>
                 <View style = {styles.graph}>
                 </View>
             </View>
+            {/* 
+              components for the new transaction button and the list of transaction history.
+             */}
             <NewTransactionButton/> 
             <TransactionHistory />
         </View>
