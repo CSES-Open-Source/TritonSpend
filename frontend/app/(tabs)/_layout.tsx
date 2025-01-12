@@ -15,7 +15,7 @@ props - all props are shared by navigators in order to share navigation data. (r
 */
 function DrawerContent(props: any) {
   return (
-    <View style={{height:'100%'}}>
+    <View style={{ height: "100%" }}>
       {/* Custom Drawer Header that contains profile picture and says "Welcome (Username)"  */}
       <CustomDrawerHeader />
       {/* Drawer contents: Home, Profile/Account */}
