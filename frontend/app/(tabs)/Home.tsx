@@ -5,7 +5,7 @@ import TransactionHistory from "@/components/TransactionHistory/TransactionHisto
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
-export default function HomeScreen() {
+export default function Home() {
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.Title}>Hello User</Text>
