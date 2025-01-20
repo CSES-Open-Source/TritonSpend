@@ -58,6 +58,20 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Drawer.Screen
+        name="ExpenseHistory"
+        options={{
+          drawerLabel: "History",
+          title: "History",
+          headerRight: () => (
+            <Ionicons
+              name="notifications-outline"
+              size={25}
+              style={styles.Logo}
+            />
+          ),
+        }}
+      />
     </Drawer>
   );
 }
