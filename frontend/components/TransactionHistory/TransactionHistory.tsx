@@ -19,6 +19,7 @@ export default function TransactionHistory(props: any) {
               amount={row.amount}
               key={row.id}
             />
+            {/* Put a separater between elements excpet for the last one */}
             {index < props.list.length - 1 && <View style={styles.separator} />}
           </View>
         ))}

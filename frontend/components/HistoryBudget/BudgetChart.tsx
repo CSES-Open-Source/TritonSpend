@@ -1,5 +1,6 @@
 import { View, StyleSheet, Text } from "react-native";
 
+//Budget Chart that shows bar to show how much money spent, can increase or decrease bar progress with props.length
 export default function BudgetChart(props: any) {
   return (
     <View style={styles.ChartContainer}>
