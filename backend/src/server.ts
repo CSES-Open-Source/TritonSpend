@@ -21,25 +21,11 @@ app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "em
 
 // Google callback route
 app.get("/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
+  passport.authenticate("google", { failureRedirect: 'http://localhost:8081/NotAuthorized' }),
   (req, res) => {
-    res.redirect("/dashboard"); // Redirect after successful login
+    res.redirect('http://localhost:8081/Dashboard'); // Redirect after successful login
   }
 );
-
-// Dashboard route
-app.get("/dashboard", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.send(`<h1>Welcome to your Dashboard</h1>`); // Simplified, no display name
-  } else {
-    res.redirect("/"); // Redirect if not authenticated
-  }
-});
-
-// Home route (for failure or non-UCSD email login)
-app.get("/", (req, res) => {
-  res.send("<h1>Only UCSD students can log in. Please use your UCSD email to sign up.</h1>");
-});
 
 // Start the server
 app.listen(PORT, () => {
