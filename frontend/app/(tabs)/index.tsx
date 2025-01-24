@@ -1,11 +1,43 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { Image, StyleSheet, Platform, View, TouchableOpacity } from 'react-native';
+import { HelloWave } from '@/components/HelloWave'; // Custom component for a wave animation
+import ParallaxScrollView from '@/components/ParallaxScrollView'; // Custom parallax scroll view component
+import { ThemedText } from '@/components/ThemedText'; // Custom themed text component
+import { ThemedView } from '@/components/ThemedView'; // Custom themed view component
+
+//dropdown menu base
+interface DropdownProps {
+  data: { value: string; label: string }[]; // Array of objects containing 'value' and 'label'
+  onSelect: (item: { value: string; label: string }) => void; // Function that takes an item and does something with it
+}
+
+//dropdown menu components
+const Dropdown: React.FC<DropdownProps> = ({ data, onSelect }) => {
+  return (
+    <View style={styles.dropdownMenu}>
+      {data.map((item) => (
+        <TouchableOpacity
+          key={item.value}
+          style={styles.dropdownItem}
+          onPress={() => onSelect(item)}
+        >
+          <ThemedText>{item.label}</ThemedText>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
 
 export default function HomeScreen() {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null); // have to initially set it to null
+
+  // function that helps with the choosing of an option
+  const handleSelect = (item: { value: string; label: string }) => {
+    setSelectedOption(item.label); // Update selected option based on the label
+    console.log('Selected item:', item); // Log the selected item
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -46,10 +78,33 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
+
+      {/* Expense Transaction Sheet */}
+      <ThemedText type="subtitle">Expense Transaction Sheet </ThemedText>
+
+      <ThemedText type="defaultSemiBold">Categories of Spending </ThemedText>
+
+
+      {/* Add the Dropdown menu below the text */}
+      <Dropdown 
+        data={[
+          { value: '1', label: 'Entertainment' },
+          { value: '2', label: 'Food' },
+          { value: '3', label: 'Transportation' },
+          { value: '4', label: 'Rent or Mortgage' },
+          { value: '5', label: 'Savings' },
+          { value: '6', label: 'Other' },
+        ]}
+        onSelect={handleSelect} // Pass the handleSelect function to update selectedOption
+      />
+      
+      {/* Optionally display the selected option */}
+      {selectedOption && <ThemedText>Input the Amount you spent on {selectedOption}: $_____</ThemedText>}
     </ParallaxScrollView>
   );
 }
 
+// Styles
 const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
@@ -66,5 +121,20 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+
+  // Style for the dropdown menu
+  dropdownMenu: {
+    backgroundColor: '#f1f1f1', //light grey color
+    borderRadius: 5,
+    marginTop: 10,
+    padding: 10,
+    width: 200,
+  },
+  // Style for each dropdown item
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
 });
