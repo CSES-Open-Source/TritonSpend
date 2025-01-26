@@ -11,7 +11,7 @@ export default function HomeScreen() {
   // function that helps with the choosing of an option
   const handleSelect = (item: { value: string; label: string }) => {
     setSelectedOption(item.label); // Update selected option based on the label
-    console.log('Selected item:', item); // Log the selected item
+    console.log("Selected item:", item); // Log the selected item
   };
 
   return (
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 
   // Style for the dropdown menu
   dropdownMenu: {
-    backgroundColor: '#f1f1f1', //light grey color
+    backgroundColor: "#f1f1f1", //light grey color
     borderRadius: 5,
     marginTop: 10,
     padding: 10,
@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
   dropdownItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: "#ddd",
   },
 });

@@ -1,12 +1,14 @@
 //imports: npm & npm install @react-native-picker/picker
 // put it into components and then import that into index
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 
 //the category for the dropdown
 const App = () => {
-  const [selectedCategory, setSelectedCategory] = useState('Spending Categories');
+  const [selectedCategory, setSelectedCategory] = useState(
+    "Spending Categories",
+  );
 
   //drop down menu
   return (
@@ -36,30 +38,30 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
   },
   title: {
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    marginBottom: 20, 
-    color: '#333', 
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
   },
   picker: {
     width: 300,
-    height: 50, 
-    marginBottom: 20, 
-    backgroundColor: '#fff', 
+    height: 50,
+    marginBottom: 20,
+    backgroundColor: "#fff",
     borderRadius: 8,
-    borderWidth: 1, 
-    borderColor: '#ccc', 
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   selectedValue: {
-    fontSize: 18, 
-    color: '#555',
-    marginTop: 10, 
+    fontSize: 18,
+    color: "#555",
+    marginTop: 10,
   },
 });
 
