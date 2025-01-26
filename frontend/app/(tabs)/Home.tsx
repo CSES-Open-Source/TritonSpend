@@ -5,7 +5,7 @@ import TransactionHistory from "@/components/TransactionHistory/TransactionHisto
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
-export default function HomeScreen() {
+export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const ThreeTransactions = [
