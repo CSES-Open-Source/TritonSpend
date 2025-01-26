@@ -6,14 +6,6 @@ import TransactionHistory from "@/components/TransactionHistory/TransactionHisto
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
 export default function HomeScreen() {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null); // have to initially set it to null
-
-  // function that helps with the choosing of an option
-  const handleSelect = (item: { value: string; label: string }) => {
-    setSelectedOption(item.label); // Update selected option based on the label
-    console.log("Selected item:", item); // Log the selected item
-  };
-
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.Title}>Hello User</Text>
@@ -30,7 +22,6 @@ export default function HomeScreen() {
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   homeContainer: {
     flex: 1,
@@ -60,20 +51,5 @@ const styles = StyleSheet.create({
     height: 180,
     backgroundColor: "white",
     borderRadius: 15,
-  },
-
-  // Style for the dropdown menu
-  dropdownMenu: {
-    backgroundColor: "#f1f1f1", //light grey color
-    borderRadius: 5,
-    marginTop: 10,
-    padding: 10,
-    width: 200,
-  },
-  // Style for each dropdown item
-  dropdownItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
 });
