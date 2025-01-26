@@ -8,7 +8,7 @@ import { port, str } from "envalid/dist/validators";
 
 export default cleanEnv(process.env, {
   PORT: port(),
-  MONGODB_URI: str({ default: 'null' }),
+  MONGODB_URI: str({ default: "null" }),
   GOOGLE_CLIENT_ID: str(), // Add Google Client ID
   GOOGLE_CLIENT_SECRET: str(), // Add Google Client Secret
 });

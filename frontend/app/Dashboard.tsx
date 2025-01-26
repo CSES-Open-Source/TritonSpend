@@ -1,6 +1,6 @@
 // src/DashboardPage.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
 
 const DashboardPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,7 +13,9 @@ const DashboardPage = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome to your Dashboard</Text>
-      <Text style={styles.infoText}>Your personalized content will appear here.</Text>
+      <Text style={styles.infoText}>
+        Your personalized content will appear here.
+      </Text>
     </View>
   );
 };
@@ -21,19 +23,19 @@ const DashboardPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   welcomeText: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   infoText: {
     fontSize: 18,
-    color: '#555',
+    color: "#555",
   },
 });
 

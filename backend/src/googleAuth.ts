@@ -20,16 +20,18 @@ passport.use(
         return done(null, profile); // Allow login if the email ends with @ucsd.edu
       }
       return done(null, false, { message: "Only UCSD students can log in." }); // Reject others
-    }
-  )
+    },
+  ),
 );
 
 // Serialize and Deserialize user information into the session
-passport.serializeUser((user: any, done) => { // Casting user as 'any'
+passport.serializeUser((user: any, done) => {
+  // Casting user as 'any'
   done(null, user);
 });
 
-passport.deserializeUser((user: any, done) => { // Casting user as 'any'
+passport.deserializeUser((user: any, done) => {
+  // Casting user as 'any'
   done(null, user);
 });
 

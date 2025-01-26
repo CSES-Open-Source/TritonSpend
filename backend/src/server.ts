@@ -1,5 +1,5 @@
 // server.ts
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 import "module-alias/register";
@@ -7,7 +7,7 @@ import passport from "passport";
 import session from "express-session";
 import env from "src/util/validateEnv"; // Importing environment variables
 import app from "src/app"; // The express app
-import './googleAuth'; // Import the Google OAuth logic (this automatically sets up passport)
+import "../src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
 
 const PORT = env.PORT;
 
@@ -20,11 +20,12 @@ app.use(passport.session());
 app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 // Google callback route
-app.get("/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: 'http://localhost:8081/NotAuthorized' }),
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "http://localhost:8081/NotAuthorized" }),
   (req, res) => {
-    res.redirect('http://localhost:8081/Dashboard'); // Redirect after successful login
-  }
+    res.redirect("http://localhost:8081/Dashboard"); // Redirect after successful login
+  },
 );
 
 // Start the server
