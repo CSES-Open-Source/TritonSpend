@@ -12,7 +12,7 @@ const NotAuthorizedPage = () => {
         You are not authorized to access this page
       </Text>
       <Text style={styles.message}>Please log in with your UCSD email.</Text>
-      <Button title="Back to Login" onPress={() => router.push("Login")} />
+      <Button title="Back to Login" onPress={() => router.push("/Login")} />
     </View>
   );
 };
