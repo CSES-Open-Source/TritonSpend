@@ -146,10 +146,6 @@ lint_check() {
 		warn "    ${dir}"
 	done
 
-	if ask_yes_no "Proceed with commit anyway?" "no"; then
-		return 0
-	fi
-
 	log "The lint autofix command is:"
 	log "    ${fix_command}"
 	if ask_yes_no "Run this command in each failed directory?" "no"; then
@@ -163,6 +159,28 @@ lint_check() {
 	else
 		log "Please fix the lint errors, then stage your"
 		log " changes and try again."
+	fi
+
+	failed_dirs=''
+	for dir in $node_dirs; do
+		log "Running lint check in '${dir}'..."
+		if ! (cd "${dir}" && $check_command); then
+			failed_dirs="${failed_dirs} ${dir}"
+		fi
+	done
+
+	if [ ! "${failed_dirs}" ]; then
+		log "Lint check passed."
+		return 0
+	fi
+
+	warn "Lint check failed in the following directories:"
+	for dir in $failed_dirs; do
+		warn "    ${dir}"
+	done
+	
+	if ask_yes_no "Proceed with commit anyway?" "no"; then
+		return 0
 	fi
 
 	explain_no_verify
