@@ -27,7 +27,7 @@ export default function TransactionRow(props: any) {
 const styles = StyleSheet.create({
   NewTransaction: {
     width: "100%",
-    height: "30%",
+    height: 50,
     borderRadius: 15,
     flexDirection: "row",
     alignItems: "center",

@@ -3,28 +3,7 @@ import TransactionRow from "./TransactionRow";
 import { FontAwesome } from "@expo/vector-icons";
 
 //container for the recent transaction history.
-export default function TransactionHistory() {
-  //place holder array for us to map through
-  const ThreeTransactions = [
-    {
-      id: 1,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-    },
-    {
-      id: 2,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-    },
-    {
-      id: 3,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-    },
-  ];
+export default function TransactionHistory(props: any) {
   return (
     <View style={styles.HistoryContainer}>
       <View style={styles.header}>
@@ -32,13 +11,17 @@ export default function TransactionHistory() {
         <FontAwesome name="angle-right" size={20} />
       </View>
       <View style={styles.recentTranactions}>
-        {ThreeTransactions.map((row) => (
-          <TransactionRow
-            name={row.name}
-            date={row.date}
-            amount={row.amount}
-            key={row.id}
-          />
+        {props.list.map((row: any, index: any) => (
+          <View key={row.id}>
+            <TransactionRow
+              name={row.name}
+              date={row.date}
+              amount={row.amount}
+              key={row.id}
+            />
+            {/* Put a separater between elements excpet for the last one */}
+            {index < props.list.length - 1 && <View style={styles.separator} />}
+          </View>
         ))}
       </View>
     </View>
@@ -62,5 +45,12 @@ const styles = StyleSheet.create({
   recentTranactions: {
     flexDirection: "column",
     height: "100%",
+  },
+  separator: {
+    width: "100%",
+    height: 2,
+    backgroundColor: "black",
+    opacity: 0.2,
+    borderRadius: 2,
   },
 });
