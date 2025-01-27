@@ -41,8 +41,14 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
         {/* Standalone screens */}
-        <Stack.Screen name="Dashboard" options={{ title: "Dashboard", headerShown: false }} />
-        <Stack.Screen name="NotAuthorized" options={{ title: "Not Authorized", headerShown: false }} />
+        <Stack.Screen
+          name="Dashboard"
+          options={{ title: "Dashboard", headerShown: false }}
+        />
+        <Stack.Screen
+          name="NotAuthorized"
+          options={{ title: "Not Authorized", headerShown: false }}
+        />
       </Stack>
     </ThemeProvider>
   );
