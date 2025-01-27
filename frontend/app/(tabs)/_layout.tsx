@@ -9,10 +9,7 @@ const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
   return (
-    <Tab.Navigator
-      initialRouteName="home"
-      screenOptions={{ headerShown: false }}
-    >
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       {/* Home Tab */}
       <Tab.Screen
         name="Home"
@@ -28,7 +25,7 @@ export default function TabLayout() {
         component={ExpenseHistory}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons size={size} color={color} />
+            <Ionicons name="time" size={size} color={color} />
           ),
         }}
       />
@@ -37,7 +34,7 @@ export default function TabLayout() {
         component={LoginPage}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons size={size} color={color} />
+            <Ionicons name="log-in" size={size} color={color} />
           ),
         }}
       />
