@@ -3,7 +3,7 @@ import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
 
 //page for showing full Expense Hisotry along with the users budget and how much they spent compared to their budget
-export default function ExpenseHistory() {
+export default function History() {
   //place holder array for transaction history
   const AllTransactions = [
     { id: 1, name: "Spotify", date: "1/11/2025", amount: 10 },

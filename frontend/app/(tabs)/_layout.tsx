@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Home from "./Home"; // Import the Home component
-import ExpenseHistory from "./ExpenseHistory"; // Import the ExpenseHistory component
+import History from "./History"; // Import the History component
 import LoginPage from "./Login";
 
 const Tab = createBottomTabNavigator();
@@ -22,7 +22,7 @@ export default function TabLayout() {
       />
       <Tab.Screen
         name="History"
-        component={ExpenseHistory}
+        component={History}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time" size={size} color={color} />
