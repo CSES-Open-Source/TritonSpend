@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import TransactionRow from "./TransactionRow";
 import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
@@ -6,9 +6,9 @@ import { Link } from "expo-router";
 export default function TransactionHistory(props: any) {
   return (
     <View style={styles.HistoryContainer}>
-    {/* Link that re routes user to History */}
+      {/* Link that re routes user to History */}
       <Link href={"/History"}>
-        <View  style={styles.header}>
+        <View style={styles.header}>
           <Text style={{ fontWeight: "bold" }}>Recent Transactions</Text>
           <FontAwesome name="angle-right" size={20} />
         </View>
@@ -44,8 +44,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
     flexDirection: "row",
-    alignItems:'center',
-
+    alignItems: "center",
   },
   recentTranactions: {
     flexDirection: "column",
