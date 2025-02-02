@@ -81,3 +81,15 @@ export const removeTask: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getTransaction: RequestHandler = async (req, res, next) => {
+  try {
+    // Fetch transactions based on your business logic
+    const transactions = await TaskModel.find(); // Modify this query as needed
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    next(error);
+  }
+};
+
