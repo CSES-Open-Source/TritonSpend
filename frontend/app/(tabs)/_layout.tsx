@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Home from "./Home"; // Import the Home component
 import History from "./History"; // Import the History component
 import LoginPage from "./Login";
-
+import Account from "./Account";
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
@@ -35,6 +35,15 @@ export default function TabLayout() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="log-in" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Account"
+        component={Account}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />
