@@ -35,7 +35,11 @@ export default function History() {
       <BudgetChart length={150} Current={2300} Budget={3500} />
 
       {/* Sorting Dropdown */}
-      <Picker selectedValue={sortBy} onValueChange={(itemValue) => setSortBy(itemValue)} style={styles.picker}>
+      <Picker
+        selectedValue={sortBy}
+        onValueChange={(itemValue) => setSortBy(itemValue)}
+        style={styles.picker}
+      >
         <Picker.Item label="Sort by Date" value="date" />
         <Picker.Item label="Sort by Amount" value="amount" />
         <Picker.Item label="Sort by Name" value="name" />
