@@ -1,29 +1,51 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Picker } from "react-native";
+import { useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
 
-//page for showing full Expense Hisotry along with the users budget and how much they spent compared to their budget
+// Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
-  //place holder array for transaction history
+  // Sorting State
+  const [sortBy, setSortBy] = useState("date");
+
+  // Placeholder array for transaction history
   const AllTransactions = [
     { id: 1, name: "Spotify", date: "1/11/2025", amount: 10 },
-    { id: 2, name: "Spotify", date: "1/11/2025", amount: 10 },
-    { id: 3, name: "Spotify", date: "1/11/2025", amount: 10 },
+    { id: 2, name: "Netflix", date: "1/10/2025", amount: 15 },
+    { id: 3, name: "Amazon", date: "12/11/2024", amount: 30 },
     { id: 4, name: "Spotify", date: "1/12/2025", amount: 10 },
-    { id: 5, name: "Spotify", date: "1/12/2025", amount: 10 },
+    { id: 5, name: "Gym", date: "8/12/2024", amount: 50 },
     { id: 6, name: "Spotify", date: "1/12/2025", amount: 10 },
-    { id: 7, name: "Spotify", date: "1/13/2025", amount: 10 },
-    { id: 8, name: "Spotify", date: "1/13/2025", amount: 10 },
-    { id: 9, name: "Spotify", date: "1/14/2025", amount: 10 },
-    { id: 10, name: "Spotify", date: "1/14/2025", amount: 10 },
-    { id: 11, name: "Spotify", date: "1/15/2025", amount: 10 },
-    { id: 12, name: "Spotify", date: "1/15/2025", amount: 10 },
   ];
+
+  // Sorting Logic
+  const sortedTransactions = [...AllTransactions].sort((a, b) => {
+    if (sortBy === "date") {
+      return new Date(b.date) - new Date(a.date);
+    } else if (sortBy === "amount") {
+      return b.amount - a.amount;
+    } else if (sortBy === "name") {
+      return a.name.localeCompare(b.name);
+    }
+  });
+
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.Title}>History</Text>
       <BudgetChart length={150} Current={2300} Budget={3500} />
-      <FullTransactionHistory list={AllTransactions} />
+
+      {/* Sorting Dropdown */}
+      <Picker
+        selectedValue={sortBy}
+        onValueChange={(itemValue) => setSortBy(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Sort by Date" value="date" />
+        <Picker.Item label="Sort by Amount" value="amount" />
+        <Picker.Item label="Sort by Name" value="name" />
+      </Picker>
+
+      <FullTransactionHistory list={sortedTransactions} />
     </View>
   );
 }
@@ -42,20 +64,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    textAlign: "center",
   },
-  graphContainer: {
-    height: 270,
-    width: "100%",
-    backgroundColor: "#8d82be",
-    borderRadius: 15,
-    padding: 20,
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  graph: {
-    width: "100%",
-    height: 180,
+  picker: {
+    height: 50,
+    width: 200,
     backgroundColor: "white",
-    borderRadius: 15,
+    borderRadius: 5,
+    marginBottom: 10,
   },
 });
+
+export default History;
