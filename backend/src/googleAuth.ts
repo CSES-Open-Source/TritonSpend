@@ -16,10 +16,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       // Extract email from the profile.emails array.
-      const email =
-        profile.emails && profile.emails.length > 0
-          ? profile.emails[0].value
-          : null;
+      const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
 
       // Check that an email is provided and that it ends with @ucsd.edu
       if (!email || !email.toLowerCase().endsWith("@ucsd.edu")) {
@@ -44,8 +41,7 @@ passport.use(
         }
 
         // User does not exist: insert a new user with the provided email and random username
-        const profilePicture =
-          photos && photos.length > 0 ? photos[0].value : null;
+        const profilePicture = photos && photos.length > 0 ? photos[0].value : null;
         const insertUserQuery = `
           INSERT INTO users (email, username, profile_picture) 
           VALUES ($1, $2, $3) RETURNING id
@@ -63,8 +59,8 @@ passport.use(
         console.error("Error during user database interaction:", err);
         return done(err);
       }
-    }
-  )
+    },
+  ),
 );
 
 // Serialize and deserialize user information into the session
