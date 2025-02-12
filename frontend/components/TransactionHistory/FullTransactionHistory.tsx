@@ -27,7 +27,13 @@ export default function FullTransactionHistory(props: any) {
               {/* for Each date category, we map the elements(transactions) that are associated with that date */}
               {transactions.map(
                 (
-                  transaction: { name: any; date: any; amount: any; id: any },
+                  transaction: {
+                    name: any;
+                    date: any;
+                    amount: any;
+                    id: any;
+                    icon: any;
+                  },
                   index: any,
                 ) => (
                   <View key={transaction.id}>
@@ -35,6 +41,7 @@ export default function FullTransactionHistory(props: any) {
                       name={transaction.name}
                       date={transaction.date}
                       amount={transaction.amount}
+                      icon={transaction.icon}
                       //   key={transaction.id}
                     />
                     {/* Put a separater between elements excpet for the last one */}
