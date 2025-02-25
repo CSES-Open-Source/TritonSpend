@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, Picker } from "react-native";
+import { View, StyleSheet, Text, Picker, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
@@ -7,6 +7,7 @@ import FullTransactionHistory from "@/components/TransactionHistory/FullTransact
 export default function History() {
   // Sorting State
   const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
 
   // Placeholder array for transaction history
   const AllTransactions = [
@@ -20,13 +21,17 @@ export default function History() {
 
   // Sorting Logic
   const sortedTransactions = [...AllTransactions].sort((a, b) => {
+    let result = 0;
+
     if (sortBy === "date") {
-      return new Date(b.date) - new Date(a.date);
+      result = new Date(a.date) - new Date(b.date);
     } else if (sortBy === "amount") {
-      return b.amount - a.amount;
+      result = a.amount - b.amount;
     } else if (sortBy === "name") {
-      return a.name.localeCompare(b.name);
+      result = a.name.localeCompare(b.name);
     }
+
+    return sortOrder === "asc" ? result : -result;
   });
 
   return (
@@ -44,6 +49,16 @@ export default function History() {
         <Picker.Item label="Sort by Amount" value="amount" />
         <Picker.Item label="Sort by Name" value="name" />
       </Picker>
+
+      {/* Toggle Ascending/Descending Button */}
+      <TouchableOpacity
+        onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        style={styles.sortButton}
+      >
+        <Text style={styles.sortButtonText}>
+          {sortOrder === "asc" ? "Ascending 🔼" : "Descending 🔽"}
+        </Text>
+      </TouchableOpacity>
 
       <FullTransactionHistory list={sortedTransactions} />
     </View>
@@ -72,6 +87,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 5,
     marginBottom: 10,
+  },
+  sortButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  sortButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
 
