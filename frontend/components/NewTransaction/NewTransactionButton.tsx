@@ -86,10 +86,7 @@ export default function NewTransactionButton() {
             <Picker.Item label="Other" value="other" />
           </Picker>
 
-          <TextInput
-            style={styles.textInput}
-            placeholder="Item Information"
-          />
+          <TextInput style={styles.textInput} placeholder="Item Information" />
 
           <TextInput
             style={styles.textInput}
@@ -97,13 +94,12 @@ export default function NewTransactionButton() {
             keyboardType="numeric"
             value={transactionAmount}
             onChangeText={(text) => {
-            // Allow only numeric values
-            if (/^\d*\.?\d*$/.test(text)) {
-              setTransactionAmount(text);
-            }
+              // Allow only numeric values
+              if (/^\d*\.?\d*$/.test(text)) {
+                setTransactionAmount(text);
+              }
             }}
           />
-
         </Animated.View>
       ) : null}
     </Animated.View>
