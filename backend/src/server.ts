@@ -1,21 +1,34 @@
-/**
- * Initializes mongoose and express.
- */
+// server.ts
+import dotenv from "dotenv";
+dotenv.config();
 
 import "module-alias/register";
-import mongoose from "mongoose";
-import app from "src/app";
-import env from "src/util/validateEnv";
+import passport from "passport";
+import session from "express-session";
+import env from "src/util/validateEnv"; // Importing environment variables
+import app from "src/app"; // The express app
+import "../src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
 
 const PORT = env.PORT;
-const MONGODB_URI = env.MONGODB_URI;
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
-    console.log("Mongoose connected!");
-    app.listen(PORT, () => {
-      console.log(`Server running on ${PORT}.`);
-    });
-  })
-  .catch(console.error);
+// Middleware for handling sessions
+app.use(session({ secret: "your_secret_key", resave: false, saveUninitialized: true }));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Google login route
+app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+
+// Google callback route
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "http://localhost:8081/NotAuthorized" }),
+  (req, res) => {
+    res.redirect("http://localhost:8081/Dashboard"); // Redirect after successful login
+  },
+);
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on ${PORT}.`);
+});

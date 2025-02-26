@@ -3,29 +3,29 @@ name: Lint and style checks
 on:
   push:
     branches:
-      - '**'
+      - "**"
   pull_request:
     branches:
-      - '**'
+      - "**"
 
 jobs:
   backend:
     name: Backend check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-    - working-directory: backend
-      run: |
-        npm ci
-        npm run lint-check
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - working-directory: backend
+        run: |
+          npm ci
+          npm run lint-check
   frontend:
     name: Frontend check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-    - working-directory: frontend
-      run: |
-        npm ci
-        npm run lint-check
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - working-directory: frontend
+        run: |
+          npm ci
+          npm run lint-check
