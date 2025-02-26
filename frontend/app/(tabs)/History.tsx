@@ -11,12 +11,90 @@ export default function History() {
 
   // Placeholder array for transaction history
   const AllTransactions = [
-    { id: 1, name: "Spotify", date: "1/11/2025", amount: 10 },
-    { id: 2, name: "Netflix", date: "1/10/2025", amount: 15 },
-    { id: 3, name: "Amazon", date: "12/11/2024", amount: 30 },
-    { id: 4, name: "Spotify", date: "1/12/2025", amount: 10 },
-    { id: 5, name: "Gym", date: "8/12/2024", amount: 50 },
-    { id: 6, name: "Spotify", date: "1/12/2025", amount: 10 },
+    {
+      id: 1,
+      name: "Spotify",
+      date: "1/11/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 2,
+      name: "Spotify",
+      date: "1/11/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 3,
+      name: "Spotify",
+      date: "1/11/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 4,
+      name: "Spotify",
+      date: "1/12/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 5,
+      name: "Spotify",
+      date: "1/12/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 6,
+      name: "Spotify",
+      date: "1/12/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 7,
+      name: "Spotify",
+      date: "1/13/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 8,
+      name: "Spotify",
+      date: "1/13/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 9,
+      name: "Spotify",
+      date: "1/14/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 10,
+      name: "Spotify",
+      date: "1/14/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 11,
+      name: "Spotify",
+      date: "1/15/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 12,
+      name: "Spotify",
+      date: "1/15/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
   ];
 
   // Sorting Logic

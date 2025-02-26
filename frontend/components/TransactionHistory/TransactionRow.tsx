@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 /*
   this is the container for every row in the transaction history, which includes the icon for the transaction,
@@ -13,13 +13,13 @@ export default function TransactionRow(props: any) {
     <View style={styles.NewTransaction}>
       <View style={styles.iconAndInfo}>
         {/* place holder for transaction icon */}
-        <FontAwesome name="spotify" size={30} color={"#1ed760"} />
+        <Ionicons name={props.icon} size={30} color={"#black"} />
         <View>
           <Text>{props.name}</Text>
           <Text>{props.date}</Text>
         </View>
       </View>
-      <Text>-${props.amount}</Text>
+      <Text>${props.amount}</Text>
     </View>
   );
 }

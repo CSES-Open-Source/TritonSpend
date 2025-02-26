@@ -10,9 +10,27 @@ export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const ThreeTransactions = [
-    { id: 1, name: "Spotify", date: "1/11/2025", amount: 10 },
-    { id: 2, name: "Spotify", date: "2/11/2025", amount: 10 },
-    { id: 3, name: "Spotify", date: "1/10/2024", amount: 10 },
+    {
+      id: 1,
+      name: "Spotify",
+      date: "1/11/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 2,
+      name: "Spotify",
+      date: "1/11/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
+    {
+      id: 3,
+      name: "Spotify",
+      date: "1/11/2025",
+      amount: 10,
+      icon: "logo-tiktok",
+    },
   ];
 
   return (
