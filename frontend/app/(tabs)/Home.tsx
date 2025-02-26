@@ -5,6 +5,7 @@ import TransactionHistory from "@/components/TransactionHistory/TransactionHisto
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
+
 export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
@@ -13,6 +14,7 @@ export default function Home() {
     { id: 2, name: "Spotify", date: "1/11/2025", amount: 10 },
     { id: 3, name: "Spotify", date: "1/11/2025", amount: 10 },
   ];
+
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.Title}>Hello User</Text>
