@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
+import { Picker } from "@react-native-picker/picker";
 
 //button that expands and shows a text input for recent transactions
 export default function NewTransactionButton() {
@@ -24,6 +25,10 @@ export default function NewTransactionButton() {
     outputRange: ["0deg", "45deg"],
   });
 
+  //for the selected category and the transaction amount
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [transactionAmount, setTransactionAmount] = useState("");
+
   //toggle function for buttion, starts all animation when toggled and sets inputVisible accordingly
   function toggle() {
     setInputVisible(!inputVisible);
@@ -33,7 +38,7 @@ export default function NewTransactionButton() {
       useNativeDriver: true,
     }).start();
     Animated.spring(expand, {
-      toValue: inputVisible ? 50 : 120,
+      toValue: inputVisible ? 50 : 210,
       tension: 40,
       useNativeDriver: false,
     }).start();
@@ -68,14 +73,35 @@ export default function NewTransactionButton() {
             },
           ]}
         >
+          <Picker
+            selectedValue={selectedCategory}
+            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select Category" value="" />
+            <Picker.Item label="Food" value="food" />
+            <Picker.Item label="Drinks" value="drinks" />
+            <Picker.Item label="Entertainment" value="entertainment" />
+            <Picker.Item label="Groceries" value="groceries" />
+            <Picker.Item label="Other" value="other" />
+          </Picker>
+
+          <TextInput style={styles.textInput} placeholder="Item Information" />
+
           <TextInput
             style={styles.textInput}
-            placeholder="Enter transaction details"
+            placeholder="Transaction Amount"
+            keyboardType="numeric"
+            value={transactionAmount}
+            onChangeText={(text) => {
+              // Allow only numeric values
+              if (/^\d*\.?\d*$/.test(text)) {
+                setTransactionAmount(text);
+              }
+            }}
           />
         </Animated.View>
-      ) : (
-        ""
-      )}
+      ) : null}
     </Animated.View>
   );
 }
@@ -105,6 +131,15 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   textInput: {
+    width: "100%",
+    borderWidth: 3,
+    borderRadius: 10,
+    padding: 10,
+    borderColor: "#E5E5E5",
+    backgroundColor: "#fff",
+    marginTop: 10,
+  },
+  picker: {
     width: "100%",
     borderWidth: 3,
     borderRadius: 10,

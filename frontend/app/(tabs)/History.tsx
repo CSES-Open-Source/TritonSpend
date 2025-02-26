@@ -1,10 +1,15 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Picker, TouchableOpacity } from "react-native";
+import { useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
 
-//page for showing full Expense Hisotry along with the users budget and how much they spent compared to their budget
+// Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
-  //place holder array for transaction history
+  // Sorting State
+  const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
+
+  // Placeholder array for transaction history
   const AllTransactions = [
     {
       id: 1,
@@ -91,11 +96,49 @@ export default function History() {
       icon: "logo-tiktok",
     },
   ];
+
+  // Sorting Logic
+  const sortedTransactions = [...AllTransactions].sort((a, b) => {
+    let result = 0;
+
+    if (sortBy === "date") {
+      result = new Date(a.date) - new Date(b.date);
+    } else if (sortBy === "amount") {
+      result = a.amount - b.amount;
+    } else if (sortBy === "name") {
+      result = a.name.localeCompare(b.name);
+    }
+
+    return sortOrder === "asc" ? result : -result;
+  });
+
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.Title}>History</Text>
       <BudgetChart length={150} Current={2300} Budget={3500} />
-      <FullTransactionHistory list={AllTransactions} />
+
+      {/* Sorting Dropdown */}
+      <Picker
+        selectedValue={sortBy}
+        onValueChange={(itemValue) => setSortBy(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Sort by Date" value="date" />
+        <Picker.Item label="Sort by Amount" value="amount" />
+        <Picker.Item label="Sort by Name" value="name" />
+      </Picker>
+
+      {/* Toggle Ascending/Descending Button */}
+      <TouchableOpacity
+        onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        style={styles.sortButton}
+      >
+        <Text style={styles.sortButtonText}>
+          {sortOrder === "asc" ? "Ascending 🔼" : "Descending 🔽"}
+        </Text>
+      </TouchableOpacity>
+
+      <FullTransactionHistory list={sortedTransactions} />
     </View>
   );
 }
@@ -114,20 +157,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    textAlign: "center",
   },
-  graphContainer: {
-    height: 270,
-    width: "100%",
-    backgroundColor: "#8d82be",
-    borderRadius: 15,
-    padding: 20,
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  graph: {
-    width: "100%",
-    height: 180,
+  picker: {
+    height: 50,
+    width: 200,
     backgroundColor: "white",
-    borderRadius: 15,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  sortButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  sortButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
+
+export default History;
