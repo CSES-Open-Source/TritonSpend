@@ -1,12 +1,15 @@
-// db.ts
 import { Client } from "pg";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
 
 const client = new Client({
-  host: "localhost", // Database host (localhost for local database)
-  port: 5432, // Default PostgreSQL port
-  user: "your_user", // Your PostgreSQL username
-  password: "your_password", // Your PostgreSQL password
-  database: "tritonspend", // Name of your database
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT), 
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
 // Connect to PostgreSQL
