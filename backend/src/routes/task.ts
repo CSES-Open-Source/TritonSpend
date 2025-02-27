@@ -9,7 +9,7 @@ import * as TaskValidator from "src/validators/task";
 const router = express.Router();
 
 router.get("/:id", TaskController.getTask);
-
+router.get("/transaction", TaskController.getTransaction);
 /**
  * TaskValidator.createTask serves as middleware for this route. This means
  * that instead of immediately serving up the route when the request is made,
