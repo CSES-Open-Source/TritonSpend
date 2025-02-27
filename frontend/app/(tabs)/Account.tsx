@@ -26,12 +26,22 @@ export default function Account() {
   const [profilePic, setProfilePic] = useState("");
   const [profilePicEdit, setProfilePicEdit] = useState("");
   const [Category, setCategory] = useState([
-    { id: 1, name: "Food", value: "100", icon: "fast-food-outline" },
-    { id: 2, name: "School", value: "100", icon: "school-outline" },
+    {
+      id: 1,
+      category_name: "Food",
+      max_category_budget: "100",
+      icon: "fast-food-outline",
+    },
+    {
+      id: 2,
+      category_name: "School",
+      max_category_budget: "100",
+      icon: "school-outline",
+    },
     {
       id: 3,
-      name: "Online Games",
-      value: "100",
+      category_name: "Online Games",
+      max_category_budget: "100",
       icon: "game-controller-outline",
     },
   ]);
@@ -57,6 +67,21 @@ export default function Account() {
     setCategory(CategoryText);
     setProfilePic(profilePicEdit);
     setModalVisible(false);
+    const formData = new FormData();
+    formData.append("username", userName);
+    formData.append("profile_picture", profilePicEdit);
+    formData.append("total_budget", totalBudget);
+    formData.append("budget_per_category", JSON.stringify(Category));
+    fetch("http://localhost:5000/updateSettings", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .catch((error) => {
+        console.error("API Error:", error);
+      });
   }
   //function for user to choose profile pic
   async function pickImage() {
@@ -127,9 +152,14 @@ export default function Account() {
             <View style={styles.inputSection}>
               <Text>Budget Per Category:</Text>
               {Category.map(
-                (section: { name: any; value: any; id: any; icon: any }) => (
+                (section: {
+                  category_name: any;
+                  max_category_budget: any;
+                  id: any;
+                  icon: any;
+                }) => (
                   <View key={section.id} style={{ width: "100%" }}>
-                    <Text>{section.name}:</Text>
+                    <Text>{section.category_name}:</Text>
                     <TextInput
                       style={styles.input}
                       onChangeText={(e) => handleCategoryChange(section.id, e)}

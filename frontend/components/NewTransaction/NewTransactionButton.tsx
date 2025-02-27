@@ -5,6 +5,7 @@ import {
   Animated,
   Pressable,
   TextInput,
+  Button,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
@@ -26,9 +27,9 @@ export default function NewTransactionButton() {
   });
 
   //for the selected category and the transaction amount
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const [transactionAmount, setTransactionAmount] = useState("");
-
+  const [itemInformation, setItemInformation] = useState("");
   //toggle function for buttion, starts all animation when toggled and sets inputVisible accordingly
   function toggle() {
     setInputVisible(!inputVisible);
@@ -38,7 +39,7 @@ export default function NewTransactionButton() {
       useNativeDriver: true,
     }).start();
     Animated.spring(expand, {
-      toValue: inputVisible ? 50 : 210,
+      toValue: inputVisible ? 50 : 260,
       tension: 40,
       useNativeDriver: false,
     }).start();
@@ -52,6 +53,27 @@ export default function NewTransactionButton() {
       duration: 300,
       useNativeDriver: true,
     }).start();
+  }
+  function addTransaction() {
+    fetch("http://localhost:5000/newTransaction", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: 1,
+        item_name: itemInformation,
+        amount: Number(transactionAmount),
+        category_id: Number(selectedCategory),
+      }),
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .catch((error) => {
+        console.error("API Error:", error);
+      });
   }
   return (
     <Animated.View style={[styles.newTransaction, { height: expand }]}>
@@ -79,14 +101,18 @@ export default function NewTransactionButton() {
             style={styles.picker}
           >
             <Picker.Item label="Select Category" value="" />
-            <Picker.Item label="Food" value="food" />
-            <Picker.Item label="Drinks" value="drinks" />
-            <Picker.Item label="Entertainment" value="entertainment" />
-            <Picker.Item label="Groceries" value="groceries" />
-            <Picker.Item label="Other" value="other" />
+            <Picker.Item label="Food" value="1" />
+            <Picker.Item label="Drinks" value="2" />
+            <Picker.Item label="Entertainment" value="3" />
+            <Picker.Item label="Groceries" value="4" />
+            <Picker.Item label="Other" value="5" />
           </Picker>
 
-          <TextInput style={styles.textInput} placeholder="Item Information" />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Item Information"
+            onChangeText={(e) => setItemInformation(e)}
+          />
 
           <TextInput
             style={styles.textInput}
@@ -100,6 +126,7 @@ export default function NewTransactionButton() {
               }
             }}
           />
+          <Button title="Save Transaction" onPress={addTransaction} />
         </Animated.View>
       ) : null}
     </Animated.View>
@@ -129,6 +156,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "90%",
+    gap: 10,
   },
   textInput: {
     width: "100%",
@@ -137,7 +165,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: "#E5E5E5",
     backgroundColor: "#fff",
-    marginTop: 10,
   },
   picker: {
     width: "100%",
