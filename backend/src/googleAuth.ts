@@ -1,8 +1,15 @@
-// src/auth/googleAuth.ts
 import passport from "passport";
-import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import db from "src/db/db";
 import env from "src/util/validateEnv"; // Importing environment variables
+
+interface UserProfile {
+  id: string;
+  email: string;
+  username: string;
+  profile_picture: string | null;
+  // Add other fields here based on your `profile` object
+}
 
 const GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
@@ -21,7 +28,6 @@ passport.use(
       // Check that an email is provided and that it ends with @ucsd.edu
       if (!email || !email.toLowerCase().endsWith("@ucsd.edu")) {
         console.error("Not authorized: Only @ucsd.edu emails are allowed.");
-        // Return false to indicate authentication failure (this will trigger the failureRedirect)
         return done(null, false, { message: "Only @ucsd.edu emails are allowed." });
       }
 
@@ -30,7 +36,6 @@ passport.use(
       const photos = profile.photos;
 
       try {
-        // Check if a user with this email already exists in the database
         const checkUserQuery = "SELECT id FROM users WHERE email = $1";
         const result = await db.query(checkUserQuery, [email]);
 
@@ -40,7 +45,7 @@ passport.use(
           return done(null, profile);
         }
 
-        // User does not exist: insert a new user with the provided email and random username
+        // User does not exist: insert a new user
         const profilePicture = photos && photos.length > 0 ? photos[0].value : null;
         const insertUserQuery = `
           INSERT INTO users (email, username, profile_picture) 
@@ -52,7 +57,6 @@ passport.use(
           profilePicture,
         ]);
 
-        // Attach the newly generated user id to the profile
         profile.id = insertResult.rows[0].id;
         return done(null, profile);
       } catch (err) {
@@ -63,12 +67,11 @@ passport.use(
   ),
 );
 
-// Serialize and deserialize user information into the session
-passport.serializeUser((user: any, done) => {
+passport.serializeUser((user: unknown, done) => {
   done(null, user);
 });
 
-passport.deserializeUser((user: any, done) => {
+passport.deserializeUser((user: UserProfile, done) => {
   done(null, user);
 });
 
