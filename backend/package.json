@@ -12,7 +12,8 @@
     "mongoose": "^7.4.0",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.13.1"
   },
   "name": "backend",
   "version": "1.0.0",
@@ -23,7 +24,8 @@
     "lint-fix": "npm run check-git-hooks && (eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write .",
     "lint-check": "npm run check-git-hooks && eslint --cache --report-unused-disable-directives . && prettier --check .",
     "prepare": "cd .. && husky",
-    "check-git-hooks": "cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks"
+    "check-git-hooks": "cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks",
+    "setup-db": "bash src/db/setup_db.sh"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +39,7 @@
     "@types/multer": "^1.4.12",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
+    "@types/pg": "^8.11.11",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.57.1",
