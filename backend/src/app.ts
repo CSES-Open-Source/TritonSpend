@@ -7,7 +7,6 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { isHttpError } from "http-errors";
 import taskRoutes from "src/routes/task";
-import path from "path";
 import client from "../src/db/db";
 const app = express();
 
@@ -76,7 +75,7 @@ app.post("/newTransaction", (req, res) => {
       return res.status(400).json({ error: "Invalid data types" });
     }
     //query
-    client.query(newTransaction, [user_id, item_name, amount, category_id], (err, result) => {
+    client.query(newTransaction, [user_id, item_name, amount, category_id], (err) => {
       if (err) {
         return res.status(500).json({ error: `Internal server error: ${err}` });
       }
@@ -107,7 +106,7 @@ app.post("/updateSettings", (req, res) => {
     client.query(
       updateSettings,
       [username, profile_picture, total_budget, Number(id)],
-      (err, result) => {
+      (err) => {
         if (err) {
           return res.status(500).json({ error: `Internal server error: ${err}` });
         }
