@@ -7,7 +7,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { isHttpError } from "http-errors";
 import taskRoutes from "src/routes/task";
-
+import client from "../src/db/db";
 const app = express();
 
 // initializes Express to accept JSON in the request/response body
@@ -54,5 +54,64 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
 
   res.status(statusCode).json({ error: errorMessage });
 });
+//adding new transaction
+app.post("/newTransaction", (req, res) => {
+  const newTransaction =
+    "INSERT INTO transactions(user_id, item_name, amount, category_id) VALUES ($1,$2,$3,$4);";
+  //try/catch any errors
+  try {
+    //retrieve data from body
+    const { user_id, item_name, amount, category_id } = req.body;
+    //checking for edge cases and validating data
+    if (!user_id || !item_name || !amount) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    if (
+      typeof user_id !== "number" ||
+      typeof item_name !== "string" ||
+      typeof amount !== "number" ||
+      (category_id !== null && typeof category_id !== "number")
+    ) {
+      return res.status(400).json({ error: "Invalid data types" });
+    }
+    //query
+    client.query(newTransaction, [user_id, item_name, amount, category_id], (err) => {
+      if (err) {
+        return res.status(500).json({ error: `Internal server error: ${err}` });
+      }
+      res.status(200).json({ message: "New Transaction Created!" });
+    });
+  } catch (error) {
+    console.error("Unexpected Error:", error);
+    res.status(500).json({ error: `Internal server error: ${error}` });
+  }
+});
 
+//updating user account settings
+app.post("/updateSettings", (req, res) => {
+  const updateSettings =
+    "UPDATE users SET username = $1, profile_picture = $2, total_budget = $3 WHERE id = $4;";
+  //try/catch any errors
+  try {
+    //retrieve data from body
+    const { username, total_budget, id, profile_picture } = req.body;
+    //checking for edge cases and validating data
+    if (!username || !total_budget) {
+      return res.status(400).json({ error: "Invalid input fields" });
+    }
+    if (typeof username !== "string" || username.trim() === "" || isNaN(total_budget)) {
+      return res.status(400).json({ error: "Invalid data types" });
+    }
+    //query
+    client.query(updateSettings, [username, profile_picture, total_budget, Number(id)], (err) => {
+      if (err) {
+        return res.status(500).json({ error: `Internal server error: ${err}` });
+      }
+      res.status(200).json({ message: "Updated Profile Information!" });
+    });
+  } catch (error) {
+    console.error("Unexpected Error:", error);
+    res.status(500).json({ error: `Internal server error: ${error}` });
+  }
+});
 export default app;

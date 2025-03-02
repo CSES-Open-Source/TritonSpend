@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
 
@@ -34,17 +34,21 @@ export default function Home() {
   ];
 
   return (
-    <View style={styles.homeContainer}>
-      <Text style={styles.Title}>Hello User</Text>
-      <View style={styles.graphContainer}>
-        <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
-        <View style={styles.graph}></View>
-      </View>
-      {/* 
-              components for the new transaction button and the list of transaction history.
-             */}
-      <NewTransactionButton />
-      <TransactionHistory list={ThreeTransactions} />
+    <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
+      <ScrollView style={{ height: "100%" }}>
+        <View style={styles.homeContainer}>
+          <Text style={styles.Title}>Hello User</Text>
+          <View style={styles.graphContainer}>
+            <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
+            <View style={styles.graph}></View>
+          </View>
+          {/* 
+                  components for the new transaction button and the list of transaction history.
+                */}
+          <NewTransactionButton />
+          <TransactionHistory list={ThreeTransactions} />
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -52,7 +56,6 @@ export default function Home() {
 const styles = StyleSheet.create({
   homeContainer: {
     flex: 1,
-    backgroundColor: "#bbadff",
     alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 50,
