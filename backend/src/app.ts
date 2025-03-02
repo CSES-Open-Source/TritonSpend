@@ -8,7 +8,7 @@ import cors from "cors";
 import { isHttpError } from "http-errors";
 import taskRoutes from "src/routes/task";
 import path from "path";
-import client from "./db/db";
+import client from "../src/db/db";
 const app = express();
 
 // initializes Express to accept JSON in the request/response body
