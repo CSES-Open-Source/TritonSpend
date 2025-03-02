@@ -103,16 +103,12 @@ app.post("/updateSettings", (req, res) => {
       return res.status(400).json({ error: "Invalid data types" });
     }
     //query
-    client.query(
-      updateSettings,
-      [username, profile_picture, total_budget, Number(id)],
-      (err) => {
-        if (err) {
-          return res.status(500).json({ error: `Internal server error: ${err}` });
-        }
-        res.status(200).json({ message: "Updated Profile Information!" });
-      },
-    );
+    client.query(updateSettings, [username, profile_picture, total_budget, Number(id)], (err) => {
+      if (err) {
+        return res.status(500).json({ error: `Internal server error: ${err}` });
+      }
+      res.status(200).json({ message: "Updated Profile Information!" });
+    });
   } catch (error) {
     console.error("Unexpected Error:", error);
     res.status(500).json({ error: `Internal server error: ${error}` });
