@@ -7,8 +7,8 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { isHttpError } from "http-errors";
 import taskRoutes from "src/routes/task";
-import multer from "multer";
 import path from "path";
+import client from "./db/db";
 const app = express();
 
 // initializes Express to accept JSON in the request/response body
@@ -55,21 +55,15 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
 
   res.status(statusCode).json({ error: errorMessage });
 });
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Save files in the 'uploads' directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname)); // Add timestamp to file name
-  },
-});
-const upload = multer({ storage: storage });
+//adding new transaction
 app.post("/newTransaction", (req, res) => {
   const newTransaction =
-    "INSERT INTO transactions(user_id, item_name, amount, category_id) VALUES (?,?,?,?);";
+    "INSERT INTO transactions(user_id, item_name, amount, category_id) VALUES ($1,$2,$3,$4);";
+  //try/catch any errors
   try {
+    //retrieve data from body
     const { user_id, item_name, amount, category_id } = req.body;
+    //checking for edge cases and validating data
     if (!user_id || !item_name || !amount) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -81,61 +75,48 @@ app.post("/newTransaction", (req, res) => {
     ) {
       return res.status(400).json({ error: "Invalid data types" });
     }
-    console.log(req.body);
-    res.status(200).json({ message: "New Transaction Created!" }); //place holder
-    // db.query(newTransaction, [user_id, item_name, amount, category_id], (err, result) => {
-    //   if(err){
-    //     return res.status(500).json({ error: "Internal server error" });
-    //   }
-    //   res.status(200).json({ message: "New Transaction Created!" });
-    // })
+    //query
+    client.query(newTransaction, [user_id, item_name, amount, category_id], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: `Internal server error: ${err}` });
+      }
+      res.status(200).json({ message: "New Transaction Created!" });
+    });
   } catch (error) {
     console.error("Unexpected Error:", error);
-    res.status(500).json({ error: "Unexpected server error" });
+    res.status(500).json({ error: `Internal server error: ${error}` });
   }
 });
-app.post("/updateSettings", upload.single("profile_picture"), (req, res) => {
+
+//updating user account settings
+app.post("/updateSettings", (req, res) => {
   const updateSettings =
-    "UPDATE users SET username = ?, profile_picture = ?, total_budget = ? WHERE id = ?;";
+    "UPDATE users SET username = $1, profile_picture = $2, total_budget = $3 WHERE id = $4;";
+  //try/catch any errors
   try {
-    const { username, total_budget, budget_per_category } = req.body;
-    const profile_picture = req.file ? req.file.path : null;
-    if (!username || !total_budget || !budget_per_category) {
+    //retrieve data from body
+    const { username, total_budget, id, profile_picture } = req.body;
+    //checking for edge cases and validating data
+    if (!username || !total_budget) {
       return res.status(400).json({ error: "Invalid input fields" });
     }
     if (typeof username !== "string" || username.trim() === "" || isNaN(total_budget)) {
       return res.status(400).json({ error: "Invalid data types" });
     }
-    const parsedBudgetPerCategory = JSON.parse(budget_per_category);
-    for (const category of parsedBudgetPerCategory) {
-      console.log(category);
-      const categoryBudget = category.total_budget;
-      if (isNaN(categoryBudget) || categoryBudget < 0) {
-        return res.status(500).json({ error: `Invalid budget for category ID ${category.id}` });
-      }
-    }
-    res.status(200).json({ message: "User Information Updated" }); //place holder
-    // db.query(updateSettings, [username, profile_picture, total_budget, budget_per_category], (err, result) => {
-    //   if(err){
-    //     return res.status(500).json({ error: "Internal server error" });
-    //   }
-    //   const userId = result.rows[0].id;
-    //   const categoryUpdates = Object.entries(budget_per_category).map(([categoryId, budget]) => {
-    //       const updateCategoryQuery = `UPDATE categories SET max_category_budget = ? WHERE user_id = ? AND id = ?`;
-    //       return db.query(updateCategoryQuery, [budget, userId, categoryId]);
-    //   });
-    //   Promise.all(categoryUpdates)
-    //     .then(() => {
-    //         return res.status(200).json({ message: 'Settings updated successfully' });
-    //     })
-    //     .catch((error) => {
-    //         console.error('Error updating categories:', error);
-    //         return res.status(500).json({ error: 'Error updating categories' });
-    //     });
-    // })
+    //query
+    client.query(
+      updateSettings,
+      [username, profile_picture, total_budget, Number(id)],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({ error: `Internal server error: ${err}` });
+        }
+        res.status(200).json({ message: "Updated Profile Information!" });
+      },
+    );
   } catch (error) {
     console.error("Unexpected Error:", error);
-    res.status(500).json({ error: "Unexpected server error" });
+    res.status(500).json({ error: `Internal server error: ${error}` });
   }
 });
 export default app;

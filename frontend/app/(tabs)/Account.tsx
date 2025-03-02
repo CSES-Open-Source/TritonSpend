@@ -68,10 +68,10 @@ export default function Account() {
     setProfilePic(profilePicEdit);
     setModalVisible(false);
     const formData = new FormData();
-    formData.append("username", userName);
+    formData.append("username", userNameText);
     formData.append("profile_picture", profilePicEdit);
-    formData.append("total_budget", totalBudget);
-    formData.append("budget_per_category", JSON.stringify(Category));
+    formData.append("total_budget", totalBudgetText);
+    formData.append("id", "1");
     fetch("http://localhost:5000/updateSettings", {
       method: "POST",
       body: formData,
