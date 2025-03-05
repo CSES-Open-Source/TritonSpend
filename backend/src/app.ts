@@ -87,6 +87,20 @@ app.post("/newTransaction", (req, res) => {
   }
 });
 
+app.get("/getTransactions/:user_id", (req, res) => {
+  const { user_id } = req.params;
+  const getTransactions = "SELECT * FROM transactions WHERE user_id = $1 ORDER BY date DESC;;";
+  try {
+    client.query(getTransactions, [user_id], (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: `Internal server error: ${err}` });
+      }
+      res.status(200).json(result.rows);
+    });
+  } catch (error) {
+    res.status(500).json({ error: `Internal server error: ${error}` });
+  }
+});
 //updating user account settings
 app.post("/updateSettings", (req, res) => {
   const updateSettings =

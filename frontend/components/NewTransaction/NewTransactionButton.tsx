@@ -102,9 +102,9 @@ export default function NewTransactionButton() {
           >
             <Picker.Item label="Select Category" value="" />
             <Picker.Item label="Food" value="1" />
-            <Picker.Item label="Drinks" value="2" />
-            <Picker.Item label="Entertainment" value="3" />
-            <Picker.Item label="Groceries" value="4" />
+            <Picker.Item label="Shopping" value="2" />
+            <Picker.Item label="Transportation" value="3" />
+            <Picker.Item label="Subsciptions" value="4" />
             <Picker.Item label="Other" value="5" />
           </Picker>
 

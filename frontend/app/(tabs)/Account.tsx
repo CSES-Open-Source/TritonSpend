@@ -153,10 +153,10 @@ export default function Account() {
               <Text>Budget Per Category:</Text>
               {Category.map(
                 (section: {
-                  category_name: any;
-                  max_category_budget: any;
-                  id: any;
-                  icon: any;
+                  category_name: string;
+                  max_category_budget: string;
+                  id: number;
+                  icon: string;
                 }) => (
                   <View key={section.id} style={{ width: "100%" }}>
                     <Text>{section.category_name}:</Text>

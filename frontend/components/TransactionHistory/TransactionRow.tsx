@@ -1,5 +1,6 @@
 import { View, StyleSheet, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 
 /*
   this is the container for every row in the transaction history, which includes the icon for the transaction,
@@ -9,14 +10,28 @@ import { Ionicons } from "@expo/vector-icons";
 
  */
 export default function TransactionRow(props: any) {
+  const [icon, setIcon] = useState<any>("");
+  const categoryIconMapping: { [key: number]: string } = {
+    1: "fast-food-outline",
+    2: "pricetag-outline",
+    3: "bus-outline",
+    4: "calendar-outline",
+  };
+
+  useEffect(() => {
+    const iconName: string = categoryIconMapping[props.icon] || "card-outline";
+    setIcon(iconName);
+  }, []);
+  const formattedDate =
+    typeof props.date === "string" ? props.date.substring(0, 10) : "";
   return (
     <View style={styles.NewTransaction}>
       <View style={styles.iconAndInfo}>
         {/* place holder for transaction icon */}
-        <Ionicons name={props.icon} size={30} color={"#black"} />
+        <Ionicons name={icon} size={30} color={"#black"} />
         <View>
           <Text>{props.name}</Text>
-          <Text>{props.date}</Text>
+          <Text>{formattedDate}</Text>
         </View>
       </View>
       <Text>${props.amount}</Text>
