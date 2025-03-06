@@ -7,7 +7,7 @@ export default function BudgetChart(props: any) {
       <View style={[styles.chartBackground, styles.shadow]}>
         <View
           style={{
-            width: props.length,
+            width: `${props.length}%`,
             height: 40,
             backgroundColor: "#8d82be",
             borderRadius: 10,

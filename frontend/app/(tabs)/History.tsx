@@ -19,10 +19,14 @@ export default function History() {
     { id: 11, name: "Spotify", date: "1/15/2025", amount: 10 },
     { id: 12, name: "Spotify", date: "1/15/2025", amount: 10 },
   ];
+
+  const Budget = 3500;
+  const current = 2300;
+  
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.Title}>History</Text>
-      <BudgetChart length={150} Current={2300} Budget={3500} />
+      <BudgetChart length={current/Budget* 100} Current={current} Budget={Budget} />
       <FullTransactionHistory list={AllTransactions} />
     </View>
   );
