@@ -57,7 +57,10 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
 });
 
 //  ↓ Organize these endpoints into routes later ↓
-
+interface Category {
+  id: number;
+  max_category_budget: string;
+}
 //adding new transaction
 app.post("/newTransaction", (req, res) => {
   const newTransaction =
@@ -120,7 +123,7 @@ app.put("/updateSettings", upload.none(), (req, res) => {
     client.query(updateSettings, [username, profile_picture, total_budget, Number(id)]);
     if (categories) {
       const parsedCategories = JSON.parse(categories);
-      const invalidCategory = parsedCategories.find((category: any) =>
+      const invalidCategory = parsedCategories.find((category: Category) =>
         isNaN(Number(category.max_category_budget)),
       );
       if (invalidCategory) {
