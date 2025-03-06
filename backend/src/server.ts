@@ -8,7 +8,7 @@ import session from "express-session";
 import env from "src/util/validateEnv"; // Importing environment variables
 import app from "src/app"; // The express app
 import "../src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
-import userRoutes from "./routes/user";
+import userRoutes from "../src/routes/user";
 import cors from "cors";
 
 // Enable CORS for your frontend domain (adjust the port accordingly)
@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: "http://localhost:8081", // Your frontend URL
     credentials: true, // Allow cookies/session data to be sent
-  })
+  }),
 );
 
 const PORT = env.PORT;
@@ -40,10 +40,7 @@ app.get(
 
 app.use("/user", userRoutes);
 
-
-
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}.`);
 });
-

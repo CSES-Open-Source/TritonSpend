@@ -24,7 +24,8 @@
     "lint-check": "npm run check-git-hooks && eslint --cache --report-unused-disable-directives . && prettier --check .",
     "prepare": "cd .. && husky",
     "check-git-hooks": "cd .. && node .secret-scan/secret-scan.js -- --check-git-hooks",
-    "setup-db": "bash src/db/setup_db.sh"
+    "setup-db": "bash src/db/setup_db.sh",
+    "prettier": "prettier --write ."
   },
   "keywords": [],
   "author": "",
