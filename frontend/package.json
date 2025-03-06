@@ -13,7 +13,8 @@
     "lint": "expo lint",
     "lint-check": "npm run check-git-hooks && expo lint && prettier --check .",
     "lint-fix": "npm run check-git-hooks && (eslint --fix --cache --report-unused-disable-directives . || true) && prettier --write .",
-    "prepare": "cd .. && husky"
+    "prepare": "cd .. && husky",
+    "prettier": "prettier --write ."
   },
   "jest": {
     "preset": "jest-expo"

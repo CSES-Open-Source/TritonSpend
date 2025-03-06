@@ -5,7 +5,7 @@ const DashboardPage = () => {
     try {
       const response = await fetch("http://localhost:5000/user/logout", {
         method: "POST",
-        credentials: "include",  // Ensures cookies (session info) are sent along with the request
+        credentials: "include", // Ensures cookies (session info) are sent along with the request
       });
 
       if (!response.ok) {
@@ -13,7 +13,7 @@ const DashboardPage = () => {
       }
 
       // Perform the redirect on the frontend
-      window.location.href = "/Login";  // Or use any React Native navigation method if needed
+      window.location.href = "/Login"; // Or use any React Native navigation method if needed
     } catch (error) {
       console.error("Logout failed", error);
     }
@@ -31,7 +31,6 @@ const DashboardPage = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
