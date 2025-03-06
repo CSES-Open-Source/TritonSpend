@@ -1,4 +1,5 @@
-import { View, StyleSheet, Text, Picker, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";

@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import Home from "./Home"; // Import the Home component
+import Home from ".";
 import History from "./History"; // Import the History component
 import LoginPage from "./Login";
 import Account from "./Account";
@@ -9,7 +9,10 @@ const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={{ headerShown: false }}
+    >
       {/* Home Tab */}
       <Tab.Screen
         name="Home"
