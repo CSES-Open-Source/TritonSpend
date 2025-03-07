@@ -15,6 +15,7 @@ import {
   ScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import Toast from "react-native-toast-message";
 export default function Account() {
   //variables to store values
   const [modalVisible, setModalVisible] = useState(false);
@@ -79,6 +80,22 @@ export default function Account() {
       body: formData,
     })
       .then((res) => {
+        if (!res.ok) {
+          return res.json().then((err) => {
+            Toast.show({
+              type: "error",
+              text1: "Transaction Unsuccessful ❌",
+              text2: "One or more fields are invalid, try again",
+            });
+
+            throw new Error(err.error || "Something went wrong");
+          });
+        }
+        Toast.show({
+          type: "success",
+          text1: "Account Info Updated ✅",
+          text2: "Your account information has been updated!",
+        });
         return res.json();
       })
       .catch((error) => {
@@ -200,6 +217,7 @@ export default function Account() {
           <LogOutButton />
         </View>
       </ScrollView>
+      <Toast />
     </>
   );
 }

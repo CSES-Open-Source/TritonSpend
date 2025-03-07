@@ -70,8 +70,9 @@ app.post("/newTransaction", (req, res) => {
     //retrieve data from body
     const { user_id, item_name, amount, category_id } = req.body;
     //checking for edge cases and validating data
-    if (!user_id || !item_name || !amount) {
-      return res.status(400).json({ error: "Missing required fields" });
+
+    if (!user_id || !item_name || !amount || item_name.length == 0 || amount <= 0) {
+      return res.status(400).json({ error: "Invalid fields" });
     }
     if (
       typeof user_id !== "number" ||

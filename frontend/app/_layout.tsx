@@ -9,8 +9,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Header from "@/components/Header/Header";
-import DashboardPage from "./Dashboard";
-import NotAuthorizedPage from "./NotAuthorized";
 
 SplashScreen.preventAutoHideAsync();
 

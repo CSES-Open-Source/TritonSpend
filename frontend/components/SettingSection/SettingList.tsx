@@ -1,4 +1,3 @@
-import LogOutButton from "@/components/LogoutButton/LogOutButton";
 import { View, StyleSheet, Text } from "react-native";
 import TransactionRow from "../TransactionHistory/TransactionRow";
 

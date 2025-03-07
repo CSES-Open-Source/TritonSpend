@@ -1,6 +1,5 @@
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import TransactionRow from "./TransactionRow";
-import { FontAwesome } from "@expo/vector-icons";
 
 //container for the recent transaction history.
 export default function FullTransactionHistory(props: any) {

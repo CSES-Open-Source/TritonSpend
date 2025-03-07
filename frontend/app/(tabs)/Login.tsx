@@ -1,10 +1,10 @@
 // src/LoginPage.tsx
 import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+// import { useRouter } from "expo-router";
 
 const LoginPage = () => {
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleGoogleLogin = () => {
     // Redirect to backend Google OAuth URL

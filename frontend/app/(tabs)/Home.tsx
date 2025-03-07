@@ -2,6 +2,7 @@ import { View, StyleSheet, Text, ScrollView } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
 import { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
@@ -11,6 +12,7 @@ export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
+  const [updateRecent, setUpdateRecent] = useState(false);
   useEffect(() => {
     fetch("http://localhost:5000/getTransactions/1", {
       method: "GET",
@@ -30,25 +32,31 @@ export default function Home() {
       .catch((error) => {
         console.error("API Error:", error);
       });
-  }, []);
+  }, [updateRecent]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
-      <ScrollView style={{ height: "100%" }}>
-        <View style={styles.homeContainer}>
-          <Text style={styles.Title}>Hello User</Text>
-          <View style={styles.graphContainer}>
-            <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
-            <View style={styles.graph}></View>
-          </View>
-          {/* 
+    <>
+      <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
+        <ScrollView style={{ height: "100%" }}>
+          <View style={styles.homeContainer}>
+            <Text style={styles.Title}>Hello User</Text>
+            <View style={styles.graphContainer}>
+              <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
+              <View style={styles.graph}></View>
+            </View>
+            {/* 
                   components for the new transaction button and the list of transaction history.
                 */}
-          <NewTransactionButton />
-          <TransactionHistory list={ThreeTransactions} />
-        </View>
-      </ScrollView>
-    </View>
+            <NewTransactionButton
+              setUpdateRecent={setUpdateRecent}
+              updateRecent={updateRecent}
+            />
+            <TransactionHistory list={ThreeTransactions} />
+          </View>
+        </ScrollView>
+      </View>
+      <Toast />
+    </>
   );
 }
 

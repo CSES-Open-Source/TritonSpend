@@ -10,9 +10,10 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
 import { Picker } from "@react-native-picker/picker";
+import Toast from "react-native-toast-message";
 
 //button that expands and shows a text input for recent transactions
-export default function NewTransactionButton() {
+export default function NewTransactionButton(props: any) {
   //usestate for expanding button, if true, button is expanded, initially set to false
   const [inputVisible, setInputVisible] = useState(false);
   //refs for animation(X icon rotating, button expanding... etc)
@@ -69,6 +70,27 @@ export default function NewTransactionButton() {
       }),
     })
       .then((res) => {
+        if (!res.ok) {
+          return res.json().then((err) => {
+            Toast.show({
+              type: "error",
+              text1: "Transaction Unsuccessful ❌",
+              text2: "One or more fields are invalid, try again",
+            });
+
+            throw new Error(err.error || "Something went wrong");
+          });
+        }
+        props.setUpdateRecent(!props.updateRecent);
+        setItemInformation("");
+        setTransactionAmount("");
+        setSelectedCategory(0);
+        Toast.show({
+          type: "success",
+          text1: "Transaction Successful ✅",
+          text2: "Your transaction has been recorded",
+        });
+
         return res.json();
       })
       .catch((error) => {
@@ -112,6 +134,7 @@ export default function NewTransactionButton() {
             style={styles.textInput}
             placeholder="Item Information"
             onChangeText={(e) => setItemInformation(e)}
+            value={itemInformation}
           />
 
           <TextInput
