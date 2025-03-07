@@ -10,6 +10,7 @@
     "module-alias": "^2.2.3",
     "mongodb": "^5.7.0",
     "mongoose": "^7.4.0",
+    "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.13.1"
@@ -35,6 +36,7 @@
     "@types/express": "^4.17.17",
     "@types/express-session": "^1.18.1",
     "@types/http-errors": "^2.0.1",
+    "@types/multer": "^1.4.12",
     "@types/passport": "^1.0.17",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/pg": "^8.11.11",

@@ -10,9 +10,11 @@ export default function Profile(props: any) {
   return (
     <View style={styles.Profile}>
       <View style={styles.ProfileInfo}>
-        <Text style={{ fontWeight: "bold", fontSize: 20 }}>Triton King</Text>
+        <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+          {props.userName}
+        </Text>
         <Text style={{ fontWeight: 500, fontSize: 15, opacity: 0.5 }}>
-          @{props.userName}
+          @{props.Email}
         </Text>
       </View>
       <View style={styles.profilePic}>

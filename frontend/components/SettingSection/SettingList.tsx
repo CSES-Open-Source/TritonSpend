@@ -1,4 +1,3 @@
-import LogOutButton from "@/components/LogoutButton/LogOutButton";
 import { View, StyleSheet, Text } from "react-native";
 import TransactionRow from "../TransactionHistory/TransactionRow";
 
@@ -20,14 +19,19 @@ export default function SettingList(props: any) {
       <View>
         {props.list.map(
           (
-            section: { name: any; value: any; id: any; icon: any },
+            section: {
+              category_name: string;
+              max_category_budget: number;
+              id: number;
+              icon: number;
+            },
             index: any,
           ) => (
             <View key={section.id}>
               <TransactionRow
-                name={section.name}
-                amount={section.value}
-                icon={section.icon}
+                name={section.category_name}
+                amount={section.max_category_budget}
+                icon={section.id}
               />
               {/* Put a separater between elements excpet for the last one */}
               {index < props.list.length - 1 && (

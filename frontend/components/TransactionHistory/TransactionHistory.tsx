@@ -14,19 +14,23 @@ export default function TransactionHistory(props: any) {
         </View>
       </Link>
       <View style={styles.recentTranactions}>
-        {props.list.map((row: any, index: any) => (
-          <View key={row.id}>
-            <TransactionRow
-              name={row.name}
-              date={row.date}
-              amount={row.amount}
-              key={row.id}
-              icon={row.icon}
-            />
-            {/* Put a separater between elements excpet for the last one */}
-            {index < props.list.length - 1 && <View style={styles.separator} />}
-          </View>
-        ))}
+        {props.list.map((row: any, index: any) => {
+          return (
+            <View key={row.id}>
+              <TransactionRow
+                name={row.item_name}
+                date={row.date}
+                amount={row.amount}
+                key={row.id}
+                icon={row.category_id}
+              />
+              {/* Put a separater between elements excpet for the last one */}
+              {index < props.list.length - 1 && (
+                <View style={styles.separator} />
+              )}
+            </View>
+          );
+        })}
       </View>
     </View>
   );

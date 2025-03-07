@@ -1,113 +1,47 @@
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
+import { useFocusEffect } from "@react-navigation/native";
 
 // Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
   // Sorting State
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
-
-  // Placeholder array for transaction history
-  const AllTransactions = [
-    {
-      id: 1,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 2,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 3,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 4,
-      name: "Spotify",
-      date: "1/12/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 5,
-      name: "Spotify",
-      date: "1/12/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 6,
-      name: "Spotify",
-      date: "1/12/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 7,
-      name: "Spotify",
-      date: "1/13/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 8,
-      name: "Spotify",
-      date: "1/13/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 9,
-      name: "Spotify",
-      date: "1/14/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 10,
-      name: "Spotify",
-      date: "1/14/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 11,
-      name: "Spotify",
-      date: "1/15/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 12,
-      name: "Spotify",
-      date: "1/15/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-  ];
-
+  const [AllTransactions, setAllTransactions] = useState<any[]>([]);
+  //our app only loads once and does not load again even if we change tabs. This is why we cant use useEffect
+  //we use useFocusEffect to detect if our tab is in focus rather than using useEffect
+  useFocusEffect(
+    useCallback(() => {
+      fetch("http://localhost:5000/getTransactions/1", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setAllTransactions(data);
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+    }, []),
+  );
   // Sorting Logic
   const sortedTransactions = [...AllTransactions].sort((a, b) => {
     let result = 0;
 
     if (sortBy === "date") {
-      result = new Date(a.date) - new Date(b.date);
+      result = new Date(a.date).getTime() - new Date(b.date).getTime();
     } else if (sortBy === "amount") {
       result = a.amount - b.amount;
     } else if (sortBy === "name") {
-      result = a.name.localeCompare(b.name);
+      result = a.item_name.localeCompare(b.item_name);
     }
 
     return sortOrder === "asc" ? result : -result;
@@ -178,5 +112,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-export default History;

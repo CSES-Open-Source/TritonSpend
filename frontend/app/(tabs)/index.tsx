@@ -1,6 +1,8 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
+import { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
@@ -9,50 +11,58 @@ import TransactionHistory from "@/components/TransactionHistory/TransactionHisto
 export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
-  const ThreeTransactions = [
-    {
-      id: 1,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 2,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-    {
-      id: 3,
-      name: "Spotify",
-      date: "1/11/2025",
-      amount: 10,
-      icon: "logo-tiktok",
-    },
-  ];
+  const [ThreeTransactions, setThreeTransactions] = useState([]);
+  const [updateRecent, setUpdateRecent] = useState(false);
+  useEffect(() => {
+    fetch("http://localhost:5000/getTransactions/1", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        console.log(res.body);
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setThreeTransactions(data.slice(0, 3));
+      })
+      .catch((error) => {
+        console.error("API Error:", error);
+      });
+  }, [updateRecent]);
 
   return (
-    <View style={styles.homeContainer}>
-      <Text style={styles.Title}>Hello User</Text>
-      <View style={styles.graphContainer}>
-        <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
-        <View style={styles.graph}></View>
+    <>
+      <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
+        <ScrollView style={{ height: "100%" }}>
+          <View style={styles.homeContainer}>
+            <Text style={styles.Title}>Hello User</Text>
+            <View style={styles.graphContainer}>
+              <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
+              <View style={styles.graph}></View>
+            </View>
+            {/* 
+                  components for the new transaction button and the list of transaction history.
+                */}
+            <NewTransactionButton
+              setUpdateRecent={setUpdateRecent}
+              updateRecent={updateRecent}
+            />
+            <TransactionHistory list={ThreeTransactions} />
+          </View>
+        </ScrollView>
       </View>
-      {/* 
-              components for the new transaction button and the list of transaction history.
-             */}
-      <NewTransactionButton />
-      <TransactionHistory list={ThreeTransactions} />
-    </View>
+      <Toast />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   homeContainer: {
     flex: 1,
-    backgroundColor: "#bbadff",
     alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 50,

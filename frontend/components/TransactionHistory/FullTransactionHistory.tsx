@@ -1,17 +1,17 @@
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import TransactionRow from "./TransactionRow";
-import { FontAwesome } from "@expo/vector-icons";
 
 //container for the recent transaction history.
 export default function FullTransactionHistory(props: any) {
   //Constant array that groups the props list by their dates
   const groupedByDate = props.list.reduce((acc: any, transaction: any) => {
+    const dateKey = transaction.date.slice(0, 10);
     //if the date does not exist, add a new hashmap for it
-    if (!acc[transaction.date]) {
-      acc[transaction.date] = [];
+    if (!acc[dateKey]) {
+      acc[dateKey] = [];
     }
     //if it exists, push new element to the date
-    acc[transaction.date].push(transaction);
+    acc[dateKey].push(transaction);
     return acc;
   }, {});
   return (
@@ -28,20 +28,20 @@ export default function FullTransactionHistory(props: any) {
               {transactions.map(
                 (
                   transaction: {
-                    name: any;
-                    date: any;
-                    amount: any;
-                    id: any;
-                    icon: any;
+                    item_name: string;
+                    date: string;
+                    amount: string;
+                    id: number;
+                    category_id: number;
                   },
                   index: any,
                 ) => (
                   <View key={transaction.id}>
                     <TransactionRow
-                      name={transaction.name}
+                      name={transaction.item_name}
                       date={transaction.date}
                       amount={transaction.amount}
-                      icon={transaction.icon}
+                      icon={transaction.category_id}
                       //   key={transaction.id}
                     />
                     {/* Put a separater between elements excpet for the last one */}
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   HistoryContainer: {
     backgroundColor: "white",
     width: "100%",
-    height: 450,
+    flex: 1,
     borderRadius: 15,
     padding: 15,
     gap: 5,
