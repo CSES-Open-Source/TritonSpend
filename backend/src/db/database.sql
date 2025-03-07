@@ -26,3 +26,18 @@ CREATE TABLE transactions (
     category_id INT REFERENCES categories(id) ON DELETE SET NULL,  -- Category ID (FK)
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Date of Transaction
 );
+
+-- initialize default categories 
+INSERT INTO categories (id, user_id, category_name, max_category_budget, category_expense) 
+VALUES 
+    (1, 1, 'Food', 3123.00, 50.00),
+    (2, 1, 'Shopping', 123.00, 240.00),
+    (3, 1, 'Transportation', 56.00, 200.00),
+    (4, 1, 'Subscriptions', 78.00, 350.00),
+    (5, 1, 'other', 90.00, 777.00);
+
+
+-- initialize default user
+INSERT INTO users (id, email, username, profile_picture, total_budget, total_expense)
+VALUES
+    (3,'TritonKing@ucsd.edu', 'TritonKing', NULL, 1500, 1000)
