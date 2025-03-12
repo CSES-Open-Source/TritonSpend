@@ -14,7 +14,7 @@ export default function Home() {
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
   useEffect(() => {
-    fetch("http://localhost:5000/getTransactions/1", {
+    fetch("http://localhost:5000/transactions/getTransactions/1", {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -55,7 +55,6 @@ export default function Home() {
           </View>
         </ScrollView>
       </View>
-      <Toast />
     </>
   );
 }

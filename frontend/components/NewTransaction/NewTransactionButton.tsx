@@ -56,7 +56,7 @@ export default function NewTransactionButton(props: any) {
     }).start();
   }
   function addTransaction() {
-    fetch("http://localhost:5000/newTransaction", {
+    fetch("http://localhost:5000/transactions/newTransaction", {
       method: "POST",
       headers: {
         Accept: "application/json",

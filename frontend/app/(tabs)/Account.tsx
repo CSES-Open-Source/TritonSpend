@@ -217,7 +217,6 @@ export default function Account() {
           <LogOutButton />
         </View>
       </ScrollView>
-      <Toast />
     </>
   );
 }

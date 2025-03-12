@@ -8,7 +8,7 @@ import session from "express-session";
 import env from "src/util/validateEnv"; // Importing environment variables
 import app from "src/app"; // The express app
 import "../src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
-
+import transactionRoutes from "./routes/transactions";
 const PORT = env.PORT;
 
 // Middleware for handling sessions
@@ -27,7 +27,7 @@ app.get(
     res.redirect("http://localhost:8081/Dashboard"); // Redirect after successful login
   },
 );
-
+app.use("/transactions", transactionRoutes);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}.`);
