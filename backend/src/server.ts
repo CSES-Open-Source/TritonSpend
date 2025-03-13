@@ -8,8 +8,8 @@ import session from "express-session";
 import env from "src/util/validateEnv"; // Importing environment variables
 import app from "src/app"; // The express app
 import "../src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
-import transactionRoutes from "./routes/transactions";
-import userRoutes from "./routes/user"
+import transactionRoutes from "../src/routes/transactions";
+import userRoutes from "../src/routes/user";
 const PORT = env.PORT;
 
 // Middleware for handling sessions
