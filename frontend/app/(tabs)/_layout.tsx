@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Home from ".";
 import History from "./History"; // Import the History component
-import LoginPage from "./Login";
+// import LoginPage from "../Login";
 import Account from "./Account";
 const Tab = createBottomTabNavigator();
 
@@ -32,7 +32,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Login"
         component={LoginPage}
         options={{
@@ -40,7 +40,7 @@ export default function TabLayout() {
             <Ionicons name="log-in" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Account"
         component={Account}

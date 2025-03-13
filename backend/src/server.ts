@@ -9,6 +9,7 @@ import env from "src/util/validateEnv"; // Importing environment variables
 import app from "src/app"; // The express app
 import "../src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
 import transactionRoutes from "./routes/transactions";
+import userRoutes from "./routes/user"
 const PORT = env.PORT;
 
 // Middleware for handling sessions
@@ -28,6 +29,7 @@ app.get(
   },
 );
 app.use("/transactions", transactionRoutes);
+app.use("/users", userRoutes);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}.`);
