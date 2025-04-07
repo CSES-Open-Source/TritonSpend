@@ -22,11 +22,15 @@ export default function History() {
 
   const Budget = 3500;
   const current = 2300;
-  
+
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.Title}>History</Text>
-      <BudgetChart length={current/Budget* 100} Current={current} Budget={Budget} />
+      <BudgetChart
+        length={(current / Budget) * 100}
+        Current={current}
+        Budget={Budget}
+      />
       <FullTransactionHistory list={AllTransactions} />
     </View>
   );
