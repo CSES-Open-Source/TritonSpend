@@ -141,4 +141,3 @@ const styles = StyleSheet.create({
 });
 
 export default LoginPage;
-
