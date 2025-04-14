@@ -12,7 +12,7 @@ import cors from "cors";
 
 // Allow only specific origins (example: http://localhost:3000)
 const allowedOrigins = [
-  "http://localhost:8081" // Change this to the frontend's origin
+  "http://localhost:8081", // Change this to the frontend's origin
 ];
 
 app.use(
@@ -26,7 +26,7 @@ app.use(
       }
     },
     credentials: true, // Allow cookies/session data to be sent
-  })
+  }),
 );
 
 const PORT = env.PORT;
@@ -42,7 +42,7 @@ app.use(
       httpOnly: true,
       maxAge: 60 * 60 * 1000, // 1 hour expiration time
     },
-  })
+  }),
 );
 
 app.use(passport.initialize());

@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import { Linking } from "react-native";
 import LogOutButton from "@/components/LogoutButton/LogOutButton"; // Assuming this is your custom logout button component
 
-
 const LoginPage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // Use null for loading state
   const [user, setUser] = useState<any>(null);
@@ -57,9 +56,6 @@ const LoginPage = () => {
     checkLoginStatus();
   }, []);
 
-
-
-
   const handleGoogleLogin = () => {
     Linking.openURL("http://localhost:5000/auth/google");
   };
@@ -83,8 +79,6 @@ const LoginPage = () => {
     }
   };
 
-
-  
   if (isLoggedIn === null) {
     return <Text>Loading...</Text>;
   }
@@ -92,17 +86,18 @@ const LoginPage = () => {
   if (isLoggedIn && user) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Welcome to your Dashboard, {user.username}!</Text>
-        <Text style={styles.message}>
-          Here are your details:
+        <Text style={styles.title}>
+          Welcome to your Dashboard, {user.username}!
         </Text>
+        <Text style={styles.message}>Here are your details:</Text>
         <Text style={styles.details}>
           Profile Picture: {user.profile_picture || "No picture set"}
         </Text>
-        <Text style={styles.details}>
-          Total Budget: ${user.total_budget}
-        </Text>
-        <Button title="Go to Settings" onPress={() => router.push("/Account")} />
+        <Text style={styles.details}>Total Budget: ${user.total_budget}</Text>
+        <Button
+          title="Go to Settings"
+          onPress={() => router.push("/Account")}
+        />
         <LogOutButton onLogout={handleLogout} />
       </View>
     );
@@ -146,3 +141,4 @@ const styles = StyleSheet.create({
 });
 
 export default LoginPage;
+
