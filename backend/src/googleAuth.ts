@@ -67,12 +67,11 @@ passport.use(
   ),
 );
 
-passport.serializeUser((user: unknown, done) => {
+passport.serializeUser((user:any, done) => {
   done(null, user);
 });
 
 passport.deserializeUser((user: UserProfile, done) => {
   done(null, user);
 });
-
 export default passport;
