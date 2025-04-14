@@ -40,32 +40,32 @@ export default function RootLayout() {
   // }, [user, router]);
   return (
     <>
-        <AuthProvider>
+      <AuthProvider>
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        > 
+        >
           {/* Custom header (optional) */}
           <Header />
 
           {/* Stack navigator */}
           <Stack>
             {/* Tab-based navigation */}
-              <Stack.Screen name="Login" options={{ headerShown: false }} />
-              <>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="Dashboard"
-                  options={{ title: "Dashboard", headerShown: false }}
-                />
-                <Stack.Screen
-                  name="NotAuthorized"
-                  options={{ title: "Not Authorized", headerShown: false }}
-                />
-              </>
+            <Stack.Screen name="Login" options={{ headerShown: false }} />
+            <>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="Dashboard"
+                options={{ title: "Dashboard", headerShown: false }}
+              />
+              <Stack.Screen
+                name="NotAuthorized"
+                options={{ title: "Not Authorized", headerShown: false }}
+              />
+            </>
           </Stack>
         </ThemeProvider>
         <Toast />
-        </AuthProvider>
+      </AuthProvider>
     </>
   );
 }

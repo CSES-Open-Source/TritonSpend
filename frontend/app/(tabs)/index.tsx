@@ -63,7 +63,7 @@ export default function Home() {
         method: "GET",
         credentials: "include", // Include cookies for session-based authentication
       });
-  
+
       if (response.ok) {
         console.log("User logged out successfully");
         Toast.show({
@@ -72,7 +72,7 @@ export default function Home() {
           text2: "You have been logged out successfully.",
         });
         setUser(null);
-        router.push("/Login")
+        router.push("/Login");
       } else {
         throw new Error("Failed to log out");
       }
@@ -91,7 +91,17 @@ export default function Home() {
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
-            <button onClick={logout} style={{ backgroundColor: "red", padding: 10, borderRadius: 5, color: "white" }}>Logout</button>
+            <button
+              onClick={logout}
+              style={{
+                backgroundColor: "red",
+                padding: 10,
+                borderRadius: 5,
+                color: "white",
+              }}
+            >
+              Logout
+            </button>
             <View style={styles.graphContainer}>
               <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
               <View style={styles.graph}></View>

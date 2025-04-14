@@ -40,11 +40,11 @@ app.get(
     });
   },
 );
-app.get('/auth/me', (req, res) => {
-  if (!req.isAuthenticated()) return res.status(401).json({ error: 'Not Authenticated' });
+app.get("/auth/me", (req, res) => {
+  if (!req.isAuthenticated()) return res.status(401).json({ error: "Not Authenticated" });
   res.json(req.user);
 });
-app.get('/auth/logout', (req, res) => {
+app.get("/auth/logout", (req, res) => {
   req.logout((err) => {
     if (err) {
       console.error("Error during logout:", err);

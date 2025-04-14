@@ -67,7 +67,7 @@ passport.use(
   ),
 );
 
-passport.serializeUser((user:any, done) => {
+passport.serializeUser((user: any, done) => {
   done(null, user);
 });
 
