@@ -51,7 +51,24 @@ export const logout: RequestHandler = (req, res, next) => {
       console.error("Logout error:", err);
       return next(err);
     }
-    console.log("Logout successful, redirecting...");
-    res.status(200).json({ message: "Logout successful" });
+    console.log("Logout successful.");
+    res.status(200).json({ message: "Logout successful", loggedIn: false });
   });
+};
+
+// In your getUserStatus controller:
+export const getUserStatus: RequestHandler = async (req, res, next) => {
+  console.log("getUserStatus called");
+  console.log("req.session:", req.session);
+  console.log("req.user:", req.user);
+  try {
+    if (!req.user) {
+      console.log("User not authenticated");
+      return res.status(401).json({ loggedIn: false, message: "User not authenticated" });
+    }
+    // ... rest of your code
+  } catch (error) {
+    console.error("Error in getUserStatus:", error);
+    next(error);
+  }
 };

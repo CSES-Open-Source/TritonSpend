@@ -1,14 +1,14 @@
-import { View, StyleSheet, Text } from "react-native";
+import { TouchableOpacity, StyleSheet, Text } from "react-native";
 
-/*
-  Logout button component, I made this because I felt like we would need this button again
+type LogOutButtonProps = {
+  onLogout: () => void;
+};
 
- */
-export default function LogOutButton() {
+export default function LogOutButton({ onLogout }: LogOutButtonProps) {
   return (
-    <View style={styles.ButtonContainer}>
+    <TouchableOpacity style={styles.ButtonContainer} onPress={onLogout}>
       <Text style={styles.logoutText}>Sign Out</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
