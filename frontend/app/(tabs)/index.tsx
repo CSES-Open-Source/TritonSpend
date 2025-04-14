@@ -34,7 +34,7 @@ export default function Home() {
       })
       .catch((error) => {
         console.error("Authentication error:", error);
-        // router.push("/Login")
+        router.push("/Login")
       });
   }, []);
   useEffect(() => {
