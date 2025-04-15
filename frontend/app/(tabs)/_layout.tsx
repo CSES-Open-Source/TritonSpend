@@ -5,6 +5,8 @@ import Home from ".";
 import History from "./History"; // Import the History component
 // import LoginPage from "../Login";
 import Account from "./Account";
+import { Tabs } from "expo-router";
+
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {

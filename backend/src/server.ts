@@ -18,7 +18,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Google login route
-app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"], prompt: 'select_account' }));
 
 // Google callback route
 app.get(

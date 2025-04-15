@@ -51,7 +51,6 @@ export default function RootLayout() {
           <Stack>
             {/* Tab-based navigation */}
             <Stack.Screen name="Login" options={{ headerShown: false }} />
-            <>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen
                 name="Dashboard"
@@ -61,7 +60,6 @@ export default function RootLayout() {
                 name="NotAuthorized"
                 options={{ title: "Not Authorized", headerShown: false }}
               />
-            </>
           </Stack>
         </ThemeProvider>
         <Toast />
