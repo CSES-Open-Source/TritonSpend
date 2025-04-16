@@ -5,11 +5,16 @@ import Home from ".";
 import History from "./History"; // Import the History component
 // import LoginPage from "../Login";
 import Account from "./Account";
-import { Tabs } from "expo-router";
+import { useAuth } from "@/context/authContext";
+import { Redirect } from "expo-router";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
+  const { user } = useAuth();
+  if (!user) {
+    return <Redirect href="/Login" />;
+  }
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -34,15 +39,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="Login"
-        component={LoginPage}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="log-in" size={size} color={color} />
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name="Account"
         component={Account}

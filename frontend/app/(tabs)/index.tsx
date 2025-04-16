@@ -4,7 +4,7 @@ import TransactionHistory from "@/components/TransactionHistory/TransactionHisto
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-
+import { useAuth } from "@/context/authContext";
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
@@ -14,29 +14,8 @@ export default function Home() {
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
-  const [user, setUser] = useState(null); // State to store user data
   const router = useRouter();
-  // Fetch user authentication status
-  useEffect(() => {
-    fetch("http://localhost:5000/auth/me", {
-      method: "GET",
-      credentials: "include", // Include cookies for session-based authentication
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Not authenticated");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Authenticated user:", data);
-        setUser(data); // Set user data
-      })
-      .catch((error) => {
-        console.error("Authentication error:", error);
-        router.push("/Login")
-      });
-  }, []);
+  const { logout } = useAuth();
   useEffect(() => {
     fetch("http://localhost:5000/transactions/getTransactions/1", {
       method: "GET",
@@ -57,7 +36,7 @@ export default function Home() {
         console.error("API Error:", error);
       });
   }, [updateRecent]);
-  const logout = async () => {
+  const logoutUser = async () => {
     try {
       const response = await fetch("http://localhost:5000/auth/logout", {
         method: "GET",
@@ -71,7 +50,7 @@ export default function Home() {
           text1: "Logged Out",
           text2: "You have been logged out successfully.",
         });
-        setUser(null);
+        logout();
         router.push("/Login");
       } else {
         throw new Error("Failed to log out");
@@ -92,7 +71,7 @@ export default function Home() {
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
             <button
-              onClick={logout}
+              onClick={logoutUser}
               style={{
                 backgroundColor: "red",
                 padding: 10,
