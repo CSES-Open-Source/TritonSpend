@@ -9,7 +9,7 @@ interface Category {
 }
 //Update settings and account information for users
 export const updateSettings: RequestHandler = async (req, res) => {
-  upload.none()(req, res, async (err) => {
+  upload.none()(req, res, async () => {
     const updateSettings =
       "UPDATE users SET username = $1, profile_picture = $2, total_budget = $3 WHERE id = $4;";
     //try/catch any errors

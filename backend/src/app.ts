@@ -7,10 +7,8 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { isHttpError } from "http-errors";
 import taskRoutes from "src/routes/task";
-import client from "../src/db/db";
-import multer from "multer";
+
 const app = express();
-const upload = multer();
 // initializes Express to accept JSON in the request/response body
 app.use(express.json());
 
