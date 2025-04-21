@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/authContext";
 import { router } from "expo-router";
-import { View, StyleSheet, Text } from "react-native";
+import {StyleSheet, Text, TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
 
 /*
@@ -38,11 +38,11 @@ export default function LogOutButton(props: any) {
     }
   };
   return (
-    <View style={styles.ButtonContainer}>
-      <Text style={styles.logoutText} onPress={logoutUser}>
+    <TouchableOpacity style={styles.ButtonContainer} onPress={logoutUser}>
+      <Text style={styles.logoutText}>
         Sign Out
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
