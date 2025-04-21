@@ -28,7 +28,6 @@ export default function Goals(){
         const randomIndex = Math.floor(Math.random() * colorOptions.length);
         return colorOptions[randomIndex];
     }
-    console.log(Goals)
     function addGoal(){
         if (newGoalTitle.trim()) {
           setGoals([...Goals, {id: nextId, title: newGoalTitle, content: newGoalContent, color: getRandomColor()}]);
@@ -44,6 +43,13 @@ export default function Goals(){
     function deleteGoal(id:number){
         setGoals(Goals.filter((goal => goal.id !== id)))
     }
+    const filteredGoals = Goals.filter(goal => {
+        return (
+            goal.title.toLowerCase().includes(search.toLowerCase()) ||
+            goal.content.toLowerCase().includes(search.toLowerCase())
+        );
+    });
+
     return(
         <View style={styles.GoalsContainer}>
             <View style={styles.header}>
@@ -54,7 +60,7 @@ export default function Goals(){
                  <Button title="Add Goal" onPress={() => setModalVisible(true)}/>
             </View>
             <ScrollView style={styles.scroll}>
-                <GoalsList Goals = {Goals} setGoals = {setGoals} editGoal = {editGoal} deleteGoal = {deleteGoal}/>
+                <GoalsList Goals = {filteredGoals} setGoals = {setGoals} editGoal = {editGoal} deleteGoal = {deleteGoal}/>
             </ScrollView>
             <Modal
             animationType="fade"
@@ -97,7 +103,7 @@ export default function Goals(){
 const styles = StyleSheet.create({
     GoalsContainer: {
         flex: 1,
-        backgroundColor: "#bbadff",
+        backgroundColor: "rgb(200,200,250)",
         alignItems: "center",
         paddingVertical: 30,
         paddingHorizontal: 50,

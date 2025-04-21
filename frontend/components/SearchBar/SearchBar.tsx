@@ -8,7 +8,7 @@ export default function SearchBar(props :any){
         <View style={styles.searchContainer}>
             <TextInput
                 style={styles.search}
-                onChangeText={(e) => props.setSearch(e)}
+                onChangeText={props.setSearch}
                 placeholder="Search for goals.."
                 value={props.search}
                 focusable = {false}

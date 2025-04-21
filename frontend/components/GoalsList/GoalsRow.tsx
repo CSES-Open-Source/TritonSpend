@@ -21,7 +21,6 @@ export default function GoalsRow(props: any){
     const inputShow = useRef(new Animated.Value(-20)).current;
     function toggle() {
         setInputVisible(!inputVisible);
-        console.log("press")
         Animated.spring(expand, {
           toValue: inputVisible ? 70 : 150,
           tension: 40,
@@ -38,7 +37,6 @@ export default function GoalsRow(props: any){
           useNativeDriver: true,
         }).start();
       }
-      console.log(props)
     return(
         <>
         <Animated.View style={[styles.GoalsContainer, {height: expand, backgroundColor: props.color}]} >
