@@ -15,7 +15,6 @@ export default function Home() {
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
   const router = useRouter();
-  const { logout } = useAuth();
   useEffect(() => {
     fetch("http://localhost:5000/transactions/getTransactions/1", {
       method: "GET",
@@ -36,51 +35,12 @@ export default function Home() {
         console.error("API Error:", error);
       });
   }, [updateRecent]);
-  const logoutUser = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/auth/logout", {
-        method: "GET",
-        credentials: "include", // Include cookies for session-based authentication
-      });
-
-      if (response.ok) {
-        console.log("User logged out successfully");
-        Toast.show({
-          type: "success",
-          text1: "Logged Out",
-          text2: "You have been logged out successfully.",
-        });
-        logout();
-        router.push("/Login");
-      } else {
-        throw new Error("Failed to log out");
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      Toast.show({
-        type: "error",
-        text1: "Logout Error",
-        text2: "An error occurred while logging out.",
-      });
-    }
-  };
   return (
     <>
       <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
-            <button
-              onClick={logoutUser}
-              style={{
-                backgroundColor: "red",
-                padding: 10,
-                borderRadius: 5,
-                color: "white",
-              }}
-            >
-              Logout
-            </button>
             <View style={styles.graphContainer}>
               <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
               <View style={styles.graph}></View>
