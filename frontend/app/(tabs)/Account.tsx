@@ -27,7 +27,7 @@ export default function Account() {
 
   //fetch values
   useEffect(() => {
-    fetch("http://localhost:5000/getUser/1", {
+    fetch("http://localhost:5000/users/1", {
       method: "GET",
     })
       .then((res) => {
@@ -43,7 +43,7 @@ export default function Account() {
         console.error("API Error:", error);
       });
 
-    fetch("http://localhost:5000/getCategoryForUser/1", {
+    fetch("http://localhost:5000/users/category/1", {
       method: "GET",
     })
       .then((res) => {
@@ -75,7 +75,7 @@ export default function Account() {
     formData.append("total_budget", totalBudget);
     formData.append("categories", JSON.stringify(Category));
     formData.append("id", "1");
-    fetch("http://localhost:5000/updateSettings", {
+    fetch("http://localhost:5000/users/updateSettings", {
       method: "PUT",
       body: formData,
     })
@@ -217,7 +217,6 @@ export default function Account() {
           <LogOutButton />
         </View>
       </ScrollView>
-      <Toast />
     </>
   );
 }

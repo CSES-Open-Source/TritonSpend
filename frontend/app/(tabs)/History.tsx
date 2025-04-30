@@ -15,7 +15,7 @@ export default function History() {
   //we use useFocusEffect to detect if our tab is in focus rather than using useEffect
   useFocusEffect(
     useCallback(() => {
-      fetch("http://localhost:5000/getTransactions/1", {
+      fetch("http://localhost:5000/transactions/getTransactions/1", {
         method: "GET",
         headers: {
           Accept: "application/json",

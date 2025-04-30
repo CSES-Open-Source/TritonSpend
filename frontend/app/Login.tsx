@@ -1,16 +1,41 @@
 // src/LoginPage.tsx
-import React from "react";
+import { useAuth } from "@/context/authContext";
+import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 // import { useRouter } from "expo-router";
 
 const LoginPage = () => {
   // const router = useRouter();
-
+  const [isRedirected, setIsRedirected] = useState(false);
+  const { login } = useAuth();
   const handleGoogleLogin = () => {
     // Redirect to backend Google OAuth URL
     window.location.href = "http://localhost:5000/auth/google";
   };
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/auth/me", {
+          credentials: "include",
+        });
 
+        if (response.ok) {
+          const userData = await response.json();
+          console.log("User data received:", userData);
+          await login(userData);
+        }
+      } catch (error) {
+        console.error("Error checking auth:", error);
+      }
+    };
+
+    // Check if we've been redirected back from OAuth
+    // You can also check for specific query parameters from your OAuth callback
+    if (window.location.pathname === "/Login" && !isRedirected) {
+      setIsRedirected(true);
+      checkAuth();
+    }
+  }, [isRedirected]);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login Page</Text>
