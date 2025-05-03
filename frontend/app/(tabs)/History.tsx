@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
 import { useFocusEffect } from "@react-navigation/native";
+import { BACKEND_PORT } from '@env';
 
 // Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
@@ -11,11 +12,12 @@ export default function History() {
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
   const [AllTransactions, setAllTransactions] = useState<any[]>([]);
+  const userId = localStorage.getItem('userId');
   //our app only loads once and does not load again even if we change tabs. This is why we cant use useEffect
   //we use useFocusEffect to detect if our tab is in focus rather than using useEffect
   useFocusEffect(
     useCallback(() => {
-      fetch("http://localhost:5000/transactions/getTransactions/1", {
+      fetch(`http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`, {
         method: "GET",
         headers: {
           Accept: "application/json",

@@ -27,17 +27,21 @@ CREATE TABLE transactions (
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Date of Transaction
 );
 
--- initialize default categories 
-INSERT INTO categories (id, user_id, category_name, max_category_budget, category_expense) 
-VALUES 
-    (1, 1, 'Food', 3123.00, 50.00),
-    (2, 1, 'Shopping', 123.00, 240.00),
-    (3, 1, 'Transportation', 56.00, 200.00),
-    (4, 1, 'Subscriptions', 78.00, 350.00),
-    (5, 1, 'other', 90.00, 777.00);
+CREATE OR REPLACE FUNCTION create_default_categories()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO categories (user_id, category_name, max_category_budget, category_expense)
+  VALUES
+    (NEW.id, 'Food', 0.00, 0.00),
+    (NEW.id, 'Shopping', 0.00, 0.00),
+    (NEW.id, 'Transportation', 0.00, 0.00),
+    (NEW.id, 'Subscriptions', 0.00, 0.00),
+    (NEW.id, 'Other', 0.00, 0.00);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-
--- initialize default user
-INSERT INTO users (id, email, username, profile_picture, total_budget, total_expense)
-VALUES
-    (3,'TritonKing@ucsd.edu', 'TritonKing', NULL, 1500, 1000)
+CREATE TRIGGER trigger_create_default_categories
+AFTER INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION create_default_categories();

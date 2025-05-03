@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/authContext";
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
+import { BACKEND_PORT } from '@env';
 // import { useRouter } from "expo-router";
 
 const LoginPage = () => {
@@ -10,18 +11,18 @@ const LoginPage = () => {
   const { login } = useAuth();
   const handleGoogleLogin = () => {
     // Redirect to backend Google OAuth URL
-    window.location.href = "http://localhost:5000/auth/google";
+    window.location.href = `http://localhost:${BACKEND_PORT}/auth/google`;
   };
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:5000/auth/me", {
+        const response = await fetch(`http://localhost:${BACKEND_PORT}/auth/me`, {
           credentials: "include",
         });
 
         if (response.ok) {
           const userData = await response.json();
-          console.log("User data received:", userData);
+          localStorage.setItem('userId', userData.id);
           await login(userData);
         }
       } catch (error) {

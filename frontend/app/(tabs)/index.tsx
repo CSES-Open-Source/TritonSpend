@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/authContext";
+import { BACKEND_PORT } from '@env';
+
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
@@ -15,8 +17,9 @@ export default function Home() {
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
   const router = useRouter();
+  const userId = localStorage.getItem('userId');
   useEffect(() => {
-    fetch("http://localhost:5000/transactions/getTransactions/1", {
+    fetch(`http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",

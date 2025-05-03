@@ -18,6 +18,7 @@ export default function LogOutButton(props: any) {
 
       if (response.ok) {
         console.log("User logged out successfully");
+        localStorage.clear();
         Toast.show({
           type: "success",
           text1: "Logged Out",

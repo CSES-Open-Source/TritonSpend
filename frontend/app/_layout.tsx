@@ -14,6 +14,7 @@ import { AuthProvider } from "@/context/authContext";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
+import { BACKEND_PORT } from '@env';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,7 +27,7 @@ function AuthCheck() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("http://localhost:5000/auth/me", {
+        const response = await fetch(`http://localhost:${BACKEND_PORT}/auth/me`, {
           credentials: "include",
         });
 
