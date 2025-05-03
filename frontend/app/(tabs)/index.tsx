@@ -2,9 +2,9 @@ import { View, StyleSheet, Text, ScrollView } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
 import { useEffect, useState } from "react";
-import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import { useAuth } from "@/context/authContext";
+import { BACKEND_PORT } from "@env";
+
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
@@ -14,15 +14,18 @@ export default function Home() {
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
-  const router = useRouter();
+  const userId = localStorage.getItem("userId");
   useEffect(() => {
-    fetch("http://localhost:5000/transactions/getTransactions/1", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+    fetch(
+      `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       },
-    })
+    )
       .then((res) => {
         console.log(res.body);
         return res.json();
