@@ -16,6 +16,8 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
+import { BACKEND_PORT } from "@env";
+
 export default function Account() {
   //variables to store values
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,10 +26,10 @@ export default function Account() {
   const [totalBudget, setTotalBudget] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [Category, setCategory] = useState<any>([]);
-
+  const userId = localStorage.getItem("userId");
   //fetch values
   useEffect(() => {
-    fetch("http://localhost:5000/getUser/1", {
+    fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
       method: "GET",
     })
       .then((res) => {
@@ -36,6 +38,7 @@ export default function Account() {
       .then((data) => {
         setUserName(data.username);
         setEmail(data.email);
+        console.log(data.email);
         setTotalBudget(data.total_budget);
         setProfilePic(data.profile_picture);
       })
@@ -43,7 +46,7 @@ export default function Account() {
         console.error("API Error:", error);
       });
 
-    fetch("http://localhost:5000/getCategoryForUser/1", {
+    fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
       method: "GET",
     })
       .then((res) => {
@@ -75,7 +78,7 @@ export default function Account() {
     formData.append("total_budget", totalBudget);
     formData.append("categories", JSON.stringify(Category));
     formData.append("id", "1");
-    fetch("http://localhost:5000/updateSettings", {
+    fetch(`http://localhost:${BACKEND_PORT}/users/updateSettings`, {
       method: "PUT",
       body: formData,
     })
@@ -217,7 +220,6 @@ export default function Account() {
           <LogOutButton />
         </View>
       </ScrollView>
-      <Toast />
     </>
   );
 }

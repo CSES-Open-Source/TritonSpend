@@ -3,12 +3,19 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Home from ".";
 import History from "./History"; // Import the History component
-import LoginPage from "./Login";
+// import LoginPage from "../Login";
 import Account from "./Account";
 import Goals from "./Goals";
+import { useAuth } from "@/context/authContext";
+import { Redirect } from "expo-router";
+
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
+  const { user } = useAuth();
+  if (!user) {
+    return <Redirect href="/Login" />;
+  }
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -52,6 +59,7 @@ export default function TabLayout() {
         }}
       />
       <Tab.Screen
+
         name="Account"
         component={Account}
         options={{
