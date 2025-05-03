@@ -5,6 +5,7 @@ import Home from ".";
 import History from "./History"; // Import the History component
 // import LoginPage from "../Login";
 import Account from "./Account";
+import Goals from "./Goals";
 import { useAuth } from "@/context/authContext";
 import { Redirect } from "expo-router";
 
@@ -40,6 +41,25 @@ export default function TabLayout() {
         }}
       />
       <Tab.Screen
+        name="Login"
+        component={LoginPage}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="log-in" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Goals"
+        component={Goals}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="rocket" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+
         name="Account"
         component={Account}
         options={{
