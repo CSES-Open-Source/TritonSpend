@@ -1,13 +1,13 @@
 import { useAuth } from "@/context/authContext";
 import { router } from "expo-router";
-import {StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
 
 /*
   Logout button component, I made this because I felt like we would need this button again
 
  */
-export default function LogOutButton(props: any) {
+export default function LogOutButton() {
   const { logout } = useAuth();
   const logoutUser = async () => {
     try {
@@ -40,9 +40,7 @@ export default function LogOutButton(props: any) {
   };
   return (
     <TouchableOpacity style={styles.ButtonContainer} onPress={logoutUser}>
-      <Text style={styles.logoutText}>
-        Sign Out
-      </Text>
+      <Text style={styles.logoutText}>Sign Out</Text>
     </TouchableOpacity>
   );
 }

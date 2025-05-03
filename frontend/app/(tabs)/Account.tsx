@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
-import { BACKEND_PORT } from '@env';
+import { BACKEND_PORT } from "@env";
 
 export default function Account() {
   //variables to store values
@@ -26,7 +26,7 @@ export default function Account() {
   const [totalBudget, setTotalBudget] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [Category, setCategory] = useState<any>([]);
-  const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem("userId");
   //fetch values
   useEffect(() => {
     fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {

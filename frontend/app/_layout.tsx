@@ -4,7 +4,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Slot, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -14,7 +14,7 @@ import { AuthProvider } from "@/context/authContext";
 import { useAuth } from "@/context/authContext";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
-import { BACKEND_PORT } from '@env';
+import { BACKEND_PORT } from "@env";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,9 +27,12 @@ function AuthCheck() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`http://localhost:${BACKEND_PORT}/auth/me`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `http://localhost:${BACKEND_PORT}/auth/me`,
+          {
+            credentials: "include",
+          },
+        );
 
         if (!response.ok) {
           setChecking(false);

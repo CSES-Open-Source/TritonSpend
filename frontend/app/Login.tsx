@@ -2,7 +2,7 @@
 import { useAuth } from "@/context/authContext";
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
-import { BACKEND_PORT } from '@env';
+import { BACKEND_PORT } from "@env";
 // import { useRouter } from "expo-router";
 
 const LoginPage = () => {
@@ -16,13 +16,16 @@ const LoginPage = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`http://localhost:${BACKEND_PORT}/auth/me`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `http://localhost:${BACKEND_PORT}/auth/me`,
+          {
+            credentials: "include",
+          },
+        );
 
         if (response.ok) {
           const userData = await response.json();
-          localStorage.setItem('userId', userData.id);
+          localStorage.setItem("userId", userData.id);
           await login(userData);
         }
       } catch (error) {
