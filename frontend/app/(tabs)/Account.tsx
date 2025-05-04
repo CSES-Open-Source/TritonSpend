@@ -17,6 +17,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { BACKEND_PORT } from "@env";
+import { useAuth } from "@/context/authContext";
 
 export default function Account() {
   //variables to store values
@@ -26,7 +27,7 @@ export default function Account() {
   const [totalBudget, setTotalBudget] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [Category, setCategory] = useState<any>([]);
-  const userId = localStorage.getItem("userId");
+  const { userId } = useAuth();
   //fetch values
   useEffect(() => {
     fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
@@ -77,7 +78,11 @@ export default function Account() {
     formData.append("profile_picture", profilePic);
     formData.append("total_budget", totalBudget);
     formData.append("categories", JSON.stringify(Category));
-    formData.append("id", "1");
+    if (userId) {
+      formData.append("id", userId);
+    } else {
+      console.error("User ID is null");
+    }
     fetch(`http://localhost:${BACKEND_PORT}/users/updateSettings`, {
       method: "PUT",
       body: formData,

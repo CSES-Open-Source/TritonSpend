@@ -11,6 +11,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
+import { BACKEND_PORT } from "@env";
 
 //button that expands and shows a text input for recent transactions
 export default function NewTransactionButton(props: any) {
@@ -56,7 +57,7 @@ export default function NewTransactionButton(props: any) {
     }).start();
   }
   function addTransaction() {
-    fetch("http://localhost:5000/transactions/newTransaction", {
+    fetch(`http://localhost:${BACKEND_PORT}/transactions/newTransaction`, {
       method: "POST",
       headers: {
         Accept: "application/json",
