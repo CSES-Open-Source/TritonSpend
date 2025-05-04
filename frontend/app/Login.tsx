@@ -25,7 +25,6 @@ const LoginPage = () => {
 
         if (response.ok) {
           const userData = await response.json();
-          localStorage.setItem("userId", userData.id);
           await login(userData);
         }
       } catch (error) {

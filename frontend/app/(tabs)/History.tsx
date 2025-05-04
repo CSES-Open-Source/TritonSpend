@@ -5,14 +5,14 @@ import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
 import { useFocusEffect } from "@react-navigation/native";
 import { BACKEND_PORT } from "@env";
-
+import { useAuth } from "@/context/authContext";
 // Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
   // Sorting State
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
   const [AllTransactions, setAllTransactions] = useState<any[]>([]);
-  const userId = localStorage.getItem("userId");
+  const { userId } = useAuth();
   //our app only loads once and does not load again even if we change tabs. This is why we cant use useEffect
   //we use useFocusEffect to detect if our tab is in focus rather than using useEffect
   useFocusEffect(
