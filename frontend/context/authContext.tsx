@@ -41,12 +41,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const userData = JSON.parse(storedUser);
 
           // Validate session with backend
-          const res = await fetch(
-                    `http://localhost:${BACKEND_PORT}/auth/me`,
-                    {
-                      credentials: "include",
-                    },
-          );
+          const res = await fetch(`http://localhost:${BACKEND_PORT}/auth/me`, {
+            credentials: "include",
+          });
 
           if (!res.ok) throw new Error("Session invalid");
           setUser(userData);

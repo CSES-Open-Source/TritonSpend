@@ -13,10 +13,13 @@ export default function LogOutButton() {
   const { logout } = useAuth();
   const logoutUser = async () => {
     try {
-      const response = await fetch(`http://localhost:${BACKEND_PORT}/auth/logout`, {
-        method: "GET",
-        credentials: "include", // Include cookies for session-based authentication
-      });
+      const response = await fetch(
+        `http://localhost:${BACKEND_PORT}/auth/logout`,
+        {
+          method: "GET",
+          credentials: "include", // Include cookies for session-based authentication
+        },
+      );
 
       if (response.ok) {
         console.log("User logged out successfully");
