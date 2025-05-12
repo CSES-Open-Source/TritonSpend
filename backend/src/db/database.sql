@@ -27,6 +27,15 @@ CREATE TABLE transactions (
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Date of Transaction
 );
 
+-- Create Goals Table
+CREATE TABLE goals (
+    id SERIAL PRIMARY KEY,                           -- Goal ID (Auto Increment)
+    user_id INT REFERENCES users(id) ON DELETE CASCADE, -- User ID (FK)
+    title VARCHAR(100) NOT NULL,                     -- Goal Title
+    details TEXT,                                    -- Goal Details (optional)
+    target_date DATE                                 -- Target Date (optional)
+);
+
 CREATE OR REPLACE FUNCTION create_default_categories()
 RETURNS TRIGGER AS $$
 BEGIN
