@@ -10,8 +10,8 @@ export default function GoalsList(props: any) {
     <View style={styles.GoalsListContainer}>
       {props.Goals.map(
         (goal: {
+          details: string;
           title: string;
-          content: string;
           id: Number;
           color: string;
         }) => {
@@ -20,7 +20,7 @@ export default function GoalsList(props: any) {
               key={goal.id}
               title={goal.title}
               date="1/1/1"
-              content={goal.content}
+              content={goal.details}
               deleteGoal={props.deleteGoal}
               editGoal={props.editGoal}
               id={goal.id}

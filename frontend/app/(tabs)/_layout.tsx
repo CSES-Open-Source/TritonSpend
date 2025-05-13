@@ -8,7 +8,6 @@ import Account from "./Account";
 import Goals from "./Goals";
 import { useAuth } from "@/context/authContext";
 import { Redirect } from "expo-router";
-
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
@@ -40,7 +39,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Login"
         component={LoginPage}
         options={{
@@ -48,7 +47,7 @@ export default function TabLayout() {
             <Ionicons name="log-in" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Goals"
         component={Goals}
@@ -59,7 +58,6 @@ export default function TabLayout() {
         }}
       />
       <Tab.Screen
-
         name="Account"
         component={Account}
         options={{

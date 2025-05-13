@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -8,9 +8,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
-import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import GoalsList from "@/components/GoalsList/GoalsList";
+import { BACKEND_PORT } from "@env";
+import { useAuth } from "@/context/authContext";
+import Toast from "react-native-toast-message";
+import { useFocusEffect } from "@react-navigation/native";
 /**
  * Goals page that lists perosnal goals that the user wants
  * Users are able to add, delete, edit their goals
@@ -22,12 +25,14 @@ export default function Goals() {
     content: string;
     color: string;
   }
+  const { userId } = useAuth();
   const [Goals, setGoals] = useState<Goal[]>([]);
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [newGoalContent, setNewGoalContent] = useState("");
-  const [nextId, setNextId] = useState(1);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const colorOptions = [
     "#ffadad",
     "#ffd6a5",
@@ -39,36 +44,167 @@ export default function Goals() {
     "#ffc6ff",
     "#fffffc",
   ];
+  useFocusEffect(
+    useCallback(() => {
+      fetch(`http://localhost:${BACKEND_PORT}/goals/getGoals/${userId}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setGoals(data);
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+    }, []),
+  );
   function getRandomColor() {
     const randomIndex = Math.floor(Math.random() * colorOptions.length);
     return colorOptions[randomIndex];
   }
   function addGoal() {
     if (newGoalTitle.trim()) {
-      setGoals([
-        ...Goals,
-        {
-          id: nextId,
-          title: newGoalTitle,
-          content: newGoalContent,
-          color: getRandomColor(),
+      // setGoals([
+      //   ...Goals,
+      //   {
+      //     id: nextId,
+      //     title: newGoalTitle,
+      //     content: newGoalContent,
+      //     color: getRandomColor(),
+      //   },
+      // ]);
+      // setNextId(nextId + 1);
+      // setNewGoalTitle("");
+      // setNewGoalContent("");
+      // setModalVisible(false);
+      fetch(`http://localhost:${BACKEND_PORT}/goals/addGoal`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-      ]);
-      setNextId(nextId + 1);
-      setNewGoalTitle("");
-      setNewGoalContent("");
-      setModalVisible(false);
+        body: JSON.stringify({
+          user_id: userId,
+          title: newGoalTitle,
+          details: newGoalContent,
+          // target_date: "",
+        }),
+      })
+        .then(async (res) => {
+          const data = await res.json();
+          if (!res.ok) {
+            return res.json().then((err) => {
+              Toast.show({
+                type: "error",
+                text1: "Goal Creation Unsuccessful ❌",
+                text2: "One or more fields are invalid, try again",
+              });
+
+              throw new Error(err.error || "Something went wrong");
+            });
+          }
+          setGoals([
+            ...Goals,
+            {
+              id: data.id,
+              title: newGoalTitle,
+              content: newGoalContent,
+              color: getRandomColor(),
+            },
+          ]);
+          // setNextId(nextId + 1);
+          setNewGoalTitle("");
+          setNewGoalContent("");
+          setModalVisible(false);
+          Toast.show({
+            type: "success",
+            text1: "Goal Added ✅",
+            text2: "Your transaction has been recorded",
+          });
+
+          return res.json();
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
     }
   }
   function editGoal(id: number, title: string, content: string) {
-    setGoals(
-      Goals.map((goal) =>
-        goal.id === id ? { ...goal, title: title, content: content } : goal,
-      ),
-    );
+    // setGoals(
+    //   Goals.map((goal) =>
+    //     goal.id === id ? { ...goal, title: title, content: content } : goal,
+    //   ),
+    // );
+    fetch(`http://localhost:${BACKEND_PORT}/goals/editGoal`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        user_id: userId,
+        title,
+        details: content,
+        target_date: null,
+      }),
+    })
+      .then((res) => {
+        setGoals(
+          Goals.map((goal) =>
+            goal.id === id ? { ...goal, title: title, details: content } : goal,
+          ),
+        );
+        Toast.show({
+          type: "success",
+          text1: "Goal Updated ✅",
+        });
+      })
+      .catch((error) => {
+        console.error("Edit Goal Error:", error);
+        Toast.show({
+          type: "error",
+          text1: "Update Failed ❌",
+          text2: "Could not update goal, try again.",
+        });
+      });
   }
   function deleteGoal(id: number) {
-    setGoals(Goals.filter((goal) => goal.id !== id));
+    // setGoals(Goals.filter((goal) => goal.id !== id));
+    fetch(`http://localhost:${BACKEND_PORT}/goals/deleteGoal`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id,
+        user_id: userId,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to delete goal");
+        }
+        setGoals(Goals.filter((goal) => goal.id !== id));
+        Toast.show({
+          type: "success",
+          text1: "Goal Deleted ✅",
+        });
+      })
+      .catch((error) => {
+        console.error("Delete Goal Error:", error);
+        Toast.show({
+          type: "error",
+          text1: "Deletion Failed ❌",
+          text2: "Could not delete goal, try again.",
+        });
+      });
   }
   const filteredGoals = Goals.filter((goal) => {
     return (
