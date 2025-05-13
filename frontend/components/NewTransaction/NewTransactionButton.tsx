@@ -11,6 +11,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef } from "react";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
+import { BACKEND_PORT } from "@env";
+import { useAuth } from "@/context/authContext";
 
 //button that expands and shows a text input for recent transactions
 export default function NewTransactionButton(props: any) {
@@ -21,6 +23,7 @@ export default function NewTransactionButton(props: any) {
   const inputShow = useRef(new Animated.Value(-20)).current;
   const expand = useRef(new Animated.Value(50)).current;
   const animatedOpacity = useRef(new Animated.Value(0)).current;
+  const { userId } = useAuth();
   //rotation iterpolate for X icon
   const interpolate = rotation.interpolate({
     inputRange: [0, 1],
@@ -56,14 +59,14 @@ export default function NewTransactionButton(props: any) {
     }).start();
   }
   function addTransaction() {
-    fetch("http://localhost:5000/transactions/newTransaction", {
+    fetch(`http://localhost:${BACKEND_PORT}/transactions/newTransaction`, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user_id: 1,
+        user_id: userId,
         item_name: itemInformation,
         amount: Number(transactionAmount),
         category_id: Number(selectedCategory),

@@ -4,6 +4,7 @@ import TransactionHistory from "@/components/TransactionHistory/TransactionHisto
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { BACKEND_PORT } from "@env";
+import { useAuth } from "@/context/authContext";
 
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
@@ -14,8 +15,9 @@ export default function Home() {
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
-  const userId = localStorage.getItem("userId");
+  const { userId } = useAuth();
   useEffect(() => {
+    console.log(userId);
     fetch(
       `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
       {

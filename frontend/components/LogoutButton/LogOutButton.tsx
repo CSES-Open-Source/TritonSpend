@@ -2,6 +2,8 @@ import { useAuth } from "@/context/authContext";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
+import { BACKEND_PORT } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /*
   Logout button component, I made this because I felt like we would need this button again
@@ -11,14 +13,17 @@ export default function LogOutButton() {
   const { logout } = useAuth();
   const logoutUser = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/logout", {
-        method: "GET",
-        credentials: "include", // Include cookies for session-based authentication
-      });
+      const response = await fetch(
+        `http://localhost:${BACKEND_PORT}/auth/logout`,
+        {
+          method: "GET",
+          credentials: "include", // Include cookies for session-based authentication
+        },
+      );
 
       if (response.ok) {
         console.log("User logged out successfully");
-        localStorage.clear();
+        await AsyncStorage.clear();
         Toast.show({
           type: "success",
           text1: "Logged Out",
