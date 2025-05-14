@@ -24,7 +24,7 @@ export default function FullTransactionHistory(props: any) {
     try {
       const res = await fetch(
         `http://localhost:${BACKEND_PORT}/transactions/${userId}/${transactionId}`,
-        { method: "DELETE" }
+        { method: "DELETE" },
       );
 
       if (!res.ok) {
@@ -32,7 +32,7 @@ export default function FullTransactionHistory(props: any) {
       }
 
       setTransactions((prev: any) =>
-        prev.filter((t: any) => t.id !== transactionId)
+        prev.filter((t: any) => t.id !== transactionId),
       );
     } catch (err) {
       console.error("Delete error:", err);
@@ -66,7 +66,9 @@ export default function FullTransactionHistory(props: any) {
                         icon={transaction.category_id}
                       />
                     </View>
-                    <TouchableOpacity onPress={() => handleDelete(transaction.id)}>
+                    <TouchableOpacity
+                      onPress={() => handleDelete(transaction.id)}
+                    >
                       <Text style={styles.deleteButton}>✕</Text>
                     </TouchableOpacity>
                   </View>
