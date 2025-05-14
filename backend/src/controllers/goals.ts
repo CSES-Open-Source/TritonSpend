@@ -51,15 +51,20 @@ export const getGoals: RequestHandler = async (req, res) => {
 // Add Goal
 export const addGoal: RequestHandler = async (req, res) => {
   const newGoal =
-    "INSERT INTO goals(user_id, title, details, target_date) VALUES ($1, $2, $3, $4);";
+    "INSERT INTO goals(user_id, title, details, target_date) VALUES ($1, $2, $3, $4) RETURNING *;";
   try {
     const { user_id, title, details, target_date } = req.body;
 
     if (!user_id || !title) {
       return res.status(400).json({ error: "Invalid fields" });
     }
-    client.query(newGoal, [user_id, title, details, target_date]);
-    res.status(200).json({ message: "New Goal Created!" });
+    client.query(newGoal, [user_id, title, details, target_date], (err, result) => {
+      if (err) {
+        console.error("Query Error:", err);
+        return res.status(500).json({ error: "Database query error" });
+      }
+      res.status(200).json(result.rows[0]);
+    });
   } catch (error) {
     console.error("Unexpected Error:", error);
     res.status(500).json({ error: `Internal server error: ${error}` });

@@ -22,8 +22,9 @@ export default function Goals() {
   interface Goal {
     id: number;
     title: string;
-    content: string;
+    details: string;
     color: string;
+    target_date: string;
   }
   const { userId } = useAuth();
   const [Goals, setGoals] = useState<Goal[]>([]);
@@ -31,8 +32,7 @@ export default function Goals() {
   const [modalVisible, setModalVisible] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [newGoalContent, setNewGoalContent] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
   const colorOptions = [
     "#ffadad",
     "#ffd6a5",
@@ -55,7 +55,6 @@ export default function Goals() {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setGoals(data);
         })
         .catch((error) => {
@@ -67,21 +66,20 @@ export default function Goals() {
     const randomIndex = Math.floor(Math.random() * colorOptions.length);
     return colorOptions[randomIndex];
   }
+  function isValidDate(date: string): boolean {
+    const regex = /^\d{4}-\d{2}-\d{2}$/; // format for YYYY-MM-DD
+    return regex.test(date);
+  }
+  function formatDate(date: string) {
+    const parsedDate = new Date(date);
+    const year = parsedDate.getUTCFullYear();
+    const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(parsedDate.getUTCDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`; // Format it as YYYY-MM-DD
+  }
   function addGoal() {
-    if (newGoalTitle.trim()) {
-      // setGoals([
-      //   ...Goals,
-      //   {
-      //     id: nextId,
-      //     title: newGoalTitle,
-      //     content: newGoalContent,
-      //     color: getRandomColor(),
-      //   },
-      // ]);
-      // setNextId(nextId + 1);
-      // setNewGoalTitle("");
-      // setNewGoalContent("");
-      // setModalVisible(false);
+    if (newGoalTitle.trim() && isValidDate(selectedDate)) {
+      const formattedDate = formatDate(selectedDate);
       fetch(`http://localhost:${BACKEND_PORT}/goals/addGoal`, {
         method: "POST",
         headers: {
@@ -92,87 +90,91 @@ export default function Goals() {
           user_id: userId,
           title: newGoalTitle,
           details: newGoalContent,
-          // target_date: "",
+          target_date: formattedDate,
         }),
       })
         .then(async (res) => {
           const data = await res.json();
-          if (!res.ok) {
-            return res.json().then((err) => {
-              Toast.show({
-                type: "error",
-                text1: "Goal Creation Unsuccessful ❌",
-                text2: "One or more fields are invalid, try again",
-              });
-
-              throw new Error(err.error || "Something went wrong");
-            });
-          }
           setGoals([
             ...Goals,
             {
               id: data.id,
               title: newGoalTitle,
-              content: newGoalContent,
+              details: newGoalContent,
               color: getRandomColor(),
+              target_date: formattedDate,
             },
           ]);
           // setNextId(nextId + 1);
           setNewGoalTitle("");
           setNewGoalContent("");
+          setSelectedDate("");
           setModalVisible(false);
           Toast.show({
             type: "success",
             text1: "Goal Added ✅",
             text2: "Your transaction has been recorded",
           });
-
-          return res.json();
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
     }
   }
-  function editGoal(id: number, title: string, content: string) {
-    // setGoals(
-    //   Goals.map((goal) =>
-    //     goal.id === id ? { ...goal, title: title, content: content } : goal,
-    //   ),
-    // );
-    fetch(`http://localhost:${BACKEND_PORT}/goals/editGoal`, {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id,
-        user_id: userId,
-        title,
-        details: content,
-        target_date: null,
-      }),
-    })
-      .then((res) => {
-        setGoals(
-          Goals.map((goal) =>
-            goal.id === id ? { ...goal, title: title, details: content } : goal,
-          ),
-        );
-        Toast.show({
-          type: "success",
-          text1: "Goal Updated ✅",
-        });
+  function editGoal(
+    id: number,
+    title: string,
+    details: string,
+    target_date: string,
+  ) {
+    if (title.trim() && isValidDate(target_date)) {
+      fetch(`http://localhost:${BACKEND_PORT}/goals/editGoal`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          user_id: userId,
+          title,
+          details: details,
+          target_date: target_date,
+        }),
       })
-      .catch((error) => {
-        console.error("Edit Goal Error:", error);
-        Toast.show({
-          type: "error",
-          text1: "Update Failed ❌",
-          text2: "Could not update goal, try again.",
+        .then((res) => {
+          setGoals(
+            Goals.map((goal) =>
+              goal.id === id
+                ? {
+                    ...goal,
+                    title: title,
+                    details: details,
+                    target_date: target_date,
+                  }
+                : goal,
+            ),
+          );
+          Toast.show({
+            type: "success",
+            text1: "Goal Updated ✅",
+          });
+        })
+        .catch((error) => {
+          console.error("Edit Goal Error:", error);
+          Toast.show({
+            type: "error",
+            text1: "Update Failed ❌",
+            text2: "Could not update goal, try again.",
+          });
         });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Update Failed ❌",
+        text2: "Could not update goal, try again.",
       });
+    }
   }
   function deleteGoal(id: number) {
     // setGoals(Goals.filter((goal) => goal.id !== id));
@@ -209,7 +211,7 @@ export default function Goals() {
   const filteredGoals = Goals.filter((goal) => {
     return (
       goal.title.toLowerCase().includes(search.toLowerCase()) ||
-      goal.content.toLowerCase().includes(search.toLowerCase())
+      goal.details.toLowerCase().includes(search.toLowerCase())
     );
   });
 
@@ -251,6 +253,13 @@ export default function Goals() {
               placeholder="Details"
               value={newGoalContent}
               onChangeText={setNewGoalContent}
+              placeholderTextColor="#888"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Target Date (YYYY-MM-DD)"
+              value={selectedDate}
+              onChangeText={setSelectedDate}
               placeholderTextColor="#888"
             />
             <View style={styles.modalButtons}>

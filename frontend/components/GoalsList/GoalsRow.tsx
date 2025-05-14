@@ -16,6 +16,7 @@ export default function GoalsRow(props: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [editTitle, setEditTitle] = useState(props.title);
   const [editContent, setEditContent] = useState(props.content);
+  const [editDate, setEditDate] = useState(props.date);
   const expand = useRef(new Animated.Value(70)).current;
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const inputShow = useRef(new Animated.Value(-20)).current;
@@ -70,7 +71,7 @@ export default function GoalsRow(props: any) {
       </Animated.View>
       <Modal
         visible={modalVisible}
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         onRequestClose={() => setModalVisible(false)}
       >
@@ -90,10 +91,17 @@ export default function GoalsRow(props: any) {
               value={editContent}
               onChangeText={setEditContent}
             />
+            <TextInput
+              style={styles.input}
+              placeholder="Target Date (YYYY-MM-DD)"
+              value={editDate}
+              onChangeText={setEditDate}
+              placeholderTextColor="#888"
+            />
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 onPress={() => {
-                  props.editGoal(props.id, editTitle, editContent);
+                  props.editGoal(props.id, editTitle, editContent, editDate);
                   setModalVisible(false);
                 }}
                 style={styles.modalButton}
