@@ -43,3 +43,27 @@ export const getTransactions: RequestHandler = async (req, res) => {
     res.status(500).json({ error: `Internal server error: ${error}` });
   }
 };
+
+// delete a specific transaction for a specific user
+export const deleteTransaction: RequestHandler = async (req, res) => {
+  const { user_id, transaction_id } = req.params;
+
+  // Validate input
+  if (!user_id || !transaction_id) {
+    return res.status(400).json({ error: "Missing user_id or transaction_id" });
+  }
+
+  try {
+    const deleteQuery = "DELETE FROM transactions WHERE id = $1 AND user_id = $2 RETURNING *;";
+    const result = await client.query(deleteQuery, [transaction_id, user_id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Transaction not found or does not belong to user" });
+    }
+
+    res.status(200).json({ message: "Transaction deleted successfully", deleted: result.rows[0] });
+  } catch (error) {
+    console.error("Error deleting transaction:", error);
+    res.status(500).json({ error: `Internal server error: ${error}` });
+  }
+};
