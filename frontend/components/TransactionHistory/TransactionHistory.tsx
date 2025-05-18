@@ -9,7 +9,9 @@ export default function TransactionHistory(props: any) {
       {/* Link that re routes user to History */}
       <Link href={"/History"}>
         <View style={styles.header}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>Recent Transactions</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+            Recent Transactions
+          </Text>
           <FontAwesome name="angle-right" size={20} />
         </View>
       </Link>
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
     padding: 15,
     gap: 5,
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
   header: {
     width: "100%",

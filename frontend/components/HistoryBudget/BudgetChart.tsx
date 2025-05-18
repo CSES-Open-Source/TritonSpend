@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 15,
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
   chartBackground: {
     width: "90%",

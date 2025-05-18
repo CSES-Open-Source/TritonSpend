@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     width: "100%",
     color: "#FFFFFF",
-    textAlign: 'center'
+    textAlign: "center",
   },
   scroll: {
     width: "100%",

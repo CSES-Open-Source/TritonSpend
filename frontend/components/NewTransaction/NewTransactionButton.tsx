@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     cursor: "pointer",
     width: "100%",
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
   button: {
     flexDirection: "row",

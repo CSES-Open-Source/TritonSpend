@@ -17,22 +17,26 @@ export default function History() {
 
   // Filter State
   const [filterType, setFilterType] = useState("none"); // "none", "month", "category"
-  const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().substring(0, 7)); // YYYY-MM format
-  const [selectedCategory, setSelectedCategory] = useState<string>("Food"); 
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    new Date().toISOString().substring(0, 7),
+  ); // YYYY-MM format
+  const [selectedCategory, setSelectedCategory] = useState<string>("Food");
   const [showFilterOptions, setShowFilterOptions] = useState(false);
 
   // Get unique categories from transactions
   const getUniqueCategories = () => {
-    const uniqueCategories = [...new Set(AllTransactions.map(trans => trans.category))].filter(Boolean);
-    
+    const uniqueCategories = [
+      ...new Set(AllTransactions.map((trans) => trans.category)),
+    ].filter(Boolean);
+
     // If no categories found in transactions or they're unexpected, use default categories
     if (uniqueCategories.length === 0) {
       return ["Food", "Shopping", "Subscriptions", "Transportation", "Other"];
     }
-    
+
     return uniqueCategories;
   };
-  
+
   const categories = getUniqueCategories();
 
   //our app only loads once and does not load again even if we change tabs. This is why we cant use useEffect
@@ -73,24 +77,26 @@ export default function History() {
   };
 
   // Filtering Logic
-  const filteredTransactions = AllTransactions.filter(transaction => {
+  const filteredTransactions = AllTransactions.filter((transaction) => {
     if (filterType === "none") return true;
-    
+
     if (filterType === "month") {
-      const transactionDate = new Date(transaction.date).toISOString().substring(0, 7);
+      const transactionDate = new Date(transaction.date)
+        .toISOString()
+        .substring(0, 7);
       return transactionDate === selectedMonth;
     }
-    
+
     if (filterType === "category") {
       // Log for debugging
       console.log(`Filtering by category: ${selectedCategory}`);
       console.log(`Transaction category: ${transaction.category}`);
-      
+
       // Handle case where transaction might not have a category
       const transactionCategory = transaction.category || "";
       return transactionCategory === selectedCategory;
     }
-    
+
     return true;
   });
 
@@ -109,17 +115,23 @@ export default function History() {
 
   // Format month for display
   const formatMonth = (dateString: string) => {
-    const [year, month] = dateString.split('-');
+    const [year, month] = dateString.split("-");
     const date = new Date(parseInt(year), parseInt(month) - 1);
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    return date.toLocaleString("default", { month: "long", year: "numeric" });
   };
 
   // Get unique months from transactions
   const getAvailableMonths = () => {
-    const months = [...new Set(AllTransactions.map(trans => 
-      new Date(trans.date).toISOString().substring(0, 7)
-    ))].sort().reverse(); // Sort in descending order
-    
+    const months = [
+      ...new Set(
+        AllTransactions.map((trans) =>
+          new Date(trans.date).toISOString().substring(0, 7),
+        ),
+      ),
+    ]
+      .sort()
+      .reverse(); // Sort in descending order
+
     return months;
   };
 
@@ -153,10 +165,7 @@ export default function History() {
 
         {/* Filter Controls */}
         <View style={styles.filterSection}>
-          <TouchableOpacity
-            onPress={toggleFilterOptions}
-            style={styles.button}
-          >
+          <TouchableOpacity onPress={toggleFilterOptions} style={styles.button}>
             <Text style={styles.buttonText}>
               {filterType === "none" ? "Filter" : "Change Filter"}
             </Text>
@@ -177,22 +186,22 @@ export default function History() {
       {showFilterOptions && (
         <View style={styles.filterOptions}>
           <Text style={styles.filterTitle}>Filter by:</Text>
-          
+
           <View style={styles.filterTypeButtons}>
             <TouchableOpacity
               style={[
                 styles.filterTypeButton,
-                filterType === "month" && styles.selectedFilterType
+                filterType === "month" && styles.selectedFilterType,
               ]}
               onPress={() => setFilterType("month")}
             >
               <Text style={styles.filterTypeText}>Month</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[
                 styles.filterTypeButton,
-                filterType === "category" && styles.selectedFilterType
+                filterType === "category" && styles.selectedFilterType,
               ]}
               onPress={() => setFilterType("category")}
             >
@@ -207,10 +216,10 @@ export default function History() {
               style={styles.filterPicker}
             >
               {getAvailableMonths().map((month) => (
-                <Picker.Item 
+                <Picker.Item
                   key={`month-${month}`}
-                  label={formatMonth(month)} 
-                  value={month} 
+                  label={formatMonth(month)}
+                  value={month}
                 />
               ))}
             </Picker>
@@ -223,10 +232,10 @@ export default function History() {
               style={styles.filterPicker}
             >
               {categories.map((category) => (
-                <Picker.Item 
+                <Picker.Item
                   key={`category-${category}`}
-                  label={category || "Uncategorized"} 
-                  value={category} 
+                  label={category || "Uncategorized"}
+                  value={category}
                 />
               ))}
             </Picker>
@@ -245,8 +254,9 @@ export default function History() {
       {filterType !== "none" && (
         <View style={styles.activeFilterContainer}>
           <Text style={styles.activeFilterText}>
-            Filtering by: {filterType === "month" 
-              ? `Month: ${formatMonth(selectedMonth)}` 
+            Filtering by:{" "}
+            {filterType === "month"
+              ? `Month: ${formatMonth(selectedMonth)}`
               : `Category: ${selectedCategory}`}
           </Text>
         </View>
@@ -273,7 +283,7 @@ const styles = StyleSheet.create({
     width: "100%",
     color: "#FFFFFF",
     paddingVertical: 10,
-    textAlign: 'center'
+    textAlign: "center",
   },
   filterSortContainer: {
     flexDirection: "row",

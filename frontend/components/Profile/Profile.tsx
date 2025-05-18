@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 15,
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
 
   ProfileInfo: {

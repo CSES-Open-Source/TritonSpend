@@ -42,7 +42,7 @@ export default function Home() {
   }, [updateRecent]);
   return (
     <>
-      <View style={{ flex: 1, backgroundColor: "#00629B"}}>
+      <View style={{ flex: 1, backgroundColor: "#00629B" }}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     width: "100%",
     color: "#FFFFFF",
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   graphContainer: {
     height: 270,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
   graph: {
     width: "100%",

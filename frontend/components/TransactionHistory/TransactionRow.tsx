@@ -30,11 +30,17 @@ export default function TransactionRow(props: any) {
         {/* place holder for transaction icon */}
         <Ionicons name={icon} size={25} color={"#black"} />
         <View>
-          <Text style={{ fontWeight: 500, fontSize: 20, paddingBottom: 4 }}>{props.name}</Text>
-          <Text style={{ fontWeight: 500, opacity: 0.65 }}>{formattedDate}</Text>
+          <Text style={{ fontWeight: 500, fontSize: 20, paddingBottom: 4 }}>
+            {props.name}
+          </Text>
+          <Text style={{ fontWeight: 500, opacity: 0.65 }}>
+            {formattedDate}
+          </Text>
         </View>
       </View>
-      <Text style={{ fontWeight: 500, fontSize: 20, paddingVertical: 4 }}>${props.amount}</Text>
+      <Text style={{ fontWeight: 500, fontSize: 20, paddingVertical: 4 }}>
+        ${props.amount}
+      </Text>
     </View>
   );
 }
@@ -47,7 +53,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   header: {
     width: "100%",

@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     padding: 25,
     gap: 20,
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
 
   separator: {

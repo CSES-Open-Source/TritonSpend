@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 10,
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
   logoutText: {
     color: "black",

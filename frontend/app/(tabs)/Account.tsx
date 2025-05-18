@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     height: 50,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   separator: {
     width: "100%",

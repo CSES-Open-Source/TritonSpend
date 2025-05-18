@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     padding: 15,
     gap: 5,
     shadowRadius: 12,
-    shadowOpacity: 0.4
+    shadowOpacity: 0.4,
   },
   title: {
     fontSize: 20,
