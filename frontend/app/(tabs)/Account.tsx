@@ -210,21 +210,20 @@ export default function Account() {
           </View>
         </ScrollView>
       </Modal>
-      <ScrollView>
-        <View style={styles.AccountContainer}>
-          <View style={styles.header}>
-            <Text style={styles.Title}>Settings</Text>
-            <Feather
-              name="edit"
-              size={25}
-              onPress={() => setModalVisible(true)}
-            />
-          </View>
-          <Profile userName={userName} profilePic={profilePic} Email={Email} />
-          <SettingList list={Category} totalBudget={totalBudget} />
-          <LogOutButton />
+      <View style={styles.AccountContainer}>
+        <View style={styles.header}>
+          <Text style={styles.Title}>Settings</Text>
+          <Feather
+            color="#E6E6E6"
+            name="edit"
+            size={25}
+            onPress={() => setModalVisible(true)}
+          />
         </View>
-      </ScrollView>
+        <Profile userName={userName} profilePic={profilePic} Email={Email} />
+        <SettingList list={Category} totalBudget={totalBudget} />
+        <LogOutButton />
+      </View>
     </>
   );
 }
@@ -232,10 +231,10 @@ export default function Account() {
 const styles = StyleSheet.create({
   AccountContainer: {
     flex: 1,
-    backgroundColor: "#bbadff",
+    backgroundColor: "#00629B",
     alignItems: "center",
     paddingVertical: 30,
-    paddingHorizontal: 50,
+    paddingHorizontal: 20,
     flexDirection: "column",
     gap: 30,
   },
@@ -245,6 +244,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     height: 50,
+    paddingHorizontal: 10
   },
   separator: {
     width: "100%",
@@ -255,20 +255,21 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   Title: {
-    fontWeight: "500",
+    fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    color: "#FFFFFF",
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     justifyContent: "center",
     alignItems: "center",
   },
   modalContent: {
     flex: 1,
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",

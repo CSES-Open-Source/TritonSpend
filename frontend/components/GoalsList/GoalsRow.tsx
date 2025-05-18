@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   GoalsContainer: {
     width: "100%",
     height: 70,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     alignItems: "center",
     justifyContent: "space-between",
     display: "flex",
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     margin: 30,
     padding: 20,
     borderRadius: 10,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
   },
   modalTitle: {
     fontSize: 18,

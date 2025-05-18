@@ -260,9 +260,9 @@ export default function History() {
 const styles = StyleSheet.create({
   homeContainer: {
     flex: 1,
-    backgroundColor: "#bbadff",
+    backgroundColor: "#00629B",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     flexDirection: "column",
     gap: 10,
@@ -271,7 +271,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     width: "100%",
-    textAlign: "center",
+    color: "#FFFFFF",
+    paddingVertical: 10,
+    textAlign: 'center'
   },
   filterSortContainer: {
     flexDirection: "row",
@@ -289,7 +291,7 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: 150,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     borderRadius: 5,
     marginBottom: 5,
   },
@@ -303,11 +305,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f44336",
   },
   buttonText: {
-    color: "white",
+    color: "#E6E6E6",
     fontWeight: "bold",
   },
   filterOptions: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     padding: 15,
     borderRadius: 10,
     width: "90%",

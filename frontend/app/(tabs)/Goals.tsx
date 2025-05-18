@@ -280,10 +280,10 @@ export default function Goals() {
 const styles = StyleSheet.create({
   GoalsContainer: {
     flex: 1,
-    backgroundColor: "rgb(200,200,250)",
+    backgroundColor: "#00629B",
     alignItems: "center",
     paddingVertical: 30,
-    paddingHorizontal: 50,
+    paddingHorizontal: 20,
     flexDirection: "column",
     gap: 30,
   },
@@ -293,9 +293,11 @@ const styles = StyleSheet.create({
     height: 50,
   },
   Title: {
-    fontWeight: "500",
+    fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    color: "#FFFFFF",
+    textAlign: 'center'
   },
   scroll: {
     width: "100%",
@@ -311,7 +313,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.4)",
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     padding: 20,
     width: "80%",
     borderRadius: 10,

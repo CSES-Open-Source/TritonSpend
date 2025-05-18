@@ -9,18 +9,18 @@ export default function BudgetChart(props: any) {
           style={{
             width: props.length,
             height: 40,
-            backgroundColor: "#8d82be",
+            backgroundColor: "#00629B",
             borderRadius: 10,
           }}
         ></View>
       </View>
       <View style={styles.informationContainer}>
         <View style={styles.column}>
-          <Text style={[styles.title, { color: "#bbadff" }]}>Current</Text>
+          <Text style={[styles.title, { color: "#00629B" }]}>Current</Text>
           <Text style={styles.title}>${props.Current}</Text>
         </View>
         <View style={styles.column}>
-          <Text style={[styles.title, { color: "#bbadff" }]}>Budget</Text>
+          <Text style={[styles.title, { color: "#00629B" }]}>Budget</Text>
           <Text style={styles.title}>${props.Budget}</Text>
         </View>
       </View>
@@ -30,7 +30,7 @@ export default function BudgetChart(props: any) {
 
 const styles = StyleSheet.create({
   ChartContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     width: "100%",
     height: 130,
     borderRadius: 10,
@@ -38,6 +38,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 15,
+    shadowRadius: 12,
+    shadowOpacity: 0.4
   },
   chartBackground: {
     width: "90%",

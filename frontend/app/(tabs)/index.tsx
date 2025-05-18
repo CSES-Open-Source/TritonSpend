@@ -34,7 +34,7 @@ export default function Home() {
       })
       .then((data) => {
         console.log(data);
-        setThreeTransactions(data.slice(0, 3));
+        setThreeTransactions(data.slice(0, 5));
       })
       .catch((error) => {
         console.error("API Error:", error);
@@ -42,7 +42,7 @@ export default function Home() {
   }, [updateRecent]);
   return (
     <>
-      <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
+      <View style={{ flex: 1, backgroundColor: "#00629B"}}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingVertical: 10,
-    paddingHorizontal: 50,
+    paddingHorizontal: 20,
     flexDirection: "column",
     gap: 17,
   },
@@ -78,20 +78,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    color: "#FFFFFF",
+    paddingHorizontal: 10
   },
   graphContainer: {
     height: 270,
     width: "100%",
-    backgroundColor: "#8d82be",
+    backgroundColor: "#E6E6E6",
     borderRadius: 15,
     padding: 20,
     flexDirection: "column",
     justifyContent: "space-between",
+    shadowRadius: 12,
+    shadowOpacity: 0.4
   },
   graph: {
     width: "100%",
     height: 180,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     borderRadius: 15,
   },
 });

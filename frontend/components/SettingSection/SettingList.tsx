@@ -49,10 +49,12 @@ const styles = StyleSheet.create({
   settingList: {
     flexDirection: "column",
     width: "100%",
-    backgroundColor: "#c69214",
+    backgroundColor: "#E6E6E6",
     borderRadius: 10,
     padding: 25,
     gap: 20,
+    shadowRadius: 12,
+    shadowOpacity: 0.4
   },
 
   separator: {
