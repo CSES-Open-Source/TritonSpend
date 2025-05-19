@@ -16,30 +16,6 @@ export default function Home() {
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
   const { userId } = useAuth();
-  // useEffect(() => {
-  //   console.log(userId);
-  //   fetch(
-  //     `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
-  //     {
-  //       method: "GET",
-  //       headers: {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //       },
-  //     },
-  //   )
-  //     .then((res) => {
-  //       console.log(res.body);
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       console.log(data);
-  //       setThreeTransactions(data.slice(0, 3));
-  //     })
-  //     .catch((error) => {
-  //       console.error("API Error:", error);
-  //     });
-  // }, [updateRecent]);
   useFocusEffect(
     useCallback(() => {
       fetch(
