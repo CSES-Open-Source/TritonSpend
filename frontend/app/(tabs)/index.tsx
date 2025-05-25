@@ -10,20 +10,27 @@ import CustomPieChart from "@/components/Graphs/PieChart";
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
-
+interface Category {
+  id: number;
+  category_name: string;
+  category_expense: string; 
+  max_category_budget: string;
+  user_id: number;
+}
 export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
-  const [allTransactions, setAllTransactions] = useState([])
+  const [total, setTotal] = useState(0)
+  const [categories, setCategories] = useState<Category[]>([])
   const { userId } = useAuth();
   const categoryColors = new Map<number, string>([
-    [1, '#b8b8ff'],
-    [2, '#fff3b0'],
-    [3, '#ff9b85'],
-    [4, '#dde5b6'],
-    [5, '#2b2d42'],
+    [6, '#b8b8ff'], // blue
+    [7, '#fff3b0'], //yellow
+    [8, '#ff9b85'],// red
+    [9, '#588157'],//green
+    [10, '#2b2d42'],//black
   ]);
   
   
@@ -40,11 +47,9 @@ export default function Home() {
       },
     )
       .then((res) => {
-        console.log(res.body);
         return res.json();
       })
       .then((data) => {
-        console.log(data);
         setThreeTransactions(data.slice(0, 3));
       })
       .catch((error) => {
@@ -59,12 +64,21 @@ export default function Home() {
           return res.json();
         })
         .then((data) => {
-          console.log(data)
+          setCategories(data)
+          setTotal(data.reduce((sum: number, category: { category_expense: string; }) => sum + parseFloat(category.category_expense), 0))
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
     }, [updateRecent]);
+
+  const pieData = categories.map((category) => ({
+    value: parseFloat(category.category_expense),
+    color: categoryColors.get(category.id) || "#cccccc",
+    name: category.category_name,
+    id : category.id
+  }));
+  console.log(pieData)
   return ( 
     <>
       <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
@@ -74,11 +88,21 @@ export default function Home() {
             <View style={styles.graphContainer}>
               <Text style={{ fontSize: 20, fontWeight: "600" }}>Total Spending</Text>
               {/* <View style={styles.graph}></View> */}
-              {/* <CustomPieChart data={pieData} size={230} /> */}
+              <CustomPieChart data={pieData} size={250} total = {total}  />
+              <View style = {styles.legendContainer}>
+                {pieData.map((category) => {
+                  return (
+                    <View key={category.id} style={styles.legendItem}>
+                      <View style={[styles.colorBox, { backgroundColor: category.color }]} />
+                      <Text style={styles.legendText}>{category.name}</Text>
+                    </View>
+                  );
+                })}
+              </View>
             </View>
             {/* 
-                  components for the new transaction button and the list of transaction history.
-                */}
+              components for the new transaction button and the list of transaction history.
+            */}
             <NewTransactionButton
               setUpdateRecent={setUpdateRecent}
               updateRecent={updateRecent}
@@ -106,8 +130,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   graphContainer: {
-    height: 350,
-    width: "100%",
+    height: 450,
+    width: '100%',
     backgroundColor: "white",
     borderRadius: 15,
     padding: 20,
@@ -120,5 +144,28 @@ const styles = StyleSheet.create({
     height: 180,
     backgroundColor: "white",
     borderRadius: 15,
+  },
+  legendContainer: {
+    flexDirection: "row",
+    marginTop: 20,
+    flexWrap:'wrap',
+    gap: 10,
+    alignItems: "flex-start",
+    justifyContent:'flex-start',
+    width:'100%'
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  colorBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: 16,
+    color: "black",
   },
 });

@@ -2,12 +2,9 @@ import React from 'react';
 import { ColorValue, View, StyleSheet } from 'react-native';
 import Svg, { Path, G, Text } from 'react-native-svg';
 
-export default function DoughnutChart(props: { size: number; data: any[]; }) {
-    //   const {
-    //     data,
-    //     size = 250,
-    //     innerRadiusRatio = 0.5,
-    //   } = props;
+export default function DoughnutChart(props: {
+  total: number; size: number; data: any[]; 
+}) {
     const radius = props.size / 2;
     const innerRadius = radius * 0.65;
     const total = props.data.reduce((acc: any, item: { value: any; }) => acc + item.value, 0);
@@ -33,6 +30,8 @@ export default function DoughnutChart(props: { size: number; data: any[]; }) {
         ].join(' ');
 
         startAngle = endAngle;
+        const textX = radius + (radius * 0.5) * Math.sin(startAngle + angle / 2);  // Mid-point of the arc
+        const textY = radius - (radius * 0.5) * Math.cos(startAngle + angle / 2);  // Mid-point of the arc
 
         return <Path key={Math.random()} d={pathData} fill={color} />;
     }
@@ -53,7 +52,7 @@ export default function DoughnutChart(props: { size: number; data: any[]; }) {
           fontWeight="bold"
           fill="#333"
         >
-          {/* {props.total} */}
+         ${props.total}
         </Text>
       </Svg>
     </View>
@@ -64,7 +63,6 @@ const styles = StyleSheet.create({
   PieContainer: {
     justifyContent: 'flex-start',
     width: '100%',
-    height: '100%',
     alignItems: 'center',
   },
 });

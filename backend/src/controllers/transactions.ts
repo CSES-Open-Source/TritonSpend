@@ -58,7 +58,6 @@ export const deleteTransaction: RequestHandler = async (req, res) => {
   try {
     const deleteQuery = "DELETE FROM transactions WHERE id = $1 AND user_id = $2 RETURNING *;";
     const result = await client.query(deleteQuery, [transaction_id, user_id]);
-
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "Transaction not found or does not belong to user" });
     }
