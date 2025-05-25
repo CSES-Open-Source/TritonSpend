@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
+import CustomPieChart from "@/components/Graphs/PieChart";
 
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
@@ -15,7 +16,17 @@ export default function Home() {
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
+  const [allTransactions, setAllTransactions] = useState([])
   const { userId } = useAuth();
+  const categoryColors = new Map<number, string>([
+    [1, '#b8b8ff'],
+    [2, '#fff3b0'],
+    [3, '#ff9b85'],
+    [4, '#dde5b6'],
+    [5, '#2b2d42'],
+  ]);
+  
+  
   useEffect(() => {
     console.log(userId);
     fetch(
@@ -39,16 +50,31 @@ export default function Home() {
       .catch((error) => {
         console.error("API Error:", error);
       });
-  }, [updateRecent]);
-  return (
+
+
+      fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
+        method: "GET",
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data)
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+    }, [updateRecent]);
+  return ( 
     <>
       <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
             <View style={styles.graphContainer}>
-              <Text style={{ fontSize: 30, fontWeight: "600" }}>$4201</Text>
-              <View style={styles.graph}></View>
+              <Text style={{ fontSize: 20, fontWeight: "600" }}>Total Spending</Text>
+              {/* <View style={styles.graph}></View> */}
+              {/* <CustomPieChart data={pieData} size={230} /> */}
             </View>
             {/* 
                   components for the new transaction button and the list of transaction history.
@@ -80,13 +106,14 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   graphContainer: {
-    height: 270,
+    height: 350,
     width: "100%",
-    backgroundColor: "#8d82be",
+    backgroundColor: "white",
     borderRadius: 15,
     padding: 20,
     flexDirection: "column",
     justifyContent: "space-between",
+    gap: 30
   },
   graph: {
     width: "100%",
