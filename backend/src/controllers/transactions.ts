@@ -5,6 +5,7 @@ import client from "../db/db"; // Import PostgreSQL client
 export const addTransaction: RequestHandler = async (req, res) => {
   const newTransaction =
     "INSERT INTO transactions(user_id, item_name, amount, category_id) VALUES ($1,$2,$3,$4);";
+  const updateCategory = " UPDATE categories SET category_expense = category_expense + $1 WHERE id = $2 AND user_id = $3;"
   //try/catch any errors
   try {
     //retrieve data from body
@@ -24,6 +25,7 @@ export const addTransaction: RequestHandler = async (req, res) => {
     }
     //query
     client.query(newTransaction, [user_id, item_name, amount, category_id]);
+    client.query(updateCategory, [amount, category_id, user_id])
     res.status(200).json({ message: "New Transaction Created!" });
   } catch (error) {
     console.error("Unexpected Error:", error);
