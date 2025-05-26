@@ -31,7 +31,7 @@ export default function NewTransactionButton(props: any) {
   });
 
   //for the selected category and the transaction amount
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [transactionAmount, setTransactionAmount] = useState("");
   const [itemInformation, setItemInformation] = useState("");
   //toggle function for buttion, starts all animation when toggled and sets inputVisible accordingly
@@ -69,7 +69,7 @@ export default function NewTransactionButton(props: any) {
         user_id: userId,
         item_name: itemInformation,
         amount: Number(transactionAmount),
-        category_id: Number(selectedCategory),
+        category_name: selectedCategory,
       }),
     })
       .then((res) => {
@@ -87,7 +87,7 @@ export default function NewTransactionButton(props: any) {
         props.setUpdateRecent(!props.updateRecent);
         setItemInformation("");
         setTransactionAmount("");
-        setSelectedCategory(0);
+        setSelectedCategory("");
         Toast.show({
           type: "success",
           text1: "Transaction Successful ✅",
@@ -126,11 +126,11 @@ export default function NewTransactionButton(props: any) {
             style={styles.picker}
           >
             <Picker.Item label="Select Category" value="" />
-            <Picker.Item label="Food" value="1" />
-            <Picker.Item label="Shopping" value="2" />
-            <Picker.Item label="Transportation" value="3" />
-            <Picker.Item label="Subsciptions" value="4" />
-            <Picker.Item label="Other" value="5" />
+            <Picker.Item label="Food" value="Food" />
+            <Picker.Item label="Shopping" value="Shopping" />
+            <Picker.Item label="Transportation" value="Transportation" />
+            <Picker.Item label="Subsciptions" value="Subsciptions" />
+            <Picker.Item label="Other" value="Other" />
           </Picker>
 
           <TextInput

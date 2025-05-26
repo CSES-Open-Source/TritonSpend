@@ -29,12 +29,10 @@ export default function Home() {
         },
       )
         .then((res) => {
-          console.log(res.body);
           return res.json();
         })
         .then((data) => {
-          console.log(data);
-          setThreeTransactions(data.slice(0, 3));
+          setThreeTransactions(data.slice(0, 5));
         })
         .catch((error) => {
           console.error("API Error:", error);

@@ -24,7 +24,7 @@ export default function TransactionHistory(props: any) {
                 date={row.date}
                 amount={row.amount}
                 key={row.id}
-                icon={row.category_id}
+                icon={row.category_name}
               />
               {/* Put a separater between elements excpet for the last one */}
               {index < props.list.length - 1 && (
