@@ -28,13 +28,19 @@ export default function TransactionRow(props: any) {
     <View style={styles.NewTransaction}>
       <View style={styles.iconAndInfo}>
         {/* place holder for transaction icon */}
-        <Ionicons name={icon} size={30} color={"#black"} />
+        <Ionicons name={icon} size={25} color={"#black"} />
         <View>
-          <Text>{props.name}</Text>
-          <Text>{formattedDate}</Text>
+          <Text style={{ fontWeight: 500, fontSize: 20, paddingBottom: 4 }}>
+            {props.name}
+          </Text>
+          <Text style={{ fontWeight: 500, opacity: 0.65 }}>
+            {formattedDate}
+          </Text>
         </View>
       </View>
-      <Text>${props.amount}</Text>
+      <Text style={{ fontWeight: 500, fontSize: 20, paddingVertical: 4 }}>
+        ${props.amount}
+      </Text>
     </View>
   );
 }
@@ -42,11 +48,12 @@ export default function TransactionRow(props: any) {
 const styles = StyleSheet.create({
   NewTransaction: {
     width: "100%",
-    height: 50,
+    height: 64,
     borderRadius: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    paddingHorizontal: 10,
   },
   header: {
     width: "100%",
