@@ -1,10 +1,10 @@
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
-import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
+import { useEffect, useState, useCallback } from "react";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
@@ -16,33 +16,34 @@ export default function Home() {
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
   const { userId } = useAuth();
-  useEffect(() => {
-    console.log(userId);
-    fetch(
-      `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+  useFocusEffect(
+    useCallback(() => {
+      fetch(
+        `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         },
-      },
-    )
-      .then((res) => {
-        console.log(res.body);
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setThreeTransactions(data.slice(0, 3));
-      })
-      .catch((error) => {
-        console.error("API Error:", error);
-      });
-  }, [updateRecent]);
+      )
+        .then((res) => {
+          console.log(res.body);
+          return res.json();
+        })
+        .then((data) => {
+          console.log(data);
+          setThreeTransactions(data.slice(0, 3));
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+    }, [updateRecent]),
+  );
   return (
     <>
-      <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
+      <View style={{ flex: 1, backgroundColor: "#00629B" }}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingVertical: 10,
-    paddingHorizontal: 50,
+    paddingHorizontal: 20,
     flexDirection: "column",
     gap: 17,
   },
@@ -78,20 +79,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    color: "#FFFFFF",
+    paddingHorizontal: 10,
   },
   graphContainer: {
     height: 270,
     width: "100%",
-    backgroundColor: "#8d82be",
+    backgroundColor: "#E6E6E6",
     borderRadius: 15,
     padding: 20,
     flexDirection: "column",
     justifyContent: "space-between",
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
   },
   graph: {
     width: "100%",
     height: 180,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     borderRadius: 15,
   },
 });

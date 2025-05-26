@@ -31,5 +31,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
+    borderColor: "#E6E6E6",
+    backgroundColor: "#E6E6E6",
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
   },
 });

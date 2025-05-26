@@ -106,7 +106,7 @@ export default function NewTransactionButton(props: any) {
         <View style={[styles.button]}>
           <Text style={styles.Title}>New Transaction</Text>
           <Animated.View style={{ transform: [{ rotate: interpolate }] }}>
-            <MaterialIcons name="add-circle-outline" size={35} />
+            <MaterialIcons name="add-circle-outline" size={32} />
           </Animated.View>
         </View>
       </Pressable>
@@ -161,12 +161,14 @@ export default function NewTransactionButton(props: any) {
 
 const styles = StyleSheet.create({
   newTransaction: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     justifyContent: "flex-start",
     alignItems: "center",
     borderRadius: 10,
     cursor: "pointer",
     width: "100%",
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
   },
   button: {
     flexDirection: "row",
@@ -178,7 +180,7 @@ const styles = StyleSheet.create({
   },
   Title: {
     fontWeight: "bold",
-    fontSize: 17,
+    fontSize: 20,
   },
   inputContainer: {
     width: "90%",

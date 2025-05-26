@@ -31,11 +31,13 @@ const styles = StyleSheet.create({
   Profile: {
     width: "100%",
     height: 100,
-    backgroundColor: "#f5f1e7",
+    backgroundColor: "#E6E6E6",
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
     borderRadius: 15,
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
   },
 
   ProfileInfo: {
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
     fontWeight: "400",
   },
   profilePic: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     borderRadius: 50,
     width: 75,
     height: 75,
