@@ -23,7 +23,7 @@ CREATE TABLE transactions (
     user_id INT REFERENCES users(id) ON DELETE CASCADE,  -- User ID (FK)
     item_name VARCHAR(255) NOT NULL,           -- Item Name
     amount DECIMAL(10,2) NOT NULL,             -- Amount of the Transaction
-    category_id INT REFERENCES categories(id) ON DELETE SET NULL,  -- Category ID (FK)
+    category_name VARCHAR(100) NOT NULL,  -- Category Name
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Date of Transaction
 );
 
