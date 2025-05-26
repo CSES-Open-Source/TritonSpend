@@ -12,7 +12,7 @@ import { useFocusEffect } from "@react-navigation/native";
 interface Category {
   id: number;
   category_name: string;
-  category_expense: string; 
+  category_expense: string;
   max_category_budget: string;
   user_id: number;
 }
@@ -21,46 +21,44 @@ export default function Home() {
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
-  const [total, setTotal] = useState(0)
-  const [categories, setCategories] = useState<Category[]>([])
+  const [total, setTotal] = useState(0);
+  const [categories, setCategories] = useState<Category[]>([]);
   const { userId } = useAuth();
-// <<<<<<< HEAD
+  // <<<<<<< HEAD
   const categoryColors = new Map<number, string>([
-    [6, '#b8b8ff'], // blue
-    [7, '#fff3b0'], //yellow
-    [8, '#ff9b85'],// red
-    [9, '#588157'],//green
-    [10, '#2b2d42'],//black
+    [6, "#b8b8ff"], // blue
+    [7, "#fff3b0"], //yellow
+    [8, "#ff9b85"], // red
+    [9, "#588157"], //green
+    [10, "#2b2d42"], //black
   ]);
-  
-  
-//   useEffect(() => {
-//     console.log(userId);
-//     fetch(
-//       `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           Accept: "application/json",
-//           "Content-Type": "application/json",
-//         },
-//       },
-//     )
-//       .then((res) => {
-//         return res.json();
-//       })
-//       .then((data) => {
-//         setThreeTransactions(data.slice(0, 3));
-//       })
-//       .catch((error) => {
-//         console.error("API Error:", error);
-//       });
 
+  //   useEffect(() => {
+  //     console.log(userId);
+  //     fetch(
+  //       `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           Accept: "application/json",
+  //           "Content-Type": "application/json",
+  //         },
+  //       },
+  //     )
+  //       .then((res) => {
+  //         return res.json();
+  //       })
+  //       .then((data) => {
+  //         setThreeTransactions(data.slice(0, 3));
+  //       })
+  //       .catch((error) => {
+  //         console.error("API Error:", error);
+  //       });
 
-//       fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
-//         method: "GET",
-//       })
-// =======
+  //       fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
+  //         method: "GET",
+  //       })
+  // =======
   useFocusEffect(
     useCallback(() => {
       fetch(
@@ -73,43 +71,68 @@ export default function Home() {
           },
         },
       )
-// >>>>>>> main
         .then((res) => {
           return res.json();
         })
         .then((data) => {
-          setCategories(data)
-          setTotal(data.reduce((sum: number, category: { category_expense: string; }) => sum + parseFloat(category.category_expense), 0))
+          console.log(data);
           setThreeTransactions(data.slice(0, 5));
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
-    }, [updateRecent]));
+      // >>>>>>> main
+      fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
+        method: "GET",
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          setCategories(data);
+          setTotal(
+            data.reduce(
+              (sum: number, category: { category_expense: string }) =>
+                sum + parseFloat(category.category_expense),
+              0,
+            ),
+          );
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+    }, [updateRecent]),
+  );
 
   const pieData = categories.map((category) => ({
     value: parseFloat(category.category_expense),
     color: categoryColors.get(category.id) || "#cccccc",
     name: category.category_name,
-    id : category.id
+    id: category.id,
   }));
-  console.log(pieData)
-  return ( 
-
+  console.log(categories);
+  return (
     <>
       <View style={{ flex: 1, backgroundColor: "#00629B" }}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
             <View style={styles.graphContainer}>
-              <Text style={{ fontSize: 20, fontWeight: "600" }}>Total Spending</Text>
+              <Text style={{ fontSize: 20, fontWeight: "600" }}>
+                Total Spending
+              </Text>
               {/* <View style={styles.graph}></View> */}
-              <CustomPieChart data={pieData} size={250} total = {total}  />
-              <View style = {styles.legendContainer}>
+              <CustomPieChart data={pieData} size={250} total={total} />
+              <View style={styles.legendContainer}>
                 {pieData.map((category) => {
                   return (
                     <View key={category.id} style={styles.legendItem}>
-                      <View style={[styles.colorBox, { backgroundColor: category.color }]} />
+                      <View
+                        style={[
+                          styles.colorBox,
+                          { backgroundColor: category.color },
+                        ]}
+                      />
                       <Text style={styles.legendText}>{category.name}</Text>
                     </View>
                   );
@@ -148,8 +171,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   graphContainer: {
-    height: 450,
-    width: '100%',
+    height: 500,
+    width: "100%",
     backgroundColor: "white",
     borderRadius: 15,
     padding: 20,
@@ -158,7 +181,6 @@ const styles = StyleSheet.create({
     gap: 30,
     shadowRadius: 12,
     shadowOpacity: 0.4,
-
   },
   graph: {
     width: "100%",
@@ -169,11 +191,11 @@ const styles = StyleSheet.create({
   legendContainer: {
     flexDirection: "row",
     marginTop: 20,
-    flexWrap:'wrap',
+    flexWrap: "wrap",
     gap: 10,
     alignItems: "flex-start",
-    justifyContent:'flex-start',
-    width:'100%'
+    justifyContent: "flex-start",
+    width: "100%",
   },
   legendItem: {
     flexDirection: "row",

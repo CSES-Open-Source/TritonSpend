@@ -126,7 +126,7 @@ export default function NewTransactionButton(props: any) {
             style={styles.picker}
           >
             <Picker.Item label="Select Category" value="" />
-{/* <<<<<<< HEAD
+            {/* <<<<<<< HEAD
             <Picker.Item label="Food" value="6" />
             <Picker.Item label="Shopping" value="7" />
             <Picker.Item label="Transportation" value="8" />
@@ -138,7 +138,7 @@ export default function NewTransactionButton(props: any) {
             <Picker.Item label="Transportation" value="Transportation" />
             <Picker.Item label="Subsciptions" value="Subsciptions" />
             <Picker.Item label="Other" value="Other" />
-{/* >>>>>>> main */}
+            {/* >>>>>>> main */}
           </Picker>
 
           <TextInput

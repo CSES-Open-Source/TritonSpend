@@ -17,7 +17,6 @@ export default function History() {
   const { userId } = useAuth();
   const [showSortOptions, setShowSortOptions] = useState(false);
 
-
   // Filter State
   const [filterType, setFilterType] = useState("none"); // "none", "month", "category"
   const [selectedMonth, setSelectedMonth] = useState<string>(
@@ -135,7 +134,7 @@ export default function History() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.homeContainer}>
+      <View style={styles.homeContainer}>
         <Text style={styles.Title}>History</Text>
         <BudgetChart length={150} Current={2300} Budget={3500} />
 
@@ -146,18 +145,17 @@ export default function History() {
               onPress={() => setShowSortOptions(!showSortOptions)}
               style={styles.button}
             >
-              <Text style={styles.buttonText}>
-                Sort
-              </Text>
+              <Text style={styles.buttonText}>Sort</Text>
             </TouchableOpacity>
           </View>
 
           {/* Filter Controls */}
           <View style={styles.filterSection}>
-            <TouchableOpacity onPress={toggleFilterOptions} style={styles.button}>
-              <Text style={styles.buttonText}>
-                Filter
-              </Text>
+            <TouchableOpacity
+              onPress={toggleFilterOptions}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>Filter</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginVertical: 16, // optional
-    width: "50%"
+    width: "50%",
   },
   filterButtonsContainer: {
     flexDirection: "row",

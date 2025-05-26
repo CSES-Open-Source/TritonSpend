@@ -11,18 +11,18 @@ import { useEffect, useState } from "react";
  */
 export default function TransactionRow(props: any) {
   const [icon, setIcon] = useState<any>("");
-// <<<<<<< HEAD
-//   const categoryIconMapping: { [key: number]: string } = {
-//     6: "fast-food-outline",
-//     7: "pricetag-outline",
-//     8: "bus-outline",
-//     9: "calendar-outline",
-// =======
+  // <<<<<<< HEAD
+  //   const categoryIconMapping: { [key: number]: string } = {
+  //     6: "fast-food-outline",
+  //     7: "pricetag-outline",
+  //     8: "bus-outline",
+  //     9: "calendar-outline",
+  // =======
   const categoryIconMapping: { [key: string]: string } = {
-    "Food": "fast-food-outline",
-    "Shopping": "pricetag-outline",
-    "Transportation": "bus-outline",
-    "Subscriptions": "calendar-outline",
+    Food: "fast-food-outline",
+    Shopping: "pricetag-outline",
+    Transportation: "bus-outline",
+    Subscriptions: "calendar-outline",
   };
 
   useEffect(() => {
