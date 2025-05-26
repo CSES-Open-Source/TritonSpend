@@ -62,7 +62,7 @@ export default function FullTransactionHistory(props: any) {
                       <TransactionRow
                         name={transaction.item_name}
                         amount={transaction.amount}
-                        icon={transaction.category_id}
+                        icon={transaction.category_name}
                       />
                     </View>
                     <TouchableOpacity
