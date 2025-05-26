@@ -1,11 +1,12 @@
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
-import { useFocusEffect } from "@react-navigation/native";
+import { StackRouter, useFocusEffect } from "@react-navigation/native";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
+import { ScrollView } from "react-native-gesture-handler";
 
 // Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
@@ -14,25 +15,31 @@ export default function History() {
   const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
   const [AllTransactions, setAllTransactions] = useState<any[]>([]);
   const { userId } = useAuth();
+  const [showSortOptions, setShowSortOptions] = useState(false);
+
 
   // Filter State
   const [filterType, setFilterType] = useState("none"); // "none", "month", "category"
-  const [selectedMonth, setSelectedMonth] = useState<string>(new Date().toISOString().substring(0, 7)); // YYYY-MM format
-  const [selectedCategory, setSelectedCategory] = useState<string>("Food"); 
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    new Date().toISOString().substring(0, 7),
+  ); // YYYY-MM format
+  const [selectedCategory, setSelectedCategory] = useState<string>("Food");
   const [showFilterOptions, setShowFilterOptions] = useState(false);
 
   // Get unique categories from transactions
   const getUniqueCategories = () => {
-    const uniqueCategories = [...new Set(AllTransactions.map(trans => trans.category))].filter(Boolean);
-    
+    const uniqueCategories = [
+      ...new Set(AllTransactions.map((trans) => trans.category_name)),
+    ].filter(Boolean);
+
     // If no categories found in transactions or they're unexpected, use default categories
     if (uniqueCategories.length === 0) {
       return ["Food", "Shopping", "Subscriptions", "Transportation", "Other"];
     }
-    
+
     return uniqueCategories;
   };
-  
+
   const categories = getUniqueCategories();
 
   //our app only loads once and does not load again even if we change tabs. This is why we cant use useEffect
@@ -51,7 +58,6 @@ export default function History() {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setAllTransactions(data);
         })
         .catch((error) => {
@@ -73,24 +79,22 @@ export default function History() {
   };
 
   // Filtering Logic
-  const filteredTransactions = AllTransactions.filter(transaction => {
+  const filteredTransactions = AllTransactions.filter((transaction) => {
     if (filterType === "none") return true;
-    
+
     if (filterType === "month") {
-      const transactionDate = new Date(transaction.date).toISOString().substring(0, 7);
+      const transactionDate = new Date(transaction.date)
+        .toISOString()
+        .substring(0, 7);
       return transactionDate === selectedMonth;
     }
-    
+
     if (filterType === "category") {
-      // Log for debugging
-      console.log(`Filtering by category: ${selectedCategory}`);
-      console.log(`Transaction category: ${transaction.category}`);
-      
       // Handle case where transaction might not have a category
-      const transactionCategory = transaction.category || "";
+      const transactionCategory = transaction.category_name || "";
       return transactionCategory === selectedCategory;
     }
-    
+
     return true;
   });
 
@@ -109,160 +113,188 @@ export default function History() {
 
   // Format month for display
   const formatMonth = (dateString: string) => {
-    const [year, month] = dateString.split('-');
+    const [year, month] = dateString.split("-");
     const date = new Date(parseInt(year), parseInt(month) - 1);
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    return date.toLocaleString("default", { month: "long", year: "numeric" });
   };
 
   // Get unique months from transactions
   const getAvailableMonths = () => {
-    const months = [...new Set(AllTransactions.map(trans => 
-      new Date(trans.date).toISOString().substring(0, 7)
-    ))].sort().reverse(); // Sort in descending order
-    
+    const months = [
+      ...new Set(
+        AllTransactions.map((trans) =>
+          new Date(trans.date).toISOString().substring(0, 7),
+        ),
+      ),
+    ]
+      .sort()
+      .reverse(); // Sort in descending order
+
     return months;
   };
 
   return (
-    <View style={styles.homeContainer}>
-      <Text style={styles.Title}>History</Text>
-      <BudgetChart length={150} Current={2300} Budget={3500} />
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.homeContainer}>
+        <Text style={styles.Title}>History</Text>
+        <BudgetChart length={150} Current={2300} Budget={3500} />
 
-      <View style={styles.filterSortContainer}>
-        {/* Sorting Controls */}
-        <View style={styles.sortingSection}>
-          <Picker
-            selectedValue={sortBy}
-            onValueChange={(itemValue) => setSortBy(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Sort by Date" value="date" />
-            <Picker.Item label="Sort by Amount" value="amount" />
-            <Picker.Item label="Sort by Name" value="name" />
-          </Picker>
-
-          <TouchableOpacity
-            onPress={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>
-              {sortOrder === "asc" ? "Ascending 🔼" : "Descending 🔽"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Filter Controls */}
-        <View style={styles.filterSection}>
-          <TouchableOpacity
-            onPress={toggleFilterOptions}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>
-              {filterType === "none" ? "Filter" : "Change Filter"}
-            </Text>
-          </TouchableOpacity>
-
-          {filterType !== "none" && (
+        <View style={styles.filterSortContainer}>
+          {/* Sorting Controls */}
+          <View style={styles.sortingSection}>
             <TouchableOpacity
-              onPress={resetFilters}
-              style={[styles.button, styles.resetButton]}
+              onPress={() => setShowSortOptions(!showSortOptions)}
+              style={styles.button}
             >
-              <Text style={styles.buttonText}>Clear Filter</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-
-      {/* Filter Selection UI */}
-      {showFilterOptions && (
-        <View style={styles.filterOptions}>
-          <Text style={styles.filterTitle}>Filter by:</Text>
-          
-          <View style={styles.filterTypeButtons}>
-            <TouchableOpacity
-              style={[
-                styles.filterTypeButton,
-                filterType === "month" && styles.selectedFilterType
-              ]}
-              onPress={() => setFilterType("month")}
-            >
-              <Text style={styles.filterTypeText}>Month</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[
-                styles.filterTypeButton,
-                filterType === "category" && styles.selectedFilterType
-              ]}
-              onPress={() => setFilterType("category")}
-            >
-              <Text style={styles.filterTypeText}>Category</Text>
+              <Text style={styles.buttonText}>
+                Sort
+              </Text>
             </TouchableOpacity>
           </View>
 
-          {filterType === "month" && (
+          {/* Filter Controls */}
+          <View style={styles.filterSection}>
+            <TouchableOpacity onPress={toggleFilterOptions} style={styles.button}>
+              <Text style={styles.buttonText}>
+                Filter
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Filter Selection UI */}
+        {showFilterOptions && (
+          <View style={styles.filterOptions}>
+            <Text style={styles.filterTitle}>Filter by:</Text>
+
+            <View style={styles.filterTypeButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.filterTypeButton,
+                  filterType === "month" && styles.selectedFilterType,
+                ]}
+                onPress={() => setFilterType("month")}
+              >
+                <Text style={styles.filterTypeText}>Month</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.filterTypeButton,
+                  filterType === "category" && styles.selectedFilterType,
+                ]}
+                onPress={() => setFilterType("category")}
+              >
+                <Text style={styles.filterTypeText}>Category</Text>
+              </TouchableOpacity>
+            </View>
+
+            {filterType === "month" && (
+              <Picker
+                selectedValue={selectedMonth}
+                onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                style={styles.filterPicker}
+              >
+                {getAvailableMonths().map((month) => (
+                  <Picker.Item
+                    key={`month-${month}`}
+                    label={formatMonth(month)}
+                    value={month}
+                  />
+                ))}
+              </Picker>
+            )}
+
+            {filterType === "category" && (
+              <Picker
+                selectedValue={selectedCategory}
+                onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+                style={styles.filterPicker}
+              >
+                {categories.map((category) => (
+                  <Picker.Item
+                    key={`category-${category}`}
+                    label={category || "Uncategorized"}
+                    value={category}
+                  />
+                ))}
+              </Picker>
+            )}
+            <View style={styles.filterButtonsContainer}>
+              <TouchableOpacity
+                style={styles.applyButton}
+                onPress={() => setShowFilterOptions(false)}
+              >
+                <Text style={styles.buttonText}>Apply Filter</Text>
+              </TouchableOpacity>
+
+              {filterType !== "none" && (
+                <TouchableOpacity
+                  onPress={resetFilters}
+                  style={[styles.button, styles.resetButton]}
+                >
+                  <Text style={styles.buttonText}>Clear Filter</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        )}
+
+        {showSortOptions && (
+          <View style={styles.filterOptions}>
+            <Text style={styles.filterTitle}>Sort by:</Text>
+
             <Picker
-              selectedValue={selectedMonth}
-              onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+              selectedValue={sortBy}
+              onValueChange={(itemValue) => setSortBy(itemValue)}
               style={styles.filterPicker}
             >
-              {getAvailableMonths().map((month) => (
-                <Picker.Item 
-                  key={`month-${month}`}
-                  label={formatMonth(month)} 
-                  value={month} 
-                />
-              ))}
+              <Picker.Item label="Date" value="date" />
+              <Picker.Item label="Amount" value="amount" />
+              <Picker.Item label="Name" value="name" />
             </Picker>
-          )}
 
-          {filterType === "category" && (
-            <Picker
-              selectedValue={selectedCategory}
-              onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-              style={styles.filterPicker}
+            <TouchableOpacity
+              onPress={() =>
+                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+              }
+              style={styles.applyButton}
             >
-              {categories.map((category) => (
-                <Picker.Item 
-                  key={`category-${category}`}
-                  label={category || "Uncategorized"} 
-                  value={category} 
-                />
-              ))}
-            </Picker>
-          )}
+              <Text style={styles.buttonText}>
+                {sortOrder === "asc" ? "Ascending 🔼" : "Descending 🔽"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-          <TouchableOpacity
-            style={styles.applyButton}
-            onPress={() => setShowFilterOptions(false)}
-          >
-            <Text style={styles.buttonText}>Apply Filter</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        {/* Display filter information */}
+        {filterType !== "none" && (
+          <View style={styles.activeFilterContainer}>
+            <Text style={styles.activeFilterText}>
+              Filtering by:{" "}
+              {filterType === "month"
+                ? `Month: ${formatMonth(selectedMonth)}`
+                : `Category: ${selectedCategory}`}
+            </Text>
+          </View>
+        )}
 
-      {/* Display filter information */}
-      {filterType !== "none" && (
-        <View style={styles.activeFilterContainer}>
-          <Text style={styles.activeFilterText}>
-            Filtering by: {filterType === "month" 
-              ? `Month: ${formatMonth(selectedMonth)}` 
-              : `Category: ${selectedCategory}`}
-          </Text>
-        </View>
-      )}
-
-      <FullTransactionHistory list={sortedTransactions} />
-    </View>
+        <FullTransactionHistory list={sortedTransactions} />
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+  },
   homeContainer: {
     flex: 1,
-    backgroundColor: "#bbadff",
+    minHeight: "100%",
+    backgroundColor: "#00629B",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     flexDirection: "column",
     gap: 10,
@@ -271,13 +303,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    color: "#FFFFFF",
+    paddingVertical: 10,
     textAlign: "center",
   },
   filterSortContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 5,
+    alignItems: "center",
+    marginVertical: 16, // optional
+    width: "50%"
+  },
+  filterButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 16, // optional
   },
   sortingSection: {
     alignItems: "center",
@@ -289,7 +330,7 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: 150,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     borderRadius: 5,
     marginBottom: 5,
   },
@@ -303,11 +344,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f44336",
   },
   buttonText: {
-    color: "white",
+    color: "#E6E6E6",
     fontWeight: "bold",
   },
   filterOptions: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     padding: 15,
     borderRadius: 10,
     width: "90%",

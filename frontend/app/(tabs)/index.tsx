@@ -1,12 +1,11 @@
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
-import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
+import { useEffect, useState, useCallback } from "react";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import CustomPieChart from "@/components/Graphs/PieChart";
-
+import { useFocusEffect } from "@react-navigation/native";
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
@@ -25,6 +24,7 @@ export default function Home() {
   const [total, setTotal] = useState(0)
   const [categories, setCategories] = useState<Category[]>([])
   const { userId } = useAuth();
+// <<<<<<< HEAD
   const categoryColors = new Map<number, string>([
     [6, '#b8b8ff'], // blue
     [7, '#fff3b0'], //yellow
@@ -34,43 +34,58 @@ export default function Home() {
   ]);
   
   
-  useEffect(() => {
-    console.log(userId);
-    fetch(
-      `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+//   useEffect(() => {
+//     console.log(userId);
+//     fetch(
+//       `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           Accept: "application/json",
+//           "Content-Type": "application/json",
+//         },
+//       },
+//     )
+//       .then((res) => {
+//         return res.json();
+//       })
+//       .then((data) => {
+//         setThreeTransactions(data.slice(0, 3));
+//       })
+//       .catch((error) => {
+//         console.error("API Error:", error);
+//       });
+
+
+//       fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
+//         method: "GET",
+//       })
+// =======
+  useFocusEffect(
+    useCallback(() => {
+      fetch(
+        `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         },
-      },
-    )
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setThreeTransactions(data.slice(0, 3));
-      })
-      .catch((error) => {
-        console.error("API Error:", error);
-      });
-
-
-      fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
-        method: "GET",
-      })
+      )
+// >>>>>>> main
         .then((res) => {
           return res.json();
         })
         .then((data) => {
           setCategories(data)
           setTotal(data.reduce((sum: number, category: { category_expense: string; }) => sum + parseFloat(category.category_expense), 0))
+          setThreeTransactions(data.slice(0, 5));
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
-    }, [updateRecent]);
+    }, [updateRecent]));
 
   const pieData = categories.map((category) => ({
     value: parseFloat(category.category_expense),
@@ -80,8 +95,9 @@ export default function Home() {
   }));
   console.log(pieData)
   return ( 
+
     <>
-      <View style={{ flex: 1, backgroundColor: "#bbadff" }}>
+      <View style={{ flex: 1, backgroundColor: "#00629B" }}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello User</Text>
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingVertical: 10,
-    paddingHorizontal: 50,
+    paddingHorizontal: 20,
     flexDirection: "column",
     gap: 17,
   },
@@ -128,6 +144,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     width: "100%",
+    color: "#FFFFFF",
+    paddingHorizontal: 10,
   },
   graphContainer: {
     height: 450,
@@ -137,12 +155,15 @@ const styles = StyleSheet.create({
     padding: 20,
     flexDirection: "column",
     justifyContent: "space-between",
-    gap: 30
+    gap: 30,
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
+
   },
   graph: {
     width: "100%",
     height: 180,
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     borderRadius: 15,
   },
   legendContainer: {

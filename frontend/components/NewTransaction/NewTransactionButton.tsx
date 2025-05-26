@@ -31,7 +31,7 @@ export default function NewTransactionButton(props: any) {
   });
 
   //for the selected category and the transaction amount
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [transactionAmount, setTransactionAmount] = useState("");
   const [itemInformation, setItemInformation] = useState("");
   //toggle function for buttion, starts all animation when toggled and sets inputVisible accordingly
@@ -69,7 +69,7 @@ export default function NewTransactionButton(props: any) {
         user_id: userId,
         item_name: itemInformation,
         amount: Number(transactionAmount),
-        category_id: Number(selectedCategory),
+        category_name: selectedCategory,
       }),
     })
       .then((res) => {
@@ -87,7 +87,7 @@ export default function NewTransactionButton(props: any) {
         props.setUpdateRecent(!props.updateRecent);
         setItemInformation("");
         setTransactionAmount("");
-        setSelectedCategory(0);
+        setSelectedCategory("");
         Toast.show({
           type: "success",
           text1: "Transaction Successful ✅",
@@ -106,7 +106,7 @@ export default function NewTransactionButton(props: any) {
         <View style={[styles.button]}>
           <Text style={styles.Title}>New Transaction</Text>
           <Animated.View style={{ transform: [{ rotate: interpolate }] }}>
-            <MaterialIcons name="add-circle-outline" size={35} />
+            <MaterialIcons name="add-circle-outline" size={32} />
           </Animated.View>
         </View>
       </Pressable>
@@ -126,11 +126,19 @@ export default function NewTransactionButton(props: any) {
             style={styles.picker}
           >
             <Picker.Item label="Select Category" value="" />
+{/* <<<<<<< HEAD
             <Picker.Item label="Food" value="6" />
             <Picker.Item label="Shopping" value="7" />
             <Picker.Item label="Transportation" value="8" />
             <Picker.Item label="Subsciptions" value="9" />
             <Picker.Item label="Other" value="10" />
+======= */}
+            <Picker.Item label="Food" value="Food" />
+            <Picker.Item label="Shopping" value="Shopping" />
+            <Picker.Item label="Transportation" value="Transportation" />
+            <Picker.Item label="Subsciptions" value="Subsciptions" />
+            <Picker.Item label="Other" value="Other" />
+{/* >>>>>>> main */}
           </Picker>
 
           <TextInput
@@ -161,12 +169,14 @@ export default function NewTransactionButton(props: any) {
 
 const styles = StyleSheet.create({
   newTransaction: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     justifyContent: "flex-start",
     alignItems: "center",
     borderRadius: 10,
     cursor: "pointer",
     width: "100%",
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
   },
   button: {
     flexDirection: "row",
@@ -178,7 +188,7 @@ const styles = StyleSheet.create({
   },
   Title: {
     fontWeight: "bold",
-    fontSize: 17,
+    fontSize: 20,
   },
   inputContainer: {
     width: "90%",

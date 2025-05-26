@@ -53,11 +53,13 @@ export default function LogOutButton() {
 const styles = StyleSheet.create({
   ButtonContainer: {
     width: "50%",
-    backgroundColor: "#f5f1e7",
+    backgroundColor: "#E6E6E6",
     height: 50,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
   },
   logoutText: {
     color: "black",

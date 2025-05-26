@@ -3,13 +3,16 @@ import client from "../db/db"; // Import PostgreSQL client
 
 //adding new transaction
 export const addTransaction: RequestHandler = async (req, res) => {
-  const newTransaction =
-    "INSERT INTO transactions(user_id, item_name, amount, category_id) VALUES ($1,$2,$3,$4);";
+  // const newTransaction =
+  //   "INSERT INTO transactions(user_id, item_name, amount, category_id) VALUES ($1,$2,$3,$4);";
   const updateCategory = " UPDATE categories SET category_expense = category_expense + $1 WHERE id = $2 AND user_id = $3;"
+// =======
+  const newTransaction = "INSERT INTO transactions(user_id, item_name, amount, category_name) VALUES ($1,$2,$3,$4);";
+// >>>>>>> main
   //try/catch any errors
   try {
     //retrieve data from body
-    const { user_id, item_name, amount, category_id } = req.body;
+    const { user_id, item_name, amount, category_name } = req.body;
     //checking for edge cases and validating data
 
     if (!user_id || !item_name || !amount || item_name.length == 0 || amount <= 0) {
@@ -19,13 +22,16 @@ export const addTransaction: RequestHandler = async (req, res) => {
       typeof user_id !== "number" ||
       typeof item_name !== "string" ||
       typeof amount !== "number" ||
-      (category_id !== null && typeof category_id !== "number")
+      (category_name !== null && typeof category_name !== "string")
     ) {
       return res.status(400).json({ error: "Invalid data types" });
     }
     //query
-    client.query(newTransaction, [user_id, item_name, amount, category_id]);
-    client.query(updateCategory, [amount, category_id, user_id])
+    client.query(newTransaction, [user_id, item_name, amount, category_name]);
+    client.query(updateCategory, [amount, category_name, user_id])
+// =======
+//     client.query(newTransaction, [user_id, item_name, amount, category_name]);
+// >>>>>>> main
     res.status(200).json({ message: "New Transaction Created!" });
   } catch (error) {
     console.error("Unexpected Error:", error);

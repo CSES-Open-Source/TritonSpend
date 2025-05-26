@@ -61,9 +61,8 @@ export default function FullTransactionHistory(props: any) {
                     <View style={{ flex: 1 }}>
                       <TransactionRow
                         name={transaction.item_name}
-                        date={transaction.date}
                         amount={transaction.amount}
-                        icon={transaction.category_id}
+                        icon={transaction.category_name}
                       />
                     </View>
                     <TouchableOpacity
@@ -87,12 +86,14 @@ export default function FullTransactionHistory(props: any) {
 
 const styles = StyleSheet.create({
   HistoryContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#E6E6E6",
     width: "100%",
     flex: 1,
     borderRadius: 15,
     padding: 15,
     gap: 5,
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
   },
   title: {
     fontSize: 20,
