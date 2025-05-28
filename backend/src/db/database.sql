@@ -54,3 +54,46 @@ CREATE TRIGGER trigger_create_default_categories
 AFTER INSERT ON users
 FOR EACH ROW
 EXECUTE FUNCTION create_default_categories();
+
+CREATE OR REPLACE FUNCTION recalculate_all_categories_expense(userid integer)
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  UPDATE categories
+  SET category_expense = COALESCE((
+      SELECT SUM(amount)
+      FROM transactions
+      WHERE user_id = categories.user_id AND category_name = categories.category_name
+    ), 0);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION trigger_recalculate_all_on_insert()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM recalculate_all_categories_expense(NEW.user_id);
+  PERFORM recalculate_all_categories_expense(NEW.user_id);
+  RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION trigger_recalculate_all_on_delete()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM recalculate_all_categories_expense(OLD.user_id);
+  PERFORM recalculate_all_categories_expense(NEW.user_id);
+  RETURN OLD;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS recalc_expense_after_insert ON transactions;
+DROP TRIGGER IF EXISTS recalc_expense_after_delete ON transactions;
+
+CREATE TRIGGER recalc_expense_after_insert
+AFTER INSERT ON transactions
+FOR EACH ROW
+EXECUTE FUNCTION trigger_recalculate_all_on_insert();
+
+CREATE TRIGGER recalc_expense_after_delete
+AFTER DELETE ON transactions
+FOR EACH ROW
+EXECUTE FUNCTION trigger_recalculate_all_on_delete();

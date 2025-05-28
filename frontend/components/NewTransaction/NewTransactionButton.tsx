@@ -126,11 +126,19 @@ export default function NewTransactionButton(props: any) {
             style={styles.picker}
           >
             <Picker.Item label="Select Category" value="" />
+            {/* <<<<<<< HEAD
+            <Picker.Item label="Food" value="6" />
+            <Picker.Item label="Shopping" value="7" />
+            <Picker.Item label="Transportation" value="8" />
+            <Picker.Item label="Subsciptions" value="9" />
+            <Picker.Item label="Other" value="10" />
+======= */}
             <Picker.Item label="Food" value="Food" />
             <Picker.Item label="Shopping" value="Shopping" />
             <Picker.Item label="Transportation" value="Transportation" />
-            <Picker.Item label="Subsciptions" value="Subsciptions" />
+            <Picker.Item label="Subscriptions" value="Subscriptions" />
             <Picker.Item label="Other" value="Other" />
+            {/* >>>>>>> main */}
           </Picker>
 
           <TextInput

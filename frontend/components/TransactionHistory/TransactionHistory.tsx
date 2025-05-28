@@ -4,6 +4,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Link } from "expo-router";
 //container for the recent transaction history.
 export default function TransactionHistory(props: any) {
+  console.log(props);
   return (
     <View style={styles.HistoryContainer}>
       {/* Link that re routes user to History */}
