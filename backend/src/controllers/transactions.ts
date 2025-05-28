@@ -3,8 +3,6 @@ import client from "../db/db"; // Import PostgreSQL client
 
 //adding new transaction
 export const addTransaction: RequestHandler = async (req, res) => {
-  const updateCategory =
-    " UPDATE categories SET category_expense = category_expense + $1 WHERE category_name = $2 AND user_id = $3;";
   const newTransaction =
     "INSERT INTO transactions(user_id, item_name, amount, category_name) VALUES ($1,$2,$3,$4);";
   //try/catch any errors
@@ -24,12 +22,10 @@ export const addTransaction: RequestHandler = async (req, res) => {
     ) {
       return res.status(400).json({ error: "Invalid data types" });
     }
-    //query
+    
+    // Only insert the transaction - let the database trigger handle category_expense update
     await client.query(newTransaction, [user_id, item_name, amount, category_name]);
-    await client.query(updateCategory, [amount, category_name, user_id]);
-    // =======
-    //     client.query(newTransaction, [user_id, item_name, amount, category_name]);
-    // >>>>>>> main
+    
     res.status(200).json({ message: "New Transaction Created!" });
   } catch (error) {
     console.error("Unexpected Error:", error);
@@ -62,13 +58,12 @@ export const deleteTransaction: RequestHandler = async (req, res) => {
   try {
     const deleteQuery = "DELETE FROM transactions WHERE id = $1 AND user_id = $2 RETURNING *;";
     const result = await client.query(deleteQuery, [transaction_id, user_id]);
+    
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "Transaction not found or does not belong to user" });
     }
-    const { amount, category_name } = result.rows[0];
-    const updateCategory =
-      " UPDATE categories SET category_expense = category_expense - $1 WHERE category_name = $2 AND user_id = $3;";
-    await client.query(updateCategory, [amount, category_name, user_id]);
+    
+    // No need to manually update category_expense - the database trigger handles it
     console.log(result.rows[0]);
     res.status(200).json({ message: "Transaction deleted successfully", deleted: result.rows[0] });
   } catch (error) {

@@ -136,7 +136,7 @@ export default function NewTransactionButton(props: any) {
             <Picker.Item label="Food" value="Food" />
             <Picker.Item label="Shopping" value="Shopping" />
             <Picker.Item label="Transportation" value="Transportation" />
-            <Picker.Item label="Subsciptions" value="Subsciptions" />
+            <Picker.Item label="Subscriptions" value="Subscriptions" />
             <Picker.Item label="Other" value="Other" />
             {/* >>>>>>> main */}
           </Picker>

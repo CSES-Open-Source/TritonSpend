@@ -24,41 +24,15 @@ export default function Home() {
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
   const { userId } = useAuth();
-  // <<<<<<< HEAD
-  const categoryColors = new Map<number, string>([
-    [6, "#b8b8ff"], // blue
-    [7, "#fff3b0"], //yellow
-    [8, "#ff9b85"], // red
-    [9, "#588157"], //green
-    [10, "#2b2d42"], //black
+  const [username, setUsername] = useState("");
+  const categoryColors = new Map<string, string>([
+    ["Food", "#b8b8ff"], // blue
+    ["Shopping", "#fff3b0"], //yellow
+    ["Subscriptions", "#ff9b85"], // red
+    ["Transportation", "#588157"], //green
+    ["Others", "#2b2d42"], //black
   ]);
 
-  //   useEffect(() => {
-  //     console.log(userId);
-  //     fetch(
-  //       `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           Accept: "application/json",
-  //           "Content-Type": "application/json",
-  //         },
-  //       },
-  //     )
-  //       .then((res) => {
-  //         return res.json();
-  //       })
-  //       .then((data) => {
-  //         setThreeTransactions(data.slice(0, 3));
-  //       })
-  //       .catch((error) => {
-  //         console.error("API Error:", error);
-  //       });
-
-  //       fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
-  //         method: "GET",
-  //       })
-  // =======
   useFocusEffect(
     useCallback(() => {
       fetch(
@@ -81,7 +55,20 @@ export default function Home() {
         .catch((error) => {
           console.error("API Error:", error);
         });
-      // >>>>>>> main
+
+      fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
+          method: "GET",
+        })
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          setUsername(data.username);
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+
       fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
         method: "GET",
       })
@@ -106,7 +93,7 @@ export default function Home() {
 
   const pieData = categories.map((category) => ({
     value: parseFloat(category.category_expense),
-    color: categoryColors.get(category.id) || "#cccccc",
+    color: categoryColors.get(category.category_name) || "#cccccc",
     name: category.category_name,
     id: category.id,
   }));
@@ -116,7 +103,7 @@ export default function Home() {
       <View style={{ flex: 1, backgroundColor: "#00629B" }}>
         <ScrollView style={{ height: "100%" }}>
           <View style={styles.homeContainer}>
-            <Text style={styles.Title}>Hello User</Text>
+            <Text style={styles.Title}>Hello {username}</Text>
             <View style={styles.graphContainer}>
               <Text style={{ fontSize: 20, fontWeight: "600" }}>
                 Total Spending

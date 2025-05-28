@@ -16,6 +16,7 @@ export default function History() {
   const [AllTransactions, setAllTransactions] = useState<any[]>([]);
   const { userId } = useAuth();
   const [showSortOptions, setShowSortOptions] = useState(false);
+  const [budget, setBudget] = useState(0);
 
   // Filter State
   const [filterType, setFilterType] = useState("none"); // "none", "month", "category"
@@ -62,6 +63,19 @@ export default function History() {
         .catch((error) => {
           console.error("API Error:", error);
         });
+
+        fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
+          method: "GET",
+        })
+          .then((res) => {
+            return res.json();
+          })
+          .then((data) => {
+            setBudget(data.total_budget);
+          })
+          .catch((error) => {
+            console.error("API Error:", error);
+          });
     }, []),
   );
 
@@ -110,6 +124,11 @@ export default function History() {
     return sortOrder === "asc" ? result : -result;
   });
 
+  // Calculate total from filtered transactions
+  const totalAmount = filteredTransactions.reduce((sum, transaction) => {
+    return sum + parseFloat(transaction.amount || 0);
+  }, 0);
+
   // Format month for display
   const formatMonth = (dateString: string) => {
     const [year, month] = dateString.split("-");
@@ -136,7 +155,8 @@ export default function History() {
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.homeContainer}>
         <Text style={styles.Title}>History</Text>
-        <BudgetChart length={150} Current={2300} Budget={3500} />
+        {/* Pass the calculated total to BudgetChart */}
+        <BudgetChart length={totalAmount/budget} Current={totalAmount} Budget={budget} />
 
         <View style={styles.filterSortContainer}>
           {/* Sorting Controls */}
@@ -273,6 +293,9 @@ export default function History() {
               {filterType === "month"
                 ? `Month: ${formatMonth(selectedMonth)}`
                 : `Category: ${selectedCategory}`}
+            </Text>
+            <Text style={styles.activeFilterText}>
+              Total: ${totalAmount.toFixed(2)}
             </Text>
           </View>
         )}

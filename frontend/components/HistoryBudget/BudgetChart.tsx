@@ -1,13 +1,25 @@
 import { View, StyleSheet, Text } from "react-native";
+import { useState } from "react";
 
-//Budget Chart that shows bar to show how much money spent, can increase or decrease bar progress with props.length
+//Budget Chart that shows bar to show how much money spent, can increase or decrease bar progress with props.length (as percentage)
 export default function BudgetChart(props: any) {
+  const [chartBackgroundWidth, setChartBackgroundWidth] = useState(0);
+  
+  // Calculate the actual bar width based on percentage of chart background width
+  const barWidth = (chartBackgroundWidth * props.length);
+
   return (
     <View style={styles.ChartContainer}>
-      <View style={[styles.chartBackground, styles.shadow]}>
+      <View 
+        style={[styles.chartBackground, styles.shadow]}
+        onLayout={(event) => {
+          const { width } = event.nativeEvent.layout;
+          setChartBackgroundWidth(width);
+        }}
+      >
         <View
           style={{
-            width: props.length,
+            width: barWidth,
             height: 40,
             backgroundColor: "#00629B",
             borderRadius: 10,
