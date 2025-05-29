@@ -55,7 +55,7 @@ export default function DoughnutChart(props: {
           fontWeight="bold"
           fill="#333"
         >
-          ${props.total}
+          ${props.total.toFixed(2)}
         </Text>
       </Svg>
     </View>
