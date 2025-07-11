@@ -22,10 +22,10 @@ export const addTransaction: RequestHandler = async (req, res) => {
     ) {
       return res.status(400).json({ error: "Invalid data types" });
     }
-    
+
     // Only insert the transaction - let the database trigger handle category_expense update
     await client.query(newTransaction, [user_id, item_name, amount, category_name]);
-    
+
     res.status(200).json({ message: "New Transaction Created!" });
   } catch (error) {
     console.error("Unexpected Error:", error);
@@ -58,11 +58,11 @@ export const deleteTransaction: RequestHandler = async (req, res) => {
   try {
     const deleteQuery = "DELETE FROM transactions WHERE id = $1 AND user_id = $2 RETURNING *;";
     const result = await client.query(deleteQuery, [transaction_id, user_id]);
-    
+
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "Transaction not found or does not belong to user" });
     }
-    
+
     // No need to manually update category_expense - the database trigger handles it
     console.log(result.rows[0]);
     res.status(200).json({ message: "Transaction deleted successfully", deleted: result.rows[0] });

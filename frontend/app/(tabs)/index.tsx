@@ -57,8 +57,8 @@ export default function Home() {
         });
 
       fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
-          method: "GET",
-        })
+        method: "GET",
+      })
         .then((res) => {
           return res.json();
         })

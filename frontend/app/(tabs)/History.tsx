@@ -64,18 +64,18 @@ export default function History() {
           console.error("API Error:", error);
         });
 
-        fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
-          method: "GET",
+      fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
+        method: "GET",
+      })
+        .then((res) => {
+          return res.json();
         })
-          .then((res) => {
-            return res.json();
-          })
-          .then((data) => {
-            setBudget(data.total_budget);
-          })
-          .catch((error) => {
-            console.error("API Error:", error);
-          });
+        .then((data) => {
+          setBudget(data.total_budget);
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
     }, []),
   );
 
@@ -156,7 +156,11 @@ export default function History() {
       <View style={styles.homeContainer}>
         <Text style={styles.Title}>History</Text>
         {/* Pass the calculated total to BudgetChart */}
-        <BudgetChart length={totalAmount/budget} Current={totalAmount} Budget={budget} />
+        <BudgetChart
+          length={totalAmount / budget}
+          Current={totalAmount}
+          Budget={budget}
+        />
 
         <View style={styles.filterSortContainer}>
           {/* Sorting Controls */}
