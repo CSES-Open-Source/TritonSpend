@@ -10,7 +10,7 @@ psql -U postgres -c "CREATE DATABASE tritonspend;"
 psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE tritonspend TO postgres;"
 
 # Run the schema SQL file to create the tables
-psql -U postgres -d tritonspend -f ./database.sql
+psql -U postgres -d tritonspend -f src/db/database.sql
 
 # Grant all privileges on the tables to postgres
 psql -U postgres -d tritonspend -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;"
