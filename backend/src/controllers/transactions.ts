@@ -129,6 +129,7 @@ export const getSpendingTrend: RequestHandler = async (req, res) => {
 
     res.status(200).json(formattedRows);
   } catch (error) {
+    console.error("Error fetching spending trend:", error);
     res.status(500).json({ error: `Internal server error: ${error}` });
   }
 };
