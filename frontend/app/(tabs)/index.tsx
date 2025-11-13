@@ -1,7 +1,7 @@
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import CustomPieChart from "@/components/Graphs/PieChart";
@@ -43,7 +43,7 @@ export default function Home() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        },
+        }
       )
         .then((res) => {
           return res.json();
@@ -81,14 +81,14 @@ export default function Home() {
             data.reduce(
               (sum: number, category: { category_expense: string }) =>
                 sum + parseFloat(category.category_expense),
-              0,
-            ),
+              0
+            )
           );
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
-    }, [updateRecent]),
+    }, [updateRecent])
   );
 
   const pieData = categories.map((category) => ({

@@ -2,6 +2,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import db from "src/db/db";
 import env from "src/util/validateEnv"; // Importing environment variables
+// login to postregress psql -U postgres
 
 interface UserProfile {
   id: string;
@@ -31,8 +32,10 @@ passport.use(
         return done(null, false, { message: "Only @ucsd.edu emails are allowed." });
       }
 
-      // Generate a random username (for new users)
-      const randomUsername = `user_${Math.floor(Math.random() * 1000000)}`;
+      // Generate a random username (for new users) 
+      console.log("Google Profile:", profile);
+      //const randomUsername = `user_${Math.floor(Math.random() * 1000000)}`;
+      const username = profile.displayName; // ADDED REAL USERNAME FROM GOOGLE PROFILE
       const photos = profile.photos;
 
       try {
@@ -53,7 +56,7 @@ passport.use(
         `;
         const insertResult = await db.query(insertUserQuery, [
           email,
-          randomUsername,
+          username,
           profilePicture,
         ]);
 
