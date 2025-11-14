@@ -1,4 +1,5 @@
 import { View, StyleSheet, Text, ScrollView } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
 import { useState, useCallback } from "react";
@@ -6,6 +7,8 @@ import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import CustomPieChart from "@/components/Graphs/PieChart";
 import { useFocusEffect } from "@react-navigation/native";
+import AreaChart from "@/components/Graphs/AreaChart";
+import { GraphType } from "@/utils/FrontendTypes";
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
@@ -20,8 +23,10 @@ export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
+  const [allTransactions, setAllTransactions] = useState([]);
   const [updateRecent, setUpdateRecent] = useState(false);
   const [total, setTotal] = useState(0);
+  const [totalBudget, setTotalBudget] = useState(0); // total budget not tied to categories
   const [categories, setCategories] = useState<Category[]>([]);
   const { userId } = useAuth();
   const [username, setUsername] = useState("");
@@ -33,6 +38,9 @@ export default function Home() {
     ["Others", "#2b2d42"], //black
   ]);
 
+  // only two graph types for now: pie and area
+  const [graphType, setGraphType] = useState<GraphType>("pie");
+
   useFocusEffect(
     useCallback(() => {
       fetch(
@@ -43,14 +51,15 @@ export default function Home() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        },
+        }
       )
         .then((res) => {
           return res.json();
         })
         .then((data) => {
-          console.log(data);
+          console.log("transaction data", data);
           setThreeTransactions(data.slice(0, 5));
+          setAllTransactions(data);
         })
         .catch((error) => {
           console.error("API Error:", error);
@@ -63,7 +72,9 @@ export default function Home() {
           return res.json();
         })
         .then((data) => {
+          console.log("user data", data);
           setUsername(data.username);
+          setTotalBudget(data.total_budget);
         })
         .catch((error) => {
           console.error("API Error:", error);
@@ -76,27 +87,29 @@ export default function Home() {
           return res.json();
         })
         .then((data) => {
+          console.log("category data", data);
           setCategories(data);
           setTotal(
             data.reduce(
               (sum: number, category: { category_expense: string }) =>
                 sum + parseFloat(category.category_expense),
-              0,
-            ),
+              0
+            )
           );
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
-    }, [updateRecent]),
+    }, [updateRecent])
   );
 
-  const pieData = categories.map((category) => ({
+  const categoryData = categories.map((category) => ({
     value: parseFloat(category.category_expense),
     color: categoryColors.get(category.category_name) || "#cccccc",
     name: category.category_name,
     id: category.id,
   }));
+
   console.log(categories);
   return (
     <>
@@ -105,13 +118,38 @@ export default function Home() {
           <View style={styles.homeContainer}>
             <Text style={styles.Title}>Hello {username}</Text>
             <View style={styles.graphContainer}>
-              <Text style={{ fontSize: 20, fontWeight: "600" }}>
-                Total Spending
-              </Text>
+              <View style={styles.graphHeaderRow}>
+                <Text style={{ fontSize: 20, fontWeight: "600" }}>
+                  Total Spending
+                </Text>
+                <View style={styles.pickerWrapper}>
+                  <Picker
+                    selectedValue={graphType}
+                    onValueChange={(itemValue: GraphType) =>
+                      setGraphType(itemValue)
+                    }
+                    style={styles.graphTypePicker}
+                    dropdownIconColor="#00629B"
+                  >
+                    <Picker.Item label="Pie" value="pie" />
+                    <Picker.Item label="Area" value="area" />
+                  </Picker>
+                </View>
+              </View>
               {/* <View style={styles.graph}></View> */}
-              <CustomPieChart data={pieData} size={250} total={total} />
+              {graphType === "pie" && (
+                <CustomPieChart data={categoryData} size={250} total={total} />
+              )}
+              {graphType === "area" && (
+                <AreaChart
+                  categories={categories}
+                  totalBudget={totalBudget}
+                  transactions={allTransactions}
+                />
+              )}
+
               <View style={styles.legendContainer}>
-                {pieData.map((category) => {
+                {categoryData.map((category) => {
                   return (
                     <View key={category.id} style={styles.legendItem}>
                       <View
@@ -158,16 +196,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   graphContainer: {
-    height: 500,
     width: "100%",
     backgroundColor: "white",
     borderRadius: 15,
     padding: 20,
     flexDirection: "column",
-    justifyContent: "space-between",
-    gap: 30,
+    justifyContent: "flex-start",
+    gap: 20,
     shadowRadius: 12,
     shadowOpacity: 0.4,
+    alignSelf: "flex-start",
   },
   graph: {
     width: "100%",
@@ -197,5 +235,23 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 16,
     color: "black",
+  },
+  graphHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+  pickerWrapper: {
+    borderRadius: 8,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#D0D0D0",
+    backgroundColor: "#FFFFFF",
+  },
+  graphTypePicker: {
+    width: 110,
+    height: 45,
+    backgroundColor: "#FFFFFF",
   },
 });
