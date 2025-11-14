@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { CategoryType } from "@/utils/FrontendTypes";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Svg, { Path, G, Line, Text as SvgText } from "react-native-svg";
 
@@ -78,8 +78,6 @@ const AreaChart = (props: {
     // Get the date range for the selected month
     const [year, month] = selectedMonth.split("-").map(Number);
     const daysInMonth = new Date(year, month, 0).getDate();
-    const startDate = new Date(year, month - 1, 1);
-    const endDate = new Date(year, month - 1, daysInMonth);
 
     // Create daily cumulative data
     const dailyData: { date: Date; cumulative: number }[] = [];
