@@ -110,10 +110,11 @@ We welcome contributions from the UCSD community and beyond! Please see our [CON
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes and test thoroughly
-4. Run linting: `npm run lint-check`
-5. Commit your changes: `git commit -m 'Add amazing feature'`
-6. Push to your branch: `git push origin feature/amazing-feature`
-7. Open a Pull Request
+4. Format with Prettier: `npm run format`,
+5. Run linting: `npm run lint-check`
+6. Commit your changes: `git commit -m 'Add amazing feature'`
+7. Push to your branch: `git push origin feature/amazing-feature`
+8. Open a Pull Request
 
 ## 📊 Project Structure
 
