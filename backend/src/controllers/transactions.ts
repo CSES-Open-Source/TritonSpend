@@ -71,3 +71,41 @@ export const deleteTransaction: RequestHandler = async (req, res) => {
     res.status(500).json({ error: `Internal server error: ${error}` });
   }
 };
+
+// Get monthly spending for a specfic user, which is further divided into categories.
+export const getMonthlyByCategory: RequestHandler = async (req, res) => {
+  const { user_id } = req.params;
+  const { startDate, endDate } = req.query;
+  const ID_MATCH = /^\d+$/;
+  const DATE_MATCH = /^\d{4}-\d{2}-\d{2}$/;
+
+  const getQuery =
+    "SELECT DATE_TRUNC('month', date)::DATE as month, " +
+    "COALESCE(category_name, 'Total') as category, SUM(amount) FROM transactions " +
+    "WHERE user_id = $1 AND date::DATE BETWEEN " +
+    "COALESCE($2, '1970-01-01'::DATE) AND COALESCE($3, CURRENT_DATE) " +
+    "GROUP BY ROLLUP(month, category_name) ORDER BY month DESC;";
+
+  // Validate input.
+  if (!user_id || !user_id.match(ID_MATCH)) {
+    return res.status(400).json({ error: "Missing or invalid user_id" });
+  }
+  if (startDate && (typeof startDate !== "string" || !startDate.match(DATE_MATCH))) {
+    return res.status(400).json({
+      error: "Invalid date format, should be YYYY-MM-DD",
+    });
+  }
+  if (endDate && (typeof endDate !== "string" || !endDate.match(DATE_MATCH))) {
+    return res.status(400).json({
+      error: "Invalid date format, should be YYYY-MM-DD",
+    });
+  }
+
+  try {
+    client.query(getQuery, [user_id, startDate, endDate], (err, result) => {
+      res.status(200).json(result.rows);
+    });
+  } catch (error) {
+    res.status(500).json({ error: `Internal server error: ${error}` });
+  }
+};
