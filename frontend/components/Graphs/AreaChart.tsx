@@ -223,7 +223,7 @@ const AreaChart = (props: {
                 value={cat.category_name}
               />
             ))}
-          </Picker>
+          </Picker> 
         </View>
 
         {/* Month/Year Selectors */}
