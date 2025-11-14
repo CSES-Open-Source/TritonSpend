@@ -32,10 +32,10 @@ passport.use(
         return done(null, false, { message: "Only @ucsd.edu emails are allowed." });
       }
 
-      // Generate a random username (for new users) 
+      // Generate a random username (for new users)
       console.log("Google Profile:", profile);
       //const randomUsername = `user_${Math.floor(Math.random() * 1000000)}`;
-      const username = profile.displayName; // ADDED REAL USERNAME FROM GOOGLE PROFILE
+      const username = profile.displayName; // ADDED REAL USERNAME FROM GOOGLE PROFILE second merge request
       const photos = profile.photos;
 
       try {
@@ -54,11 +54,7 @@ passport.use(
           INSERT INTO users (email, username, profile_picture) 
           VALUES ($1, $2, $3) RETURNING id
         `;
-        const insertResult = await db.query(insertUserQuery, [
-          email,
-          username,
-          profilePicture,
-        ]);
+        const insertResult = await db.query(insertUserQuery, [email, username, profilePicture]);
 
         profile.id = insertResult.rows[0].id;
         return done(null, profile);

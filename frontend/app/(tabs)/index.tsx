@@ -43,7 +43,7 @@ export default function Home() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        }
+        },
       )
         .then((res) => {
           return res.json();
@@ -81,14 +81,14 @@ export default function Home() {
             data.reduce(
               (sum: number, category: { category_expense: string }) =>
                 sum + parseFloat(category.category_expense),
-              0
-            )
+              0,
+            ),
           );
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
-    }, [updateRecent])
+    }, [updateRecent]),
   );
 
   const pieData = categories.map((category) => ({
