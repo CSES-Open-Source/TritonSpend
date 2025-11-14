@@ -19,13 +19,13 @@ const AreaChart = (props: {
   transactions?: Transaction[];
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(
-    null
+    null,
   );
   const [selectedMonth, setSelectedMonth] = useState<string>(
-    new Date().toISOString().substring(0, 7)
+    new Date().toISOString().substring(0, 7),
   );
   const [selectedYear, setSelectedYear] = useState<string>(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
   const [useTotalOrCategory, setUseTotalOrCategory] = useState<
     "total" | "category"
@@ -72,7 +72,7 @@ const AreaChart = (props: {
 
     // Sort transactions by date
     const sortedTransactions = [...filteredTransactions].sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
     // Get the date range for the selected month
@@ -118,7 +118,7 @@ const AreaChart = (props: {
 
     const maxCumulative = Math.max(
       ...dailyData.map((d) => d.cumulative),
-      budget
+      budget,
     );
 
     // Convert to chart coordinates
@@ -167,7 +167,7 @@ const AreaChart = (props: {
       if (useTotalOrCategory === "total") {
         return props.categories.reduce(
           (sum, cat) => sum + parseFloat(cat.category_expense),
-          0
+          0,
         );
       } else {
         return selectedCategory
@@ -208,7 +208,7 @@ const AreaChart = (props: {
               } else {
                 setUseTotalOrCategory("category");
                 const category = props.categories.find(
-                  (c) => c.category_name === itemValue
+                  (c) => c.category_name === itemValue,
                 );
                 setSelectedCategory(category || null);
               }
