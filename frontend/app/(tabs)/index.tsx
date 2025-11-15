@@ -1,4 +1,10 @@
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
 import { useEffect, useState, useCallback } from "react";
@@ -6,6 +12,8 @@ import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import CustomPieChart from "@/components/Graphs/PieChart";
 import { useFocusEffect } from "@react-navigation/native";
+import { useWindowDimensions } from "react-native";
+import StackedBarChart from "@/components/Graphs/StackedBarChart";
 /* 
   this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
 */
@@ -16,6 +24,19 @@ interface Category {
   max_category_budget: string;
   user_id: number;
 }
+
+interface MonthlyCategory {
+  month: string;
+  category: string;
+  sum: string;
+}
+
+type StackedBarData = Record<string, Record<string, number>>;
+
+const STACKED_BAR_NUM = 6; // Number of bars in the stacked bar chart.
+const STACKED_BAR_HEIGHT = 300;
+const STACKED_BAR_WIDTH_OFFSET = 150;
+
 export default function Home() {
   //place holder array for us to map through
   //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
@@ -23,6 +44,9 @@ export default function Home() {
   const [updateRecent, setUpdateRecent] = useState(false);
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [stackedBarData, setStackedBarData] = useState<StackedBarData>({});
+  const [stackedBarIsRelative, setStackedBarIsRelative] =
+    useState<boolean>(false);
   const { userId } = useAuth();
   const [username, setUsername] = useState("");
   const categoryColors = new Map<string, string>([
@@ -88,6 +112,39 @@ export default function Home() {
         .catch((error) => {
           console.error("API Error:", error);
         });
+
+      const current_date = new Date();
+      let year = current_date.getFullYear();
+      let month = current_date.getMonth() + 1 - STACKED_BAR_NUM;
+      // Normalize year and month in case of wraparound.
+      if (month < 1) {
+        year--;
+        month += 12;
+      }
+      const firstDateOfMonth =
+        year.toString().padStart(4, "0") +
+        "-" +
+        month.toString().padStart(2, "0") +
+        "-01";
+
+      fetch(
+        `http://localhost:${BACKEND_PORT}/transactions/getMonthlyByCategory/${userId}`,
+        { method: "GET" },
+      )
+        .then((res) => res.json())
+        .then((data: MonthlyCategory[]) => {
+          setStackedBarData(
+            data.slice(1).reduce<StackedBarData>((acc: StackedBarData, row) => {
+              const monthString = row.month.slice(0, 10);
+              if (!(monthString in acc)) acc[monthString] = {};
+              acc[monthString][row.category] = parseFloat(row.sum);
+              return acc;
+            }, {}),
+          );
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
     }, [updateRecent]),
   );
 
@@ -124,6 +181,44 @@ export default function Home() {
                     </View>
                   );
                 })}
+              </View>
+            </View>
+            <View style={styles.stackedBarChartContainer}>
+              <Text style={{ fontSize: 20, fontWeight: "600" }}>
+                Monthly Spending Breakdown
+              </Text>
+              <StackedBarChart
+                data={stackedBarData}
+                colors={categoryColors}
+                numCols={STACKED_BAR_NUM}
+                width={useWindowDimensions().width - STACKED_BAR_WIDTH_OFFSET}
+                height={STACKED_BAR_HEIGHT}
+                isRelative={stackedBarIsRelative}
+              />
+              <View style={styles.legendContainer}>
+                {pieData.map((category) => {
+                  return (
+                    <View key={category.id} style={styles.legendItem}>
+                      <View
+                        style={[
+                          styles.colorBox,
+                          { backgroundColor: category.color },
+                        ]}
+                      />
+                      <Text style={styles.legendText}>{category.name}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+              <View>
+                <TouchableOpacity
+                  onPress={() => setStackedBarIsRelative((prev) => !prev)}
+                  style={styles.applyButton}
+                >
+                  <Text style={styles.buttonText}>
+                    {stackedBarIsRelative ? "Relative" : "Absolute"}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
             {/* 
@@ -169,6 +264,17 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOpacity: 0.4,
   },
+  stackedBarChartContainer: {
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 20,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    gap: 30,
+    shadowRadius: 12,
+    shadowOpacity: 0.4,
+  },
   graph: {
     width: "100%",
     height: 180,
@@ -197,5 +303,16 @@ const styles = StyleSheet.create({
   legendText: {
     fontSize: 16,
     color: "black",
+  },
+  applyButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  buttonText: {
+    color: "#E6E6E6",
+    fontWeight: "bold",
   },
 });
