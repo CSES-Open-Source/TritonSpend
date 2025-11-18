@@ -1,5 +1,15 @@
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { G, Rect, Line } from "react-native-svg";
+import Animated, {
+  useSharedValue,
+  useAnimatedProps,
+  withTiming,
+  interpolate,
+  SharedValue,
+  ReduceMotion,
+  Easing,
+} from "react-native-reanimated";
+import { useEffect } from "react";
 
 type StackedBarData = Record<string, Record<string, number>>;
 
@@ -17,18 +27,62 @@ const MONTH_NAMES = [
   "Nov",
   "Dec",
 ] as const;
+// Prefered number of bars.
 const PREFERRED_NUM_COLS = [60, 24, 12, 6, 3, 1] as const;
-// Denomination for determining chart line.
+// Denomination for determining highest chart line. For example:
+// value=2.5: highest chart line is at 2.5, 25, 250, 2500 or so on.
+// log=Math.log10(2.5): for quick comparison with the log of the maximum bar value.
+// subdivisions=5: the chart line divides the chart into 5 sections.
 const DENOMINATIONS = [
+  {
+    value: 1,
+    log: 0,
+    subdivisions: 5,
+  },
+  {
+    value: 1.2,
+    log: Math.log10(1.2),
+    subdivisions: 6,
+  },
+  {
+    value: 1.5,
+    log: Math.log10(1.5),
+    subdivisions: 3,
+  },
   {
     value: 2,
     log: Math.log10(2),
     subdivisions: 4,
   },
   {
+    value: 2.5,
+    log: Math.log10(2.5),
+    subdivisions: 5,
+  },
+  {
+    value: 3,
+    log: Math.log10(3),
+    subdivisions: 6,
+  },
+  {
+    value: 4,
+    log: Math.log10(4),
+    subdivisions: 4,
+  },
+  {
     value: 5,
     log: Math.log10(5),
     subdivisions: 5,
+  },
+  {
+    value: 6,
+    log: Math.log10(6),
+    subdivisions: 6,
+  },
+  {
+    value: 8,
+    log: Math.log10(8),
+    subdivisions: 4,
   },
   {
     value: 10,
@@ -39,17 +93,21 @@ const DENOMINATIONS = [
 const MIN_COL_WIDTH = 40; // Including gap between columns.
 const HALF_GAP_WIDTH = 8;
 
-function hash(input: string) {
-  let hash = 0;
-  for (const char of input) {
-    hash = (hash << 5) - hash + char.charCodeAt(0);
-    hash |= 0;
-  }
-  return hash;
-}
+const AnimatedG = Animated.createAnimatedComponent(G);
 
 function range(n: number) {
   return [...Array(n).keys()];
+}
+
+function first<T>(
+  array: readonly T[],
+  test: (value: T, index: number) => boolean,
+): T {
+  for (let i = 0; i < array.length; i++) {
+    if (test(array[i], i)) return array[i];
+  }
+
+  return array[array.length - 1];
 }
 
 class YearAndMonth {
@@ -127,6 +185,69 @@ class MonthIter implements Iterator<YearAndMonth>, Iterable<YearAndMonth> {
   }
 }
 
+function StackedBar(props: {
+  monthData: Record<string, number>;
+  monthString: string;
+  index: number;
+  animatedVar: SharedValue<number>;
+  colors: Map<string, string>;
+  barWidth: number;
+  height: number;
+  maxYValue: number;
+  width: number;
+  columnWidth: number;
+}) {
+  const scale = props.monthData.Total / props.maxYValue;
+
+  const animatedProps = useAnimatedProps(() => ({
+    transform: [
+      {
+        translateX:
+          props.width - props.columnWidth * (props.index + 1) + HALF_GAP_WIDTH,
+      },
+      {
+        translateY: interpolate(
+          props.animatedVar.value,
+          [0, 1],
+          [(1 - scale) * props.height, 1],
+        ),
+      },
+      { scaleX: props.barWidth },
+      {
+        scaleY: interpolate(
+          props.animatedVar.value,
+          [0, 1],
+          [scale * props.height, props.height],
+        ),
+      },
+    ],
+  }));
+
+  let startY = 1;
+  return (
+    <AnimatedG animatedProps={animatedProps}>
+      {Array.from(props.colors)
+        .filter(([category, _]) => category in props.monthData)
+        .map(([category, color]) => ({
+          key: category,
+          startY: (startY -= props.monthData[category] / props.monthData.Total),
+          height: props.monthData[category] / props.monthData.Total,
+          color,
+        }))
+        .map(({ key, startY, height, color }) => (
+          <Rect
+            key={key}
+            x={0}
+            y={startY}
+            width={1}
+            height={height}
+            fill={color}
+          />
+        ))}
+    </AnimatedG>
+  );
+}
+
 export default function StackedBarChart(props: {
   width: number;
   height: number;
@@ -140,120 +261,55 @@ export default function StackedBarChart(props: {
   const current_month = current_date.getMonth() + 1;
   const currentYearAndMonth = new YearAndMonth(current_year, current_month);
 
-  let maxYValue = 100;
-  let numSubdivisions = 5;
-  if (!props.isRelative) {
-    // Compute max monthly expense for this duration, and the height of the chart line needed.
-    const maxExpense = Object.values(props.data).reduce(
-      (acc, row) => (row.Total > acc ? row.Total : acc),
-      0,
-    );
-    const logMaxExpense = Math.max(Math.log10(maxExpense), 0);
-    const intPart = Math.floor(logMaxExpense);
-    const fracPart = logMaxExpense % 1;
-    maxYValue = Math.pow(10, intPart);
-    for (const item of DENOMINATIONS) {
-      if (fracPart <= item.log) {
-        maxYValue *= item.value;
-        numSubdivisions = item.subdivisions;
-        break;
-      }
-    }
-  }
+  // Compute max monthly expense for this duration, and the height of the chart line needed.
+  const maxExpense = Object.values(props.data).reduce(
+    (max, row) => (row.Total > max ? row.Total : max),
+    0,
+  );
+  const logMaxExpense = Math.max(Math.log10(maxExpense), Math.log10(0.05));
+  const intPart = Math.floor(logMaxExpense);
+  const fracPart = logMaxExpense - intPart;
+  const denomObj = first(DENOMINATIONS, (item) => fracPart < item.log);
+  const maxYValue = Math.pow(10, intPart) * denomObj.value;
+  const numSubdivisions = props.isRelative ? 5 : denomObj.subdivisions;
   const subdivisionGap = maxYValue / numSubdivisions;
 
-  let numCols = 1;
-  for (const val of PREFERRED_NUM_COLS) {
-    if (props.width / val >= MIN_COL_WIDTH) {
-      numCols = val;
-      break;
-    }
-  }
+  const numCols = first(
+    PREFERRED_NUM_COLS,
+    (value) => props.width / value >= MIN_COL_WIDTH,
+  );
   const columnWidth = props.width / numCols;
   const barWidth = columnWidth - 2 * HALF_GAP_WIDTH;
-  let startY = props.height;
 
-  function createSection(
-    key: number,
-    monthData: Record<string, number>,
-    category: string,
-    color: string,
-  ) {
-    const sectionHeight =
-      category in monthData
-        ? (monthData[category] / monthData.Total) * props.height
-        : 0;
-
-    return (
-      <Rect
-        key={key}
-        x={0}
-        y={(startY -= sectionHeight)}
-        width={barWidth}
-        height={sectionHeight}
-        fill={color}
-      />
-    );
-  }
-
-  function createStackedBar(
-    monthData: Record<string, number> | undefined,
-    monthString: string,
-    index: number,
-  ) {
-    startY = props.height;
-    const key = hash(monthString);
-
-    if (monthData === undefined) {
-      return <G key={key}></G>;
-    }
-
-    const heightScale = monthData.Total / maxYValue;
-
-    return (
-      <G
-        key={key}
-        style={{
-          transformOrigin: "bottom left",
-          transform: [
-            {
-              translateX:
-                props.width - columnWidth * (index + 1) + HALF_GAP_WIDTH,
-            },
-            {
-              scaleY: props.isRelative ? 1 : heightScale,
-            },
-          ],
-        }}
-      >
-        {Array.from(props.colors).map((row) =>
-          createSection(hash(monthString + row[0]), monthData, row[0], row[1]),
-        )}
-      </G>
-    );
-  }
+  const animatedVar = useSharedValue(0);
+  useEffect(() => {
+    animatedVar.value = withTiming(+props.isRelative, {
+      duration: 800,
+      easing: Easing.inOut(Easing.quad),
+      reduceMotion: ReduceMotion.System,
+    });
+  }, [props.isRelative]);
 
   return (
     <View style={styles.stackedBarChartView}>
       <View>
         <View style={styles.lineLabelsView}>
-          {range(numSubdivisions + 1).map((index) => {
-            const labelValue = maxYValue - index * subdivisionGap;
-            let lineLabel: string = labelValue.toFixed(0);
-            if (props.isRelative) {
-              lineLabel = labelValue.toFixed(0) + "%";
-            } else if (labelValue < 1 && labelValue > 0) {
-              lineLabel = (labelValue * 100).toFixed(0) + "¢";
-            } else {
-              lineLabel = "$" + labelValue.toFixed(0);
-            }
+          {range(numSubdivisions + 1)
+            .map((index) => {
+              if (props.isRelative) {
+                return (100 * (1 - index / numSubdivisions)).toFixed(0) + "%";
+              }
 
-            return (
-              <Text key={labelValue} style={styles.lineLabelText}>
+              const value = maxYValue - index * subdivisionGap;
+              return value < 1 && value > 0
+                ? (value * 100).toFixed(0) + "¢"
+                : "$" + value.toFixed(0);
+            })
+            .map((lineLabel) => (
+              <Text key={lineLabel} style={styles.lineLabelText}>
                 {lineLabel}
               </Text>
-            );
-          })}
+            ))}
         </View>
         <Text style={styles.lineLabelText}> </Text>
       </View>
@@ -281,10 +337,20 @@ export default function StackedBarChart(props: {
               ...new MonthIter(currentYearAndMonth.clone(), numCols, -1).map(
                 (yearAndMonth, index) => {
                   const monthString = yearAndMonth.toString();
-                  return createStackedBar(
-                    props.data[monthString],
-                    monthString,
-                    index,
+                  return (
+                    <StackedBar
+                      key={monthString}
+                      monthData={props.data[monthString] ?? {}}
+                      monthString={monthString}
+                      index={index}
+                      animatedVar={animatedVar}
+                      width={props.width}
+                      height={props.height}
+                      barWidth={barWidth}
+                      columnWidth={columnWidth}
+                      maxYValue={maxYValue}
+                      colors={props.colors}
+                    />
                   );
                 },
               ),
@@ -306,17 +372,14 @@ export default function StackedBarChart(props: {
               currentYearAndMonth.clone().addMonth(-numCols + 1),
               numCols,
               1,
-            ).map((yearAndMonth) => {
-              console.log(yearAndMonth);
-              return (
-                <Text
-                  key={hash(yearAndMonth.toString())}
-                  style={[styles.columnLabelText, { width: columnWidth }]}
-                >
-                  {MONTH_NAMES[yearAndMonth.month - 1]}
-                </Text>
-              );
-            }),
+            ).map((yearAndMonth) => (
+              <Text
+                key={yearAndMonth.toString()}
+                style={[styles.columnLabelText, { width: columnWidth }]}
+              >
+                {MONTH_NAMES[yearAndMonth.month - 1]}
+              </Text>
+            )),
           ]}
         </View>
       </View>
@@ -349,12 +412,5 @@ const styles = StyleSheet.create({
   columnLabelText: {
     textAlign: "center",
     fontSize: 16,
-  },
-  columns: {
-    transformOrigin: "bottom left",
-  },
-  svgView: {
-    paddingTop: 8,
-    paddingBottom: 8,
   },
 });
