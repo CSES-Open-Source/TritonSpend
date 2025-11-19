@@ -71,3 +71,68 @@ export const deleteTransaction: RequestHandler = async (req, res) => {
     res.status(500).json({ error: `Internal server error: ${error}` });
   }
 };
+
+//get spending trend per category for multi-line chart comparison
+export const multiLineTransaction: RequestHandler = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const periodParam = req.query.period as string;
+    const monthsParam = req.query.months as string;
+
+    const period = periodParam || "weekly";
+    const months = monthsParam ? parseInt(monthsParam) : 3;
+
+    // Validate input
+    if (!user_id) {
+      return res.status(400).json({ error: "Missing user_id" });
+    }
+    if (period !== "weekly" && period !== "daily") {
+      return res.status(400).json({ error: "Period must be 'weekly' or 'daily'" });
+    }
+    if (months <= 0 || isNaN(months)) {
+      return res.status(400).json({ error: "Months must be a positive number" });
+    }
+
+    // Build query
+    let getMultiLineTrend: string;
+
+    if (period === "weekly") {
+      getMultiLineTrend = `
+        SELECT 
+          date_trunc('week', date)::date as date,
+          category_name,
+          COALESCE(SUM(amount), 0) as total
+        FROM transactions
+        WHERE user_id = $1 
+          AND date >= NOW() - INTERVAL '1 month' * $2
+        GROUP BY date_trunc('week', date), category_name
+        ORDER BY date ASC, category_name ASC;
+      `;
+    } else {
+      getMultiLineTrend = `
+        SELECT 
+          date::date as date,
+          category_name,
+          COALESCE(SUM(amount), 0) as total
+        FROM transactions
+        WHERE user_id = $1 
+          AND date >= NOW() - INTERVAL '1 month' * $2
+        GROUP BY date::date, category_name
+        ORDER BY date ASC, category_name ASC;
+      `;
+    }
+
+    const result = await client.query(getMultiLineTrend, [user_id, months]);
+
+    const formattedRows = result.rows.map((row) => ({
+      date: new Date(row.date).toISOString().split("T")[0], // Format as YYYY-MM-DD
+      category: row.category_name,
+      total: parseFloat(row.total),
+    }));
+
+    res.status(200).json(formattedRows);
+  } catch (error) {
+    console.error("Error fetching multi-line category trends:", error);
+    res.status(500).json({ error: `Internal server error: ${error}` });
+  }
+};

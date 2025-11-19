@@ -1,12 +1,19 @@
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useCallback, useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
-import { StackRouter, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import { ScrollView } from "react-native-gesture-handler";
+import MultiLineChart from "@/components/Graphs/MultiLineChart";
 
 // Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
@@ -25,6 +32,20 @@ export default function History() {
   ); // YYYY-MM format
   const [selectedCategory, setSelectedCategory] = useState<string>("Food");
   const [showFilterOptions, setShowFilterOptions] = useState(false);
+  const [multiLineChartData, setMultiLineChartData] = useState<
+    { date: string; category: string; total: number }[]
+  >([]);
+  const [selectedTimeRange, setSelectedTimeRange] = useState("3months");
+  const screenWidth = useWindowDimensions().width;
+  const chartWidth = screenWidth * 0.75;
+
+  // Time range configuration
+  const timeRangeConfig = {
+    "1month": { period: "daily", months: 1, label: "1 Month" },
+    "3months": { period: "weekly", months: 3, label: "3 Months" },
+    "6months": { period: "weekly", months: 6, label: "6 Months" },
+    "1year": { period: "weekly", months: 12, label: "1 Year" },
+  };
 
   // Get unique categories from transactions
   const getUniqueCategories = () => {
@@ -76,7 +97,27 @@ export default function History() {
         .catch((error) => {
           console.error("API Error:", error);
         });
-    }, []),
+
+      const config =
+        timeRangeConfig[selectedTimeRange as keyof typeof timeRangeConfig];
+      fetch(
+        `http://localhost:${BACKEND_PORT}/transactions/multiTrend/${userId}?period=${config.period}&months=${config.months}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        },
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          setMultiLineChartData(data);
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+    }, [selectedTimeRange]),
   );
 
   // Toggle filter options visibility
@@ -161,6 +202,30 @@ export default function History() {
           Current={totalAmount}
           Budget={budget}
         />
+
+        <View style={styles.graphContainer}>
+          <Text style={{ fontSize: 20, fontWeight: "600" }}>
+            Category Trends Comparison
+          </Text>
+          <MultiLineChart
+            data={multiLineChartData}
+            width={chartWidth}
+            height={300}
+          />
+          <View style={styles.timeRangePickerContainer}>
+            <Text style={styles.timeRangeLabel}>Time Range:</Text>
+            <Picker
+              selectedValue={selectedTimeRange}
+              onValueChange={(itemValue) => setSelectedTimeRange(itemValue)}
+              style={styles.timeRangePicker}
+            >
+              <Picker.Item label="1 Month" value="1month" />
+              <Picker.Item label="3 Months" value="3months" />
+              <Picker.Item label="6 Months" value="6months" />
+              <Picker.Item label="1 Year" value="1year" />
+            </Picker>
+          </View>
+        </View>
 
         <View style={styles.filterSortContainer}>
           {/* Sorting Controls */}
@@ -423,5 +488,31 @@ const styles = StyleSheet.create({
   },
   activeFilterText: {
     fontWeight: "bold",
+  },
+  graphContainer: {
+    backgroundColor: "#FFFFFF",
+    padding: 15,
+    borderRadius: 10,
+    width: "90%",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  timeRangePickerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 15,
+    width: "100%",
+    justifyContent: "center",
+  },
+  timeRangeLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginRight: 10,
+  },
+  timeRangePicker: {
+    height: 50,
+    width: 150,
+    backgroundColor: "#E6E6E6",
+    borderRadius: 5,
   },
 });
