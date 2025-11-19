@@ -16,7 +16,7 @@ import Svg, {
 //   { date: "2024-01-01", category: "Food", total: 150.00 },
 //   { date: "2024-01-01", category: "Shopping", total: 75.00 },
 //   { date: "2024-01-08", category: "Food", total: 200.00 },
-//   ... 
+//   ...
 // Each data point represents the total spending for that category in that time period.
 
 export default function MultiLineChart(props: {
