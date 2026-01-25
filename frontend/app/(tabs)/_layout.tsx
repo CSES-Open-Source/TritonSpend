@@ -1,20 +1,42 @@
-import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Home from ".";
 import History from "./History"; // Import the History component
+import { useEffect } from "react";
 // import LoginPage from "../Login";
 import Account from "./Account";
 import Goals from "./Goals";
 import { useAuth } from "@/context/authContext";
 import { Redirect } from "expo-router";
+import Checking from "@/components/Checking";
+import { BACKEND_PORT } from "@env";
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
-  const { user } = useAuth();
+  const { user, isLoading, login } = useAuth();
+
+  useEffect(() => {
+    fetch(`http://localhost:${BACKEND_PORT}/auth/me`, {
+      credentials: "include",
+    })
+      .then((response) => {
+        if (response.ok) {
+          response.json().then(login);
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking auth:", error);
+      });
+  }, []);
+
+  if (isLoading) {
+    return <Checking />;
+  }
+
   if (!user) {
     return <Redirect href="/Login" />;
   }
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
