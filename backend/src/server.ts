@@ -27,22 +27,10 @@ app.get(
 // Google callback route
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "http://localhost:8081/NotAuthorized" }),
-  (req, res, next) => {
-    if (!req.user) {
-      console.error("User is undefined during login.");
-      return res.status(401).json({ error: "User not authenticated" });
-    }
-    req.login(req.user, (err) => {
-      if (err) {
-        console.error("Error during req.login:", err);
-        return next(err); // Pass the error to the error handler
-      }
-      console.log("User logged in:", req.user); // Debug log
-      console.log("Session data:", req.session); // Debug log
-      res.redirect("http://localhost:8081/"); // Redirect after successful login
-    });
-  },
+  passport.authenticate("google", {
+    successRedirect: "http://localhost:8081/",
+    failureRedirect: "http://localhost:8081/NotAuthorized",
+  }),
 );
 app.get("/auth/me", (req, res) => {
   if (!req.isAuthenticated()) return res.status(401).json({ error: "Not Authenticated" });

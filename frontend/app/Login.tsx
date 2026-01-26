@@ -1,49 +1,32 @@
 // src/LoginPage.tsx
 import { useAuth } from "@/context/authContext";
-import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import { BACKEND_PORT } from "@env";
-// import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
+import Checking from "@/components/Checking";
 
 const LoginPage = () => {
-  // const router = useRouter();
-  const [isRedirected, setIsRedirected] = useState(false);
-  const { login } = useAuth();
-  const handleGoogleLogin = () => {
-    // Redirect to backend Google OAuth URL
-    window.location.href = `http://localhost:${BACKEND_PORT}/auth/google`;
-  };
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:${BACKEND_PORT}/auth/me`,
-          {
-            credentials: "include",
-          },
-        );
+  const router = useRouter();
+  const { isLoading, user } = useAuth();
 
-        if (response.ok) {
-          const userData = await response.json();
-          await login(userData);
-        }
-      } catch (error) {
-        console.error("Error checking auth:", error);
-      }
-    };
+  if (isLoading) {
+    return <Checking />;
+  }
 
-    // Check if we've been redirected back from OAuth
-    // You can also check for specific query parameters from your OAuth callback
-    if (window.location.pathname === "/Login" && !isRedirected) {
-      setIsRedirected(true);
-      checkAuth();
-    }
-  }, [isRedirected]);
+  if (user) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login Page</Text>
       <Text style={styles.message}>Sign in to access your account.</Text>
-      <Button title="Sign in with Google" onPress={handleGoogleLogin} />
+      <Button
+        title="Sign in with Google"
+        onPress={() => {
+          router.replace(`http://localhost:${BACKEND_PORT}/auth/google`);
+        }}
+      />
     </View>
   );
 };
