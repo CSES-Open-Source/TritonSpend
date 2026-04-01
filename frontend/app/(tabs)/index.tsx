@@ -28,9 +28,9 @@ export default function Home() {
   const categoryColors = new Map<string, string>([
     ["Food", "#b8b8ff"], // blue
     ["Shopping", "#fff3b0"], //yellow
-    ["Subscriptions", "#ff9b85"], // red
     ["Transportation", "#588157"], //green
-    ["Others", "#2b2d42"], //black
+    ["Subscriptions", "#ff9b85"], // red
+    ["Other", "#2b2d42"], //black
   ]);
 
   useFocusEffect(
