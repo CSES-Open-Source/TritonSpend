@@ -133,3 +133,25 @@ export const getSpendingTrend: RequestHandler = async (req, res) => {
     res.status(500).json({ error: `Internal server error: ${error}` });
   }
 };
+
+export const getMonthlySpending: RequestHandler = async (req, res) => {
+  const { user_id } = req.params;
+
+  const query = `
+    SELECT 
+      TO_CHAR(date, 'YYYY-MM') AS month,
+      SUM(amount) AS total
+    FROM transactions
+    WHERE user_id = $1
+    GROUP BY month
+    ORDER BY month ASC;
+  `;
+
+  try {
+    const result = await client.query(query, [user_id]);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error fetching monthly data:", error);
+    res.status(500).json({ error: `Internal server error: ${error}` });
+  }
+};

@@ -4,6 +4,7 @@ import {
   getTransactions,
   deleteTransaction,
   getSpendingTrend,
+  getMonthlySpending,
 } from "../controllers/transactions";
 
 const router = express.Router();
@@ -16,5 +17,7 @@ router.get("/getTransactions/:user_id", getTransactions);
 router.delete("/:user_id/:transaction_id", deleteTransaction);
 
 router.get("/spendingTrend/:user_id", getSpendingTrend);
+
+router.get("/monthly/:user_id", getMonthlySpending);
 
 export default router;

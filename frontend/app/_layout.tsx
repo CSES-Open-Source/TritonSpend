@@ -15,6 +15,8 @@ import { useAuth } from "@/context/authContext";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { BACKEND_PORT } from "@env";
+import { TamaguiProvider, Theme } from 'tamagui';
+import tamaguiConfig from '../tamagui.config';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -86,6 +88,7 @@ function AuthCheck() {
 }
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -101,8 +104,12 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <AuthCheck />
-    </AuthProvider>
+    <TamaguiProvider config={tamaguiConfig}>
+      <Theme name={colorScheme === "dark" ? "dark" : "light"}>
+        <AuthProvider>
+          <AuthCheck />
+        </AuthProvider>
+      </Theme>
+    </TamaguiProvider>
   );
 }
