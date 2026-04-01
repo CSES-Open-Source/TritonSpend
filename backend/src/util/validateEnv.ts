@@ -11,4 +11,5 @@ export default cleanEnv(process.env, {
   MONGODB_URI: str({ default: "null" }),
   GOOGLE_CLIENT_ID: str(), // Add Google Client ID
   GOOGLE_CLIENT_SECRET: str(), // Add Google Client Secret
+  DATABASE_URL: str(), // Supabase PostgreSQL connection string
 });

@@ -113,7 +113,7 @@ export default function LineChart(props: {
 
                 for (let i = 0; i < numLabels; i++) {
                   const index = Math.floor(
-                    (i / (numLabels - 1)) * (props.data.length - 1),
+                    (i / (numLabels - 1 || 1)) * (props.data.length - 1),
                   );
                   labelIndices.push(index);
                 }
