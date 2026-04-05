@@ -2,6 +2,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import db from "src/db/db";
 import env from "src/util/validateEnv"; // Importing environment variables
+// login to postregress psql -U postgres
 
 interface UserProfile {
   id: string;
@@ -32,7 +33,9 @@ passport.use(
       }
 
       // Generate a random username (for new users)
-      const randomUsername = `user_${Math.floor(Math.random() * 1000000)}`;
+      console.log("Google Profile:", profile);
+      //const randomUsername = `user_${Math.floor(Math.random() * 1000000)}`;
+      const username = profile.displayName; // ADDED REAL USERNAME FROM GOOGLE PROFILE second merge request
       const photos = profile.photos;
 
       try {
@@ -51,11 +54,7 @@ passport.use(
           INSERT INTO users (email, username, profile_picture) 
           VALUES ($1, $2, $3) RETURNING id
         `;
-        const insertResult = await db.query(insertUserQuery, [
-          email,
-          randomUsername,
-          profilePicture,
-        ]);
+        const insertResult = await db.query(insertUserQuery, [email, username, profilePicture]);
 
         profile.id = insertResult.rows[0].id;
         return done(null, profile);
