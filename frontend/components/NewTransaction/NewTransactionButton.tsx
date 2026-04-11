@@ -135,7 +135,9 @@ export default function NewTransactionButton({
           paddingHorizontal="$3"
           gap="$5"
         >
-          <AppText variant="title" fontSize="$5">New Transaction</AppText>
+          <AppText variant="title" fontSize="$5">
+            New Transaction
+          </AppText>
           <Animated.View style={{ transform: [{ rotate: interpolate }] }}>
             <MaterialIcons name="add-circle-outline" size={32} />
           </Animated.View>

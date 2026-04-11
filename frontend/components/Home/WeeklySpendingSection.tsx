@@ -28,10 +28,14 @@ const PERIOD_LABELS: Record<Period, string> = {
 function getCutoff(period: Period): Date {
   const now = new Date();
   switch (period) {
-    case "1D": return new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    case "1W": return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    case "1M": return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    case "1Y": return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+    case "1D":
+      return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    case "1W":
+      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    case "1M":
+      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    case "1Y":
+      return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
   }
 }
 

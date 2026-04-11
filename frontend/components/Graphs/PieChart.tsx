@@ -42,8 +42,17 @@ export default function DoughnutChart(props: {
 
   return (
     <YStack justifyContent="flex-start" width="100%" alignItems="center">
-      <YStack width={props.size} height={props.size} alignItems="center" justifyContent="center">
-        <Svg width={props.size} height={props.size} style={{ position: "absolute" }}>
+      <YStack
+        width={props.size}
+        height={props.size}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Svg
+          width={props.size}
+          height={props.size}
+          style={{ position: "absolute" }}
+        >
           <G>{props.data.map((item) => createArc(item.value, item.color))}</G>
         </Svg>
         <AppText variant="title" fontSize={27} color="$text">

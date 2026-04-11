@@ -17,7 +17,13 @@ export const QuickActionsSection: React.FC<QuickActionsSectionProps> = ({
       <SectionTitle title="Quick Actions" />
       <XStack gap="$3">
         <QuickActionCard
-          icon={<MaterialIcons name="add-circle-outline" size={28} color="#395773" />}
+          icon={
+            <MaterialIcons
+              name="add-circle-outline"
+              size={28}
+              color="#395773"
+            />
+          }
           label="Add Expense"
           onPress={onAddExpense}
         />

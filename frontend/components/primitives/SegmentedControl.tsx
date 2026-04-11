@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { XStack, YStack } from 'tamagui';
-import { AppText } from './AppText';
+import React, { useState } from "react";
+import { XStack, YStack } from "tamagui";
+import { AppText } from "./AppText";
 
-const PERIODS = ['1D', '1W', '1M', '1Y'] as const;
-type Period = typeof PERIODS[number];
+const PERIODS = ["1D", "1W", "1M", "1Y"] as const;
+type Period = (typeof PERIODS)[number];
 
 interface SegmentedControlProps {
   onValueChange?: (_value: Period) => void; // eslint-disable-line no-unused-vars
   defaultValue?: Period;
 }
 
-export const SegmentedControl: React.FC<SegmentedControlProps> = ({ 
-  onValueChange, 
-  defaultValue = '1M' 
+export const SegmentedControl: React.FC<SegmentedControlProps> = ({
+  onValueChange,
+  defaultValue = "1M",
 }) => {
   const [active, setActive] = useState<Period>(defaultValue);
 
@@ -22,7 +22,7 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
   };
 
   return (
-    <XStack 
+    <XStack
       backgroundColor="$surfaceTintBlue" // light grayish blue container
       borderRadius="$7" // Pill shape container
       padding="$1"
@@ -38,12 +38,12 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
             justifyContent="center"
             paddingVertical="$2"
             borderRadius="$7" // Pill shaped items
-            backgroundColor={isActive ? '$primary' : 'transparent'}
+            backgroundColor={isActive ? "$primary" : "transparent"}
             onPress={() => handlePress(period)}
           >
-            <AppText 
-              fontWeight={isActive ? 'bold' : 'normal'}
-              color={isActive ? '$white' : '$textMuted'}
+            <AppText
+              fontWeight={isActive ? "bold" : "normal"}
+              color={isActive ? "$white" : "$textMuted"}
               fontSize="$2"
             >
               {period}
