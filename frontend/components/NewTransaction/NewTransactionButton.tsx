@@ -5,13 +5,13 @@ import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
-import { XStack, YStack } from "tamagui";
+import { XStack } from "tamagui";
 import { AppText } from "@/components/primitives/AppText";
 import { AppInput } from "@/components/primitives/AppInput";
 import { AppButton } from "@/components/primitives/AppButton";
 
 interface NewTransactionButtonProps {
-  setUpdateRecent: (val: boolean) => void;
+  setUpdateRecent: (_val: boolean) => void;
   updateRecent: boolean;
   forceOpen?: boolean;
   onForceOpenHandled?: () => void;

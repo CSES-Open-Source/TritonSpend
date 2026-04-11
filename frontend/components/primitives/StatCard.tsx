@@ -13,7 +13,7 @@ interface StatCardProps extends CardProps {
   icon?: React.ReactNode;
 }
 
-export const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle, trend, icon, ...props }) => {
+export const StatCard: React.FC<StatCardProps> = ({ title, value, subtitle, icon, ...props }) => {
   return (
     <Card 
       flex={1} 
