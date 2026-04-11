@@ -6,7 +6,7 @@ const PERIODS = ['1D', '1W', '1M', '1Y'] as const;
 type Period = typeof PERIODS[number];
 
 interface SegmentedControlProps {
-  onValueChange?: (_value: Period) => void;
+  onValueChange?: (_value: Period) => void; // eslint-disable-line no-unused-vars
   defaultValue?: Period;
 }
 
