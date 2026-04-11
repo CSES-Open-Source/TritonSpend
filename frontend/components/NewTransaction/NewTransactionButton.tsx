@@ -11,7 +11,7 @@ import { AppInput } from "@/components/primitives/AppInput";
 import { AppButton } from "@/components/primitives/AppButton";
 
 interface NewTransactionButtonProps {
-  setUpdateRecent: (_val: boolean) => void;
+  setUpdateRecent: (_val: boolean) => void; // eslint-disable-line no-unused-vars
   updateRecent: boolean;
   forceOpen?: boolean;
   onForceOpenHandled?: () => void;

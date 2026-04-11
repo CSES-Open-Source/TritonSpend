@@ -12,7 +12,7 @@ import { BACKEND_PORT } from "@env";
 interface AuthContextType {
   user: any | null;
   userId: any | null;
-  login: (_userData: any) => Promise<void>;
+  login: (_userData: any) => Promise<void>; // eslint-disable-line no-unused-vars
   logout: () => Promise<void>;
 }
 
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (!res.ok) throw new Error("Session invalid");
           setUser(userData);
           setUserId(userData.id);
-        } catch (_err) {
+        } catch {
           await AsyncStorage.clear();
           setUser(null);
           setUserId(null);

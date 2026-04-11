@@ -1,13 +1,13 @@
-import { Button, styled } from 'tamagui';
+import { Button, styled } from "tamagui";
 
 export const AppButton = styled(Button, {
-  backgroundColor: '$primary',
-  color: 'white',
-  borderRadius: '$7', // Pill shape
-  paddingHorizontal: '$5',
-  paddingVertical: '$3',
-  alignItems: 'center',
-  justifyContent: 'center',
+  backgroundColor: "$primary",
+  color: "white",
+  borderRadius: "$7", // Pill shape
+  paddingHorizontal: "$5",
+  paddingVertical: "$3",
+  alignItems: "center",
+  justifyContent: "center",
   borderWidth: 0,
 
   hoverStyle: {
@@ -20,22 +20,22 @@ export const AppButton = styled(Button, {
   variants: {
     variant: {
       primary: {
-        backgroundColor: '$primary',
-        color: 'white',
+        backgroundColor: "$primary",
+        color: "white",
       },
       secondary: {
-        backgroundColor: '$secondary',
-        color: 'white',
+        backgroundColor: "$secondary",
+        color: "white",
       },
       outline: {
-        backgroundColor: 'transparent',
+        backgroundColor: "transparent",
         borderWidth: 1,
-        borderColor: '$primary',
-        color: '$primary',
+        borderColor: "$primary",
+        color: "$primary",
       },
     },
   } as const,
   defaultVariants: {
-    variant: 'primary',
+    variant: "primary",
   },
 });
