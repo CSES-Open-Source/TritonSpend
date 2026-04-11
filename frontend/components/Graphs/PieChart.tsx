@@ -1,6 +1,7 @@
-import React from "react";
-import { ColorValue, View, StyleSheet } from "react-native";
-import Svg, { Path, G, Text } from "react-native-svg";
+import { ColorValue } from "react-native";
+import Svg, { Path, G } from "react-native-svg";
+import { YStack } from "tamagui";
+import { AppText } from "@/components/primitives/AppText";
 
 export default function DoughnutChart(props: {
   total: number;
@@ -11,7 +12,7 @@ export default function DoughnutChart(props: {
   const innerRadius = radius * 0.65;
   const total = props.data.reduce(
     (acc: any, item: { value: any }) => acc + item.value,
-    0,
+    0
   );
   let startAngle = 0;
 
@@ -35,37 +36,20 @@ export default function DoughnutChart(props: {
     ].join(" ");
 
     startAngle = endAngle;
-    const textX = radius + radius * 0.5 * Math.sin(startAngle + angle / 2); // Mid-point of the arc
-    const textY = radius - radius * 0.5 * Math.cos(startAngle + angle / 2); // Mid-point of the arc
 
     return <Path key={Math.random()} d={pathData} fill={color} />;
   }
 
   return (
-    <View style={styles.PieContainer}>
-      <Svg width={props.size} height={props.size}>
-        <G>{props.data.map((item) => createArc(item.value, item.color))}</G>
-        <Text
-          x={radius}
-          y={radius}
-          textAnchor="middle"
-          alignmentBaseline="middle"
-          fontSize={27}
-          fontFamily="Open Sans"
-          fontWeight="bold"
-          fill="#333"
-        >
+    <YStack justifyContent="flex-start" width="100%" alignItems="center">
+      <YStack width={props.size} height={props.size} alignItems="center" justifyContent="center">
+        <Svg width={props.size} height={props.size} style={{ position: "absolute" }}>
+          <G>{props.data.map((item) => createArc(item.value, item.color))}</G>
+        </Svg>
+        <AppText variant="title" fontSize={27} color="$text">
           ${props.total.toFixed(2)}
-        </Text>
-      </Svg>
-    </View>
+        </AppText>
+      </YStack>
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  PieContainer: {
-    justifyContent: "flex-start",
-    width: "100%",
-    alignItems: "center",
-  },
-});
