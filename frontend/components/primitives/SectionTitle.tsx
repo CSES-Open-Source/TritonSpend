@@ -1,6 +1,6 @@
-import React from 'react';
-import { XStack } from 'tamagui';
-import { AppText } from './AppText';
+import React from "react";
+import { XStack } from "tamagui";
+import { AppText } from "./AppText";
 
 interface SectionTitleProps {
   title: string;
@@ -8,14 +8,24 @@ interface SectionTitleProps {
   onAction?: () => void;
 }
 
-export const SectionTitle: React.FC<SectionTitleProps> = ({ title, actionText, onAction }) => {
+export const SectionTitle: React.FC<SectionTitleProps> = ({
+  title,
+  actionText,
+  onAction,
+}) => {
   return (
-    <XStack justifyContent="space-between" alignItems="center" marginBottom="$3">
-      <AppText variant="title" fontSize="$6">{title}</AppText>
+    <XStack
+      justifyContent="space-between"
+      alignItems="center"
+      marginBottom="$3"
+    >
+      <AppText variant="title" fontSize="$6">
+        {title}
+      </AppText>
       {actionText && (
-        <AppText 
-          color="$primary" 
-          fontWeight="bold" 
+        <AppText
+          color="$primary"
+          fontWeight="bold"
           onPress={onAction}
           pressStyle={{ opacity: 0.7 }}
         >

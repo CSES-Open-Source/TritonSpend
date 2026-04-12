@@ -15,8 +15,8 @@ import { useAuth } from "@/context/authContext";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { BACKEND_PORT } from "@env";
-import { TamaguiProvider, Theme } from 'tamagui';
-import tamaguiConfig from '../tamagui.config';
+import { TamaguiProvider, Theme } from "tamagui";
+import tamaguiConfig from "../tamagui.config";
 
 SplashScreen.preventAutoHideAsync();
 
