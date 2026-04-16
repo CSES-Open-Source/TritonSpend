@@ -3,7 +3,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useCallback, useState } from "react";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
-import { StackRouter, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import { ScrollView } from "react-native-gesture-handler";

@@ -1,14 +1,18 @@
-import { View, StyleSheet, Text, ScrollView } from "react-native";
-import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
-import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
-import { useEffect, useState, useCallback } from "react";
+import { ScrollView, XStack, YStack } from "tamagui";
+import { useState, useCallback } from "react";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
-import CustomPieChart from "@/components/Graphs/PieChart";
 import { useFocusEffect } from "@react-navigation/native";
-/* 
-  this function is the structure for the home screen which includes a graph, option to add transaction, and recent transaction history.
-*/
+import { Screen } from "@/components/primitives/Screen";
+import { AppText } from "@/components/primitives/AppText";
+import { Card } from "@/components/primitives/Card";
+import { SectionTitle } from "@/components/primitives/SectionTitle";
+import { QuickActionsSection } from "@/components/Home/QuickActionsSection";
+import { WeeklySpendingSection } from "@/components/Home/WeeklySpendingSection";
+import NewTransactionButton from "@/components/NewTransaction/NewTransactionButton";
+import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
+import CustomPieChart from "@/components/Graphs/PieChart";
+
 interface Category {
   id: number;
   category_name: string;
@@ -16,22 +20,32 @@ interface Category {
   max_category_budget: string;
   user_id: number;
 }
+
+interface Transaction {
+  id: number;
+  item_name: string;
+  amount: string;
+  category_name: string;
+  date: string;
+}
+
+const categoryColors = new Map<string, string>([
+  ["Food", "#b8b8ff"],
+  ["Shopping", "#fff3b0"],
+  ["Transportation", "#588157"],
+  ["Subscriptions", "#ff9b85"],
+  ["Other", "#2b2d42"],
+]);
+
 export default function Home() {
-  //place holder array for us to map through
-  //passing it through props because I think it will be easier for us to call the API endpoints in the page and pass it through props
   const [ThreeTransactions, setThreeTransactions] = useState([]);
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [updateRecent, setUpdateRecent] = useState(false);
   const [total, setTotal] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
-  const { userId } = useAuth();
   const [username, setUsername] = useState("");
-  const categoryColors = new Map<string, string>([
-    ["Food", "#b8b8ff"], // blue
-    ["Shopping", "#fff3b0"], //yellow
-    ["Transportation", "#588157"], //green
-    ["Subscriptions", "#ff9b85"], // red
-    ["Other", "#2b2d42"], //black
-  ]);
+  const [forceOpenTransaction, setForceOpenTransaction] = useState(false);
+  const { userId } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
@@ -45,12 +59,10 @@ export default function Home() {
           },
         },
       )
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setThreeTransactions(data.slice(0, 5));
+          setAllTransactions(data);
         })
         .catch((error) => {
           console.error("API Error:", error);
@@ -59,9 +71,7 @@ export default function Home() {
       fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
         method: "GET",
       })
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((data) => {
           setUsername(data.username);
         })
@@ -72,9 +82,7 @@ export default function Home() {
       fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
         method: "GET",
       })
-        .then((res) => {
-          return res.json();
-        })
+        .then((res) => res.json())
         .then((data) => {
           setCategories(data);
           setTotal(
@@ -97,105 +105,56 @@ export default function Home() {
     name: category.category_name,
     id: category.id,
   }));
-  console.log(categories);
+
   return (
-    <>
-      <View style={{ flex: 1, backgroundColor: "#00629B" }}>
-        <ScrollView style={{ height: "100%" }}>
-          <View style={styles.homeContainer}>
-            <Text style={styles.Title}>Hello {username}</Text>
-            <View style={styles.graphContainer}>
-              <Text style={{ fontSize: 20, fontWeight: "600" }}>
-                Total Spending
-              </Text>
-              {/* <View style={styles.graph}></View> */}
-              <CustomPieChart data={pieData} size={250} total={total} />
-              <View style={styles.legendContainer}>
-                {pieData.map((category) => {
-                  return (
-                    <View key={category.id} style={styles.legendItem}>
-                      <View
-                        style={[
-                          styles.colorBox,
-                          { backgroundColor: category.color },
-                        ]}
-                      />
-                      <Text style={styles.legendText}>{category.name}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
-            {/* 
-              components for the new transaction button and the list of transaction history.
-            */}
-            <NewTransactionButton
-              setUpdateRecent={setUpdateRecent}
-              updateRecent={updateRecent}
+    <Screen backgroundColor="$primary">
+      <ScrollView>
+        <YStack px="$4" py="$4" gap="$4">
+          <AppText variant="title" fontSize="$7" color="white">
+            Hello {username}
+          </AppText>
+
+          <Card elevated>
+            <SectionTitle title="Total Spending" />
+            <CustomPieChart data={pieData} size={250} total={total} />
+            <XStack flexWrap="wrap" gap="$2" marginTop="$2">
+              {pieData.map((category) => (
+                <XStack key={category.id} alignItems="center" gap="$2">
+                  <YStack
+                    width={16}
+                    height={16}
+                    borderRadius="$1"
+                    backgroundColor={category.color}
+                  />
+                  <AppText variant="caption">{category.name}</AppText>
+                </XStack>
+              ))}
+            </XStack>
+          </Card>
+
+          <Card>
+            <WeeklySpendingSection transactions={allTransactions} />
+          </Card>
+
+          <Card>
+            <QuickActionsSection
+              onAddExpense={() => setForceOpenTransaction(true)}
             />
+          </Card>
+
+          <NewTransactionButton
+            setUpdateRecent={setUpdateRecent}
+            updateRecent={updateRecent}
+            forceOpen={forceOpenTransaction}
+            onForceOpenHandled={() => setForceOpenTransaction(false)}
+          />
+
+          <Card>
+            <SectionTitle title="Recent Transactions" />
             <TransactionHistory list={ThreeTransactions} />
-          </View>
-        </ScrollView>
-      </View>
-    </>
+          </Card>
+        </YStack>
+      </ScrollView>
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  homeContainer: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    flexDirection: "column",
-    gap: 17,
-  },
-  Title: {
-    fontWeight: "bold",
-    fontSize: 30,
-    width: "100%",
-    color: "#FFFFFF",
-    paddingHorizontal: 10,
-  },
-  graphContainer: {
-    height: 500,
-    width: "100%",
-    backgroundColor: "white",
-    borderRadius: 15,
-    padding: 20,
-    flexDirection: "column",
-    justifyContent: "space-between",
-    gap: 30,
-    shadowRadius: 12,
-    shadowOpacity: 0.4,
-  },
-  graph: {
-    width: "100%",
-    height: 180,
-    backgroundColor: "#E6E6E6",
-    borderRadius: 15,
-  },
-  legendContainer: {
-    flexDirection: "row",
-    marginTop: 20,
-    flexWrap: "wrap",
-    gap: 10,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-    width: "100%",
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  colorBox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-  },
-  legendText: {
-    fontSize: 16,
-    color: "black",
-  },
-});

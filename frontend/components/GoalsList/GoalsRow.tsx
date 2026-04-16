@@ -6,7 +6,6 @@ import {
   Text,
   Animated,
   Pressable,
-  Button,
   TextInput,
   TouchableOpacity,
   Modal,

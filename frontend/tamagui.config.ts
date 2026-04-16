@@ -1,8 +1,8 @@
-import { createTamagui, createFont } from 'tamagui';
-import { tokens } from './constants/tamagui-tokens';
+import { createTamagui, createFont } from "tamagui";
+import { tokens } from "./constants/tamagui-tokens";
 
 const interFont = createFont({
-  family: 'Inter, Helvetica, Arial, sans-serif',
+  family: "Inter, Helvetica, Arial, sans-serif",
   size: {
     1: 12,
     2: 14,
@@ -27,8 +27,8 @@ const interFont = createFont({
     9: 60,
   },
   weight: {
-    4: '400',
-    7: '700',
+    4: "400",
+    7: "700",
   },
   letterSpacing: {
     4: 0,
@@ -44,7 +44,7 @@ export const tamaguiConfig = createTamagui({
   },
   themes: {
     light: {
-      background: '#F7F9FA', // soft off-white from design
+      background: "#F7F9FA", // soft off-white from design
       color: tokens.color.text,
       primary: tokens.color.primary,
       tint: tokens.color.primary,
@@ -75,16 +75,17 @@ export const tamaguiConfig = createTamagui({
     },
   },
   shorthands: {
-    px: 'paddingHorizontal',
-    py: 'paddingVertical',
-    mx: 'marginHorizontal',
-    my: 'marginVertical',
+    px: "paddingHorizontal",
+    py: "paddingVertical",
+    mx: "marginHorizontal",
+    my: "marginVertical",
   } as const,
 });
 
 export type AppConfig = typeof tamaguiConfig;
 
-declare module 'tamagui' {
+declare module "tamagui" {
+  // eslint-disable-next-line no-unused-vars
   interface TamaguiCustomConfig extends AppConfig {}
 }
 
