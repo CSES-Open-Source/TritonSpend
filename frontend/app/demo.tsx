@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ScrollView } from "react-native";
 import { Screen } from "../components/primitives/Screen";
 import { AppText } from "../components/primitives/AppText";
@@ -10,7 +10,10 @@ import { SegmentedControl } from "../components/primitives/SegmentedControl";
 import { YStack, XStack, Circle } from "tamagui";
 import { Ionicons } from "@expo/vector-icons";
 
+type DemoPeriod = "1D" | "1W" | "1M" | "1Y";
+
 export default function DemoScreen() {
+  const [demoPeriod, setDemoPeriod] = useState<DemoPeriod>("1W");
   return (
     <Screen>
       <ScrollView contentContainerStyle={{ padding: 20 }}>
@@ -101,7 +104,16 @@ export default function DemoScreen() {
             <AppText variant="title" fontSize="$6">
               Segmented Control Example
             </AppText>
-            <SegmentedControl defaultValue="1W" />
+            <SegmentedControl
+              value={demoPeriod}
+              onValueChange={setDemoPeriod}
+              options={[
+                { label: "1D", value: "1D" },
+                { label: "1W", value: "1W" },
+                { label: "1M", value: "1M" },
+                { label: "1Y", value: "1Y" },
+              ]}
+            />
           </YStack>
         </YStack>
       </ScrollView>

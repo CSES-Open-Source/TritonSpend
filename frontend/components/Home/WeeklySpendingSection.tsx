@@ -55,8 +55,14 @@ export const WeeklySpendingSection: React.FC<WeeklySpendingSectionProps> = ({
     <YStack gap="$3">
       <SectionTitle title="Spending Overview" />
       <SegmentedControl
-        defaultValue="1M"
-        onValueChange={(val) => setPeriod(val)}
+        value={period}
+        onValueChange={setPeriod}
+        options={[
+          { label: "1D", value: "1D" },
+          { label: "1W", value: "1W" },
+          { label: "1M", value: "1M" },
+          { label: "1Y", value: "1Y" },
+        ]}
       />
       <StatCard
         title="Total Spent"
