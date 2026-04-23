@@ -1,90 +1,84 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
 import Svg, { Rect, Text as SvgText } from "react-native-svg";
+import { YStack, useTheme } from "tamagui";
+import { AppText } from "@/components/primitives/AppText";
+
+interface BarChartDatum {
+  name: string;
+  value: number;
+}
 
 export default function BarChart({
   data,
-  size,
+  width,
+  height,
   total,
 }: {
-  data: any[];
-  size: number;
+  data: BarChartDatum[];
+  width: number;
+  height: number;
   total: number;
 }) {
-  const chartHeight = size;
-  const chartWidth = size * 1.2;
+  const theme = useTheme();
+  const primary = theme.primary?.val ?? "#395773";
+  const mutedColor = theme.textMuted?.val ?? "#7B8A96";
+  const textColor = theme.color?.val ?? "#1C252E";
 
-  const barSpacing = 25; // consistent spacing
-  const barWidth = (chartWidth - barSpacing * (data.length + 1)) / data.length;
+  const topPadding = 28;
+  const bottomPadding = 32;
+  const barSpacing = 16;
+  const count = Math.max(data.length, 1);
+  const barWidth = (width - barSpacing * (count + 1)) / count;
 
-  const maxValue = Math.max(...data.map((d: any) => d.value), 1);
+  const maxValue = Math.max(...data.map((d) => d.value), 1);
+  const drawableHeight = height - topPadding - bottomPadding;
 
-  // Convert "YYYY-MM" to "Mon"
   const formatMonth = (monthStr: string) => {
     const [year, month] = monthStr.split("-").map(Number);
     const date = new Date(year, month - 1);
     return date.toLocaleString("default", { month: "short" });
   };
 
-  // Pastel colors for each month
-  const monthColors: Record<string, string> = {
-    "01": "#FFD1DC", // Jan
-    "02": "#FFE4B5", // Feb
-    "03": "#BFFCC6", // Mar
-    "04": "#C1F0F6", // Apr
-    "05": "#D8B4E2", // May
-    "06": "#FFFACD", // Jun
-    "07": "#FFB347", // Jul
-    "08": "#AEC6CF", // Aug
-    "09": "#FF6961", // Sep
-    "10": "#77DD77", // Oct
-    "11": "#CBAACB", // Nov
-    "12": "#FDFD96", // Dec
-  };
-
   return (
-    <View style={styles.container}>
-      <Svg height={chartHeight} width={chartWidth}>
-        {data.map((item: any, index: number) => {
+    <YStack width="100%" alignItems="center" gap="$2">
+      <Svg height={height} width={width}>
+        {data.map((item, index) => {
           const x = barSpacing + index * (barWidth + barSpacing);
-          const barHeight = (item.value / maxValue) * (chartHeight - 90);
-          const y = chartHeight - barHeight - 50; // padding from bottom
-
-          // Assign color based on month if color not already set
-          const month = item.name.split("-")[1];
-          const fillColor = item.color || monthColors[month] || "#ccc";
+          const barHeight = (item.value / maxValue) * drawableHeight;
+          const y = topPadding + (drawableHeight - barHeight);
 
           return (
-            <React.Fragment key={index}>
-              {/* Value label */}
+            <React.Fragment key={`${item.name}-${index}`}>
               <SvgText
                 x={x + barWidth / 2}
-                y={y - 10}
-                fontSize="14"
-                fill="#333"
+                y={y - 8}
+                fontSize={11}
+                fill={textColor}
                 textAnchor="middle"
+                fontFamily="Inter"
+                fontWeight="600"
               >
-                {item.value}
+                ${item.value.toFixed(0)}
               </SvgText>
 
-              {/* Bar */}
               <Rect
                 x={x}
                 y={y}
                 width={barWidth}
                 height={barHeight}
-                fill={fillColor}
+                fill={primary}
                 rx={8}
                 ry={8}
               />
 
-              {/* Category label */}
               <SvgText
                 x={x + barWidth / 2}
-                y={chartHeight - 20}
-                fontSize="14"
-                fill="#000"
+                y={height - 10}
+                fontSize={11}
+                fill={mutedColor}
                 textAnchor="middle"
+                fontFamily="Inter"
+                fontWeight="600"
               >
                 {formatMonth(item.name)}
               </SvgText>
@@ -93,20 +87,9 @@ export default function BarChart({
         })}
       </Svg>
 
-      <Text style={styles.totalText}>Total: ${total.toFixed(2)}</Text>
-    </View>
+      <AppText variant="title" fontSize="$7">
+        ${total.toFixed(2)}
+      </AppText>
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  totalText: {
-    marginTop: 10,
-    fontSize: 18,
-    fontWeight: "600",
-  },
-});

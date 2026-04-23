@@ -1,34 +1,38 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
 import Svg, { Path, Line, Text, G } from "react-native-svg";
+import { YStack, useTheme } from "tamagui";
+import { AppText } from "@/components/primitives/AppText";
 
-// GET /transactions/spendingTrend/:user_id
-// Query Params: ?period=weekly&months=3
-// Response: [
-//   { date: "2024-01-01", total: 150.00 },
-//   { date: "2024-01-08", total: 200.00 },
-//   ...
-// ]
+interface LineChartDatum {
+  date: string;
+  total: number;
+}
 
 export default function LineChart(props: {
-  data: any[];
+  data: LineChartDatum[];
   width: number;
   height: number;
+  total?: number;
 }) {
-  const padding = 20;
+  const theme = useTheme();
+  const primary = theme.primary?.val ?? "#395773";
+  const mutedColor = theme.textMuted?.val ?? "#7B8A96";
+
+  const padding = 28;
   const chartWidth = props.width - 2 * padding;
   const chartHeight = props.height - 2 * padding;
 
-  function createLine(data: any[]) {
+  const values = props.data.map((item) => item.total);
+  const maxValue = values.length > 0 ? Math.max(...values) : 0;
+  const minValue = values.length > 0 ? Math.min(...values) : 0;
+
+  function createLine(data: LineChartDatum[]) {
     if (data.length === 0) return "";
 
-    const values = data.map((item) => item.total);
-    const maxValue = Math.max(...values);
-    const minValue = Math.min(...values);
     const valueRange = maxValue - minValue || 1;
-    const verticalMargin = chartHeight * 0.1; // 10% margin top and bottom
+    const verticalMargin = chartHeight * 0.1;
 
-    const pathData = data
+    return data
       .map((item, index) => {
         const x = padding + (index / (data.length - 1 || 1)) * chartWidth;
         const y =
@@ -41,16 +45,13 @@ export default function LineChart(props: {
         return index === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
       })
       .join(" ");
-
-    return pathData;
   }
 
-  const values = props.data.map((item) => item.total);
-  const maxValue = values.length > 0 ? Math.max(...values) : 0;
-  const minValue = values.length > 0 ? Math.min(...values) : 0;
+  const numYLabels = 5;
+  const numXLabels = Math.min(5, props.data.length);
 
   return (
-    <View style={styles.LineContainer}>
+    <YStack width="100%" alignItems="center" gap="$2">
       <Svg width={props.width} height={props.height}>
         <G>
           {/* Y-axis */}
@@ -59,8 +60,8 @@ export default function LineChart(props: {
             y1={padding}
             x2={padding}
             y2={props.height - padding}
-            stroke="#333"
-            strokeWidth={2}
+            stroke={mutedColor}
+            strokeWidth={1}
           />
           {/* X-axis */}
           <Line
@@ -68,101 +69,77 @@ export default function LineChart(props: {
             y1={props.height - padding}
             x2={props.width - padding}
             y2={props.height - padding}
-            stroke="#333"
-            strokeWidth={2}
+            stroke={mutedColor}
+            strokeWidth={1}
           />
 
           {/* Y-axis labels */}
-          {(() => {
-            const numYLabels = 5;
-            const yLabelIndices = [];
+          {Array.from({ length: numYLabels }, (_, i) => {
+            const value =
+              maxValue - (i / (numYLabels - 1)) * (maxValue - minValue);
+            const y =
+              padding + (i / (numYLabels - 1)) * (props.height - 2 * padding);
 
-            for (let i = 0; i < numYLabels; i++) {
-              yLabelIndices.push(i);
-            }
+            return (
+              <Text
+                key={`y-${i}`}
+                x={padding - 6}
+                y={y + 4}
+                fontSize={10}
+                fill={mutedColor}
+                textAnchor="end"
+                fontFamily="Inter"
+                fontWeight="600"
+              >
+                ${value.toFixed(0)}
+              </Text>
+            );
+          })}
 
-            return yLabelIndices.map((i) => {
-              const value =
-                maxValue - (i / (numYLabels - 1)) * (maxValue - minValue);
-              const y =
-                padding + (i / (numYLabels - 1)) * (props.height - 2 * padding);
+          {/* X-axis labels */}
+          {props.data.length > 0 &&
+            Array.from({ length: numXLabels }, (_, i) => {
+              const index = Math.floor(
+                (i / (numXLabels - 1 || 1)) * (props.data.length - 1)
+              );
+              const x =
+                padding + (index / (props.data.length - 1 || 1)) * chartWidth;
+              const date = new Date(props.data[index].date);
 
               return (
                 <Text
-                  key={i}
-                  x={padding - 5}
-                  y={y + 5}
+                  key={`x-${index}`}
+                  x={x}
+                  y={props.height - padding + 16}
                   fontSize={10}
-                  fill="#333"
-                  textAnchor="end"
-                  fontFamily="Open Sans"
+                  fill={mutedColor}
+                  textAnchor="middle"
+                  fontFamily="Inter"
                   fontWeight="600"
                 >
-                  ${value.toFixed(0)}
+                  {date.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </Text>
               );
-            });
-          })()}
-
-          {/* X-axis labels */}
-          {props.data.length > 0 && (
-            <>
-              {(() => {
-                const numLabels = Math.min(5, props.data.length);
-                const labelIndices = [];
-
-                for (let i = 0; i < numLabels; i++) {
-                  const index = Math.floor(
-                    (i / (numLabels - 1 || 1)) * (props.data.length - 1),
-                  );
-                  labelIndices.push(index);
-                }
-
-                return labelIndices.map((index) => {
-                  const x =
-                    padding +
-                    (index / (props.data.length - 1 || 1)) * chartWidth;
-                  const date = new Date(props.data[index].date);
-
-                  return (
-                    <Text
-                      key={index}
-                      x={x}
-                      y={props.height - padding + 15}
-                      fontSize={9}
-                      fill="#333"
-                      textAnchor="middle"
-                      fontFamily="Open Sans"
-                      fontWeight="600"
-                    >
-                      {date.toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </Text>
-                  );
-                });
-              })()}
-            </>
-          )}
+            })}
 
           {/* Line path */}
           <Path
             d={createLine(props.data)}
-            stroke="#007AFF"
-            strokeWidth={2}
+            stroke={primary}
+            strokeWidth={2.5}
             fill="none"
           />
         </G>
       </Svg>
-    </View>
+
+      {props.total !== undefined && (
+        <AppText variant="title" fontSize="$7">
+          ${props.total.toFixed(2)}
+        </AppText>
+      )}
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  LineContainer: {
-    justifyContent: "flex-start",
-    width: "100%",
-    alignItems: "center",
-  },
-});
