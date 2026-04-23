@@ -213,7 +213,7 @@ export default function Home() {
                   data={lineData}
                   width={chartCardWidth}
                   height={260}
-                  total={total}
+                  total={lineData.reduce((sum, d) => sum + d.total, 0)}
                 />
               )}
               {chartType === "bar" && (
@@ -221,7 +221,7 @@ export default function Home() {
                   data={barData}
                   width={chartCardWidth}
                   height={260}
-                  total={total}
+                  total={barData.reduce((sum, d) => sum + d.value, 0)}
                 />
               )}
             </YStack>
