@@ -88,7 +88,7 @@ export default function LineChart(props: {
                 fontSize={10}
                 fill={mutedColor}
                 textAnchor="end"
-                fontFamily="Inter"
+                fontFamily="Inter, Helvetica, Arial, sans-serif"
                 fontWeight="600"
               >
                 ${value.toFixed(0)}
@@ -114,7 +114,7 @@ export default function LineChart(props: {
                   fontSize={10}
                   fill={mutedColor}
                   textAnchor="middle"
-                  fontFamily="Inter"
+                  fontFamily="Inter, Helvetica, Arial, sans-serif"
                   fontWeight="600"
                 >
                   {date.toLocaleDateString("en-US", {

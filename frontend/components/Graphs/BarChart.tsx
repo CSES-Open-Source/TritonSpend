@@ -55,7 +55,7 @@ export default function BarChart({
                 fontSize={11}
                 fill={textColor}
                 textAnchor="middle"
-                fontFamily="Inter"
+                fontFamily="Inter, Helvetica, Arial, sans-serif"
                 fontWeight="600"
               >
                 ${item.value.toFixed(0)}
@@ -77,7 +77,7 @@ export default function BarChart({
                 fontSize={11}
                 fill={mutedColor}
                 textAnchor="middle"
-                fontFamily="Inter"
+                fontFamily="Inter, Helvetica, Arial, sans-serif"
                 fontWeight="600"
               >
                 {formatMonth(item.name)}
