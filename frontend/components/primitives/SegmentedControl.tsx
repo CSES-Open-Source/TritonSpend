@@ -1,56 +1,54 @@
-import React, { useState } from "react";
+import React from "react";
 import { XStack, YStack } from "tamagui";
 import { AppText } from "./AppText";
 
-const PERIODS = ["1D", "1W", "1M", "1Y"] as const;
-type Period = (typeof PERIODS)[number];
-
-interface SegmentedControlProps {
-  onValueChange?: (_value: Period) => void; // eslint-disable-line no-unused-vars
-  defaultValue?: Period;
+interface SegmentedControlOption<T extends string> {
+  label: string;
+  value: T;
 }
 
-export const SegmentedControl: React.FC<SegmentedControlProps> = ({
+interface SegmentedControlProps<T extends string> {
+  options: SegmentedControlOption<T>[];
+  value: T;
+  // eslint-disable-next-line no-unused-vars
+  onValueChange: (value: T) => void;
+}
+
+export function SegmentedControl<T extends string>({
+  options,
+  value,
   onValueChange,
-  defaultValue = "1M",
-}) => {
-  const [active, setActive] = useState<Period>(defaultValue);
-
-  const handlePress = (period: Period) => {
-    setActive(period);
-    onValueChange?.(period);
-  };
-
+}: SegmentedControlProps<T>) {
   return (
     <XStack
-      backgroundColor="$surfaceTintBlue" // light grayish blue container
-      borderRadius="$7" // Pill shape container
+      backgroundColor="$surfaceTintBlue"
+      borderRadius="$7"
       padding="$1"
       width="100%"
     >
-      {PERIODS.map((period) => {
-        const isActive = active === period;
+      {options.map((option) => {
+        const isActive = option.value === value;
         return (
           <YStack
-            key={period}
+            key={option.value}
             flex={1}
             alignItems="center"
             justifyContent="center"
             paddingVertical="$2"
-            borderRadius="$7" // Pill shaped items
+            borderRadius="$7"
             backgroundColor={isActive ? "$primary" : "transparent"}
-            onPress={() => handlePress(period)}
+            onPress={() => onValueChange(option.value)}
           >
             <AppText
               fontWeight={isActive ? "bold" : "normal"}
               color={isActive ? "$white" : "$textMuted"}
               fontSize="$2"
             >
-              {period}
+              {option.label}
             </AppText>
           </YStack>
         );
       })}
     </XStack>
   );
-};
+}

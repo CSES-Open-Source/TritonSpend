@@ -48,7 +48,7 @@ export default function GoalsRow(props: any) {
         <Pressable
           onPress={toggle}
           onLongPress={() => setModalVisible(true)}
-          style={{ height: "100%", width: "80%" }}
+          style={{ height: "100%", width: "70%" }}
         >
           <Text style={styles.title}>{props.title}</Text>
           <Text>{props.date}</Text>
@@ -66,7 +66,16 @@ export default function GoalsRow(props: any) {
             </Animated.View>
           ) : null}
         </Pressable>
-        <Ionicons name="checkmark-circle-outline" size={25} />
+        <View style={styles.iconRow}>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            hitSlop={8}
+            accessibilityLabel="Edit goal"
+          >
+            <Ionicons name="create-outline" size={25} />
+          </TouchableOpacity>
+          <Ionicons name="checkmark-circle-outline" size={25} />
+        </View>
       </Animated.View>
       <Modal
         visible={modalVisible}
@@ -184,5 +193,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     minWidth: 70,
     alignItems: "center",
+  },
+  iconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
 });

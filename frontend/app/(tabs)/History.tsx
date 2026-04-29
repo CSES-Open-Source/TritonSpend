@@ -1,6 +1,7 @@
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useCallback, useState } from "react";
+import { XStack, YStack } from "tamagui";
 import BudgetChart from "@/components/HistoryBudget/BudgetChart";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
 import { useFocusEffect } from "@react-navigation/native";
@@ -8,7 +9,40 @@ import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import { ScrollView } from "react-native-gesture-handler";
 import CustomLineChart from "@/components/Graphs/LineChart";
+import CustomBarChart from "@/components/Graphs/BarChart";
+import CustomPieChart from "@/components/Graphs/PieChart";
+import { SegmentedControl } from "@/components/primitives/SegmentedControl";
+import { AppText } from "@/components/primitives/AppText";
 import { useWindowDimensions } from "react-native";
+
+type ChartType = "pie" | "line" | "bar";
+type Range = "1M" | "3M" | "6M" | "1Y";
+
+const RANGE_CONFIG: Record<
+  Range,
+  { period: "daily" | "weekly"; months: number }
+> = {
+  "1M": { period: "daily", months: 1 },
+  "3M": { period: "weekly", months: 3 },
+  "6M": { period: "weekly", months: 6 },
+  "1Y": { period: "weekly", months: 12 },
+};
+
+const categoryColors = new Map<string, string>([
+  ["Food", "#b8b8ff"],
+  ["Shopping", "#fff3b0"],
+  ["Transportation", "#588157"],
+  ["Subscriptions", "#ff9b85"],
+  ["Other", "#2b2d42"],
+]);
+
+interface Category {
+  id: number;
+  category_name: string;
+  category_expense: string;
+  max_category_budget: string;
+  user_id: number;
+}
 
 // Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
@@ -23,23 +57,23 @@ export default function History() {
   // Filter State
   const [filterType, setFilterType] = useState("none"); // "none", "month", "category"
   const [selectedMonth, setSelectedMonth] = useState<string>(
-    new Date().toISOString().substring(0, 7),
+    new Date().toISOString().substring(0, 7)
   ); // YYYY-MM format
   const [selectedCategory, setSelectedCategory] = useState<string>("Food");
   const [showFilterOptions, setShowFilterOptions] = useState(false);
-  const [lineChartData, setLineChartData] = useState([]);
-  const [selectedTimeRange, setSelectedTimeRange] = useState("3months");
+
+  // Chart switcher state
+  const [chartType, setChartType] = useState<ChartType>("pie");
+  const [range, setRange] = useState<Range>("3M");
+  const [lineData, setLineData] = useState<{ date: string; total: number }[]>(
+    []
+  );
+  const [barData, setBarData] = useState<{ name: string; value: number }[]>([]);
+  const [chartCategories, setChartCategories] = useState<Category[]>([]);
 
   const screenWidth = useWindowDimensions().width;
-  const chartWidth = screenWidth * 0.75;
-
-  // Time range configuration
-  const timeRangeConfig = {
-    "1month": { period: "daily", months: 1, label: "1 Month" },
-    "3months": { period: "weekly", months: 3, label: "3 Months" },
-    "6months": { period: "weekly", months: 6, label: "6 Months" },
-    "1year": { period: "weekly", months: 12, label: "1 Year" },
-  };
+  // page paddingHorizontal 20 * 2 + card padding 15 * 2 = 70
+  const chartCardWidth = screenWidth * 0.9 - 30;
 
   // Get unique categories from transactions
   const getUniqueCategories = () => {
@@ -69,7 +103,7 @@ export default function History() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        },
+        }
       )
         .then((res) => res.json())
         .then((data) => {
@@ -91,27 +125,59 @@ export default function History() {
         .catch((error) => {
           console.error("API Error:", error);
         });
-      const config =
-        timeRangeConfig[selectedTimeRange as keyof typeof timeRangeConfig];
-      fetch(
-        `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${config.period}&months=${config.months}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        },
-      )
+
+      fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
+        method: "GET",
+      })
         .then((res) => res.json())
         .then((data) => {
-          setLineChartData(data);
+          setChartCategories(data);
         })
         .catch((error) => {
           console.error("API Error:", error);
         });
-    }, [selectedTimeRange]),
+
+      if (chartType === "line") {
+        const { period, months } = RANGE_CONFIG[range];
+        fetch(
+          `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${period}&months=${months}`,
+          { method: "GET" }
+        )
+          .then((res) => res.json())
+          .then((data) => setLineData(data))
+          .catch((error) => {
+            console.error("API Error:", error);
+          });
+      }
+
+      if (chartType === "bar") {
+        const { months } = RANGE_CONFIG[range];
+        fetch(
+          `http://localhost:${BACKEND_PORT}/transactions/monthly/${userId}`,
+          { method: "GET" }
+        )
+          .then((res) => res.json())
+          .then((data: { month: string; total: number | string }[]) => {
+            const mapped = data.map((d) => ({
+              name: d.month,
+              value: parseFloat(String(d.total)),
+            }));
+            setBarData(mapped.slice(-months));
+          })
+          .catch((error) => {
+            console.error("API Error:", error);
+          });
+      }
+    }, [chartType, range])
   );
+
+  const pieData = chartCategories.map((category) => ({
+    value: parseFloat(category.category_expense),
+    color: categoryColors.get(category.category_name) || "#cccccc",
+    name: category.category_name,
+    id: category.id,
+  }));
+  const pieTotal = pieData.reduce((sum, d) => sum + d.value, 0);
 
   // Toggle filter options visibility
   const toggleFilterOptions = () => {
@@ -175,8 +241,8 @@ export default function History() {
     const months = [
       ...new Set(
         AllTransactions.map((trans) =>
-          new Date(trans.date).toISOString().substring(0, 7),
-        ),
+          new Date(trans.date).toISOString().substring(0, 7)
+        )
       ),
     ]
       .sort()
@@ -197,30 +263,74 @@ export default function History() {
         />
 
         <View style={styles.graphContainer}>
-          <Text style={{ fontSize: 20, fontWeight: "600" }}>
-            Spending Trend
+          <Text
+            style={{ fontSize: 20, fontWeight: "600", alignSelf: "flex-start" }}
+          >
+            Total Spending
           </Text>
-          {/* <View style={styles.graph}></View> */}
 
-          <CustomLineChart
-            data={lineChartData}
-            width={chartWidth}
-            height={300}
-          />
+          <YStack width="100%" marginTop={10} gap="$3">
+            <SegmentedControl
+              value={chartType}
+              onValueChange={setChartType}
+              options={[
+                { label: "Pie", value: "pie" },
+                { label: "Line", value: "line" },
+                { label: "Bar", value: "bar" },
+              ]}
+            />
 
-          <View style={styles.timeRangePickerContainer}>
-            <Text style={styles.timeRangeLabel}>Time Range:</Text>
-            <Picker
-              selectedValue={selectedTimeRange}
-              onValueChange={(itemValue) => setSelectedTimeRange(itemValue)}
-              style={styles.timeRangePicker}
-            >
-              <Picker.Item label="1 Month" value="1month" />
-              <Picker.Item label="3 Months" value="3months" />
-              <Picker.Item label="6 Months" value="6months" />
-              <Picker.Item label="1 Year" value="1year" />
-            </Picker>
-          </View>
+            {chartType !== "pie" && (
+              <SegmentedControl
+                value={range}
+                onValueChange={setRange}
+                options={[
+                  { label: "1M", value: "1M" },
+                  { label: "3M", value: "3M" },
+                  { label: "6M", value: "6M" },
+                  { label: "1Y", value: "1Y" },
+                ]}
+              />
+            )}
+
+            <YStack alignItems="center" marginTop="$2">
+              {chartType === "pie" && (
+                <CustomPieChart data={pieData} size={250} total={pieTotal} />
+              )}
+              {chartType === "line" && (
+                <CustomLineChart
+                  data={lineData}
+                  width={chartCardWidth}
+                  height={260}
+                  total={lineData.reduce((sum, d) => sum + d.total, 0)}
+                />
+              )}
+              {chartType === "bar" && (
+                <CustomBarChart
+                  data={barData}
+                  width={chartCardWidth}
+                  height={260}
+                  total={barData.reduce((sum, d) => sum + d.value, 0)}
+                />
+              )}
+            </YStack>
+
+            {chartType === "pie" && (
+              <XStack flexWrap="wrap" gap="$2" marginTop="$2">
+                {pieData.map((category) => (
+                  <XStack key={category.id} alignItems="center" gap="$2">
+                    <YStack
+                      width={16}
+                      height={16}
+                      borderRadius="$1"
+                      backgroundColor={category.color}
+                    />
+                    <AppText variant="caption">{category.name}</AppText>
+                  </XStack>
+                ))}
+              </XStack>
+            )}
+          </YStack>
         </View>
 
         <View style={styles.filterSortContainer}>
@@ -400,24 +510,6 @@ const styles = StyleSheet.create({
     width: "90%",
     alignItems: "center",
     marginVertical: 10,
-  },
-  timeRangePickerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 15,
-    width: "100%",
-    justifyContent: "center",
-  },
-  timeRangeLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginRight: 10,
-  },
-  timeRangePicker: {
-    height: 50,
-    width: 150,
-    backgroundColor: "#E6E6E6",
-    borderRadius: 5,
   },
   filterSortContainer: {
     flexDirection: "row",

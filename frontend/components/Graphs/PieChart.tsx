@@ -1,22 +1,25 @@
-import { ColorValue } from "react-native";
 import Svg, { Path, G } from "react-native-svg";
 import { YStack } from "tamagui";
 import { AppText } from "@/components/primitives/AppText";
 
+interface PieChartDatum {
+  value: number;
+  color: string;
+  name?: string;
+  id?: number;
+}
+
 export default function DoughnutChart(props: {
   total: number;
   size: number;
-  data: any[];
+  data: PieChartDatum[];
 }) {
   const radius = props.size / 2;
   const innerRadius = radius * 0.65;
-  const total = props.data.reduce(
-    (acc: any, item: { value: any }) => acc + item.value,
-    0
-  );
+  const total = props.data.reduce((acc, item) => acc + item.value, 0);
   let startAngle = 0;
 
-  function createArc(value: number, color?: ColorValue) {
+  function createArc(value: number, color: string, key: number) {
     const angle = (value / total) * 2 * Math.PI;
     const endAngle = startAngle + angle;
 
@@ -37,7 +40,7 @@ export default function DoughnutChart(props: {
 
     startAngle = endAngle;
 
-    return <Path key={Math.random()} d={pathData} fill={color} />;
+    return <Path key={key} d={pathData} fill={color} />;
   }
 
   return (
@@ -53,9 +56,13 @@ export default function DoughnutChart(props: {
           height={props.size}
           style={{ position: "absolute" }}
         >
-          <G>{props.data.map((item) => createArc(item.value, item.color))}</G>
+          <G>
+            {props.data.map((item, index) =>
+              createArc(item.value, item.color, index)
+            )}
+          </G>
         </Svg>
-        <AppText variant="title" fontSize={27} color="$text">
+        <AppText variant="title" fontSize={27} color="$color">
           ${props.total.toFixed(2)}
         </AppText>
       </YStack>
