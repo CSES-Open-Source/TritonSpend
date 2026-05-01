@@ -2,21 +2,25 @@ import React, { useState } from "react";
 import { XStack, YStack } from "tamagui";
 import { AppText } from "./AppText";
 
-const PERIODS = ["1D", "1W", "1M", "1Y"] as const;
-type Period = (typeof PERIODS)[number];
-
 interface SegmentedControlProps {
-  onValueChange?: (value: Period) => void;
-  defaultValue?: Period;
+  value?: string;
+  onValueChange?: (value: string) => void;
+  periods?: string[];
+  defaultValue?: string;
 }
 
 export const SegmentedControl: React.FC<SegmentedControlProps> = ({
+  value,
   onValueChange,
+  periods = ["1D", "1W", "1M", "1Y"],
   defaultValue = "1M",
 }) => {
-  const [active, setActive] = useState<Period>(defaultValue);
+  const [isActive, setActive] = useState(defaultValue);
+  if (!value) {
+    value = isActive;
+  }
 
-  const handlePress = (period: Period) => {
+  const handlePress = (period: string) => {
     setActive(period);
     onValueChange?.(period);
   };
@@ -27,9 +31,10 @@ export const SegmentedControl: React.FC<SegmentedControlProps> = ({
       borderRadius="$7" // Pill shape container
       padding="$1"
       width="100%"
+      flex={1}
     >
-      {PERIODS.map((period) => {
-        const isActive = active === period;
+      {periods.map((period) => {
+        const isActive = value === period;
         return (
           <YStack
             key={period}
