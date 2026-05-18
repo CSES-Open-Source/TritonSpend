@@ -58,7 +58,7 @@ export default function DoughnutChart(props: {
         >
           <G>
             {props.data.map((item, index) =>
-              createArc(item.value, item.color, index)
+              createArc(item.value, item.color, index),
             )}
           </G>
         </Svg>

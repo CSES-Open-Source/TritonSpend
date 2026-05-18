@@ -100,7 +100,7 @@ export default function LineChart(props: {
           {props.data.length > 0 &&
             Array.from({ length: numXLabels }, (_, i) => {
               const index = Math.floor(
-                (i / (numXLabels - 1 || 1)) * (props.data.length - 1)
+                (i / (numXLabels - 1 || 1)) * (props.data.length - 1),
               );
               const x =
                 padding + (index / (props.data.length - 1 || 1)) * chartWidth;

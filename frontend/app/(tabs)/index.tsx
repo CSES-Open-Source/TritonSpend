@@ -66,7 +66,7 @@ export default function Home() {
   const [chartType, setChartType] = useState<ChartType>("pie");
   const [range, setRange] = useState<Range>("3M");
   const [lineData, setLineData] = useState<{ date: string; total: number }[]>(
-    []
+    [],
   );
   const [barData, setBarData] = useState<{ name: string; value: number }[]>([]);
 
@@ -85,7 +85,7 @@ export default function Home() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        }
+        },
       )
         .then((res) => res.json())
         .then((data) => {
@@ -117,8 +117,8 @@ export default function Home() {
             data.reduce(
               (sum: number, category: { category_expense: string }) =>
                 sum + parseFloat(category.category_expense),
-              0
-            )
+              0,
+            ),
           );
         })
         .catch((error) => {
@@ -129,7 +129,7 @@ export default function Home() {
         const { period, months } = RANGE_CONFIG[range];
         fetch(
           `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${period}&months=${months}`,
-          { method: "GET" }
+          { method: "GET" },
         )
           .then((res) => res.json())
           .then((data) => setLineData(data))
@@ -144,7 +144,7 @@ export default function Home() {
           `http://localhost:${BACKEND_PORT}/transactions/monthly/${userId}`,
           {
             method: "GET",
-          }
+          },
         )
           .then((res) => res.json())
           .then((data: { month: string; total: number | string }[]) => {
@@ -158,7 +158,7 @@ export default function Home() {
             console.error("API Error:", error);
           });
       }
-    }, [updateRecent, chartType, range])
+    }, [updateRecent, chartType, range]),
   );
 
   const pieData = categories.map((category) => ({

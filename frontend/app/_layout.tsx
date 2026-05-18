@@ -33,7 +33,7 @@ function AuthCheck() {
           `http://localhost:${BACKEND_PORT}/auth/me`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) {
