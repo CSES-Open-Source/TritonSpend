@@ -10,7 +10,7 @@ import CustomBarChart from "@/components/Graphs/BarChart";
 import CustomPieChart from "@/components/Graphs/PieChart";
 import { SegmentedControl } from "@/components/primitives/SegmentedControl";
 import { useWindowDimensions } from "react-native";
-import { Screen } from "@/components/primitives/Screen";
+import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import Transaction, { Category } from "@/types/transaction";
 import { AppText } from "@/components/primitives/AppText";
 import { StatCard } from "@/components/primitives/StatCard";
@@ -23,6 +23,7 @@ import { AppSelect } from "@/components/primitives/AppSelect";
 import { AppSwitch } from "@/components/primitives/AppSwitch";
 import { AppButton } from "@/components/primitives/AppButton";
 import { categoryColors } from "@/constants/categoryColors";
+import { useAppTheme } from "@/context/themeContext";
 
 type SortOption = "Date" | "Amount" | "Name";
 type FilterOption = "All" | "Month" | "Category";
@@ -67,6 +68,7 @@ export default function History() {
   const [barData, setBarData] = useState<{ name: string; value: number }[]>([]);
   const [chartCategories, setChartCategories] = useState<ChartCategory[]>([]);
   const [showSettings, setShowSettings] = useState(false);
+  const { colors } = useAppTheme();
 
   const screenWidth = useWindowDimensions().width;
   const chartCardWidth = screenWidth - 64;
@@ -245,7 +247,7 @@ export default function History() {
   }, [filterType, filteredTransactions, AllTransactions, categories]);
 
   return (
-    <Screen backgroundColor="$primary">
+    <PrimaryScreen>
       <ScrollView showsVerticalScrollIndicator={false}>
         <YStack px="$4" py="$4" gap="$4">
           <PageHeader
@@ -253,7 +255,11 @@ export default function History() {
             subtitle="Track trends and transactions"
             action={
               <TouchableOpacity onPress={() => setShowSettings(!showSettings)}>
-                <Ionicons name="settings-outline" size={25} color="white" />
+                <Ionicons
+                  name="settings-outline"
+                  size={25}
+                  color={colors.onPrimary}
+                />
               </TouchableOpacity>
             }
           />
@@ -384,7 +390,7 @@ export default function History() {
                     <Ionicons
                       name={categoryIconMapping.get(category[0])!}
                       size={16}
-                      color="#395773"
+                      color="$primary"
                     />
                   }
                   flexBasis={0}
@@ -399,6 +405,6 @@ export default function History() {
           </Card>
         </YStack>
       </ScrollView>
-    </Screen>
+    </PrimaryScreen>
   );
 }

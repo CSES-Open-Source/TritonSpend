@@ -2,6 +2,7 @@ import React from "react";
 import { Card } from "./Card";
 import { AppText } from "./AppText";
 import { YStack, GetProps } from "tamagui";
+import { shadows } from "@/constants/shadows";
 
 type CardProps = GetProps<typeof Card>;
 
@@ -24,17 +25,18 @@ export const QuickActionCard: React.FC<QuickActionCardProps> = ({
       padding="$4"
       flex={1}
       onPress={onPress}
-      pressStyle={{ opacity: 0.8, scale: 0.98 }}
+      pressStyle={{ opacity: 0.88, scale: 0.97 }}
       backgroundColor="$surfaceTintYellow"
       borderRadius="$5"
+      style={shadows.sm}
       {...props}
     >
       <YStack alignItems="center" space="$2">
         {icon}
         <AppText
           variant="caption"
-          fontWeight="bold"
-          color="$text"
+          fontWeight="700"
+          color="$color"
           textAlign="center"
         >
           {label}

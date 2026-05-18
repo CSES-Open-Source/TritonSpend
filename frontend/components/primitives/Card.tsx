@@ -1,12 +1,14 @@
 import { YStack, styled } from "tamagui";
+import { shadows } from "@/constants/shadows";
 
 export const Card = styled(YStack, {
   backgroundColor: "$surfaceDefault",
-  borderRadius: "$5", // 24px radius
+  borderRadius: "$5",
   padding: "$4",
+  borderWidth: 1,
+  borderColor: "$borderColor",
+  ...shadows.sm,
 
-  // By default cards are flat in the new design.
-  // We can override with elevated variant if needed.
   variants: {
     padded: {
       true: {
@@ -15,8 +17,7 @@ export const Card = styled(YStack, {
     },
     elevated: {
       true: {
-        shadowOpacity: 0.2,
-        elevation: 6,
+        ...shadows.md,
       },
     },
   } as const,

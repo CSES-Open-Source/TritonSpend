@@ -4,7 +4,7 @@ import { useWindowDimensions } from "react-native";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import { useFocusEffect } from "@react-navigation/native";
-import { Screen } from "@/components/primitives/Screen";
+import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import { AppText } from "@/components/primitives/AppText";
 import { PageHeader } from "@/components/primitives/PageHeader";
 import { Card } from "@/components/primitives/Card";
@@ -163,8 +163,8 @@ export default function Home() {
   }));
 
   return (
-    <Screen backgroundColor="$primary">
-      <ScrollView>
+    <PrimaryScreen>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <YStack px="$4" py="$4" gap="$4">
           <PageHeader
             title={`Hello ${username}`}
@@ -261,6 +261,6 @@ export default function Home() {
           </Card>
         </YStack>
       </ScrollView>
-    </Screen>
+    </PrimaryScreen>
   );
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import { Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Home from ".";
@@ -8,10 +9,15 @@ import Goals from "./Goals";
 import Deals from "./Deals";
 import { useAuth } from "@/context/authContext";
 import { Redirect } from "expo-router";
+import { shadows } from "@/constants/shadows";
+import { useAppTheme } from "@/context/themeContext";
+
 const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
   const { user } = useAuth();
+  const { colors } = useAppTheme();
+
   if (!user) {
     return <Redirect href="/Login" />;
   }
@@ -20,20 +26,28 @@ export default function TabLayout() {
       initialRouteName="Home"
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#395773",
-        tabBarInactiveTintColor: "#7B8A96",
+        tabBarActiveTintColor: colors.tabBarActive,
+        tabBarInactiveTintColor: colors.tabBarInactive,
         tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          borderTopColor: "#C6C6C8",
-          paddingTop: 4,
+          position: "absolute",
+          left: 16,
+          right: 16,
+          bottom: Platform.OS === "ios" ? 24 : 16,
+          height: 64,
+          borderRadius: 28,
+          backgroundColor: colors.tabBarBg,
+          borderTopWidth: 0,
+          paddingTop: 6,
+          paddingBottom: Platform.OS === "ios" ? 8 : 6,
+          ...shadows.tabBar,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: "600",
+          marginTop: -2,
         },
       }}
     >
-      {/* Home Tab */}
       <Tab.Screen
         name="Home"
         component={Home}
@@ -52,15 +66,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="Login"
-        component={LoginPage}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="log-in" size={size} color={color} />
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name="Goals"
         component={Goals}

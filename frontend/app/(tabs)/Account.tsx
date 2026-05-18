@@ -13,13 +13,15 @@ import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
-import { Screen } from "@/components/primitives/Screen";
+import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import { PageHeader } from "@/components/primitives/PageHeader";
 import { Card } from "@/components/primitives/Card";
 import { AppInput } from "@/components/primitives/AppInput";
 import { AppButton } from "@/components/primitives/AppButton";
 import { AppText } from "@/components/primitives/AppText";
 import { YStack, ScrollView, XStack } from "tamagui";
+import ThemeToggle from "@/components/SettingSection/ThemeToggle";
+import { useAppTheme } from "@/context/themeContext";
 
 interface CategoryBudget {
   category_name: string;
@@ -35,6 +37,7 @@ export default function Account() {
   const [profilePic, setProfilePic] = useState("");
   const [Category, setCategory] = useState<CategoryBudget[]>([]);
   const { userId } = useAuth();
+  const { colors } = useAppTheme();
 
   useEffect(() => {
     fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
@@ -198,7 +201,7 @@ export default function Account() {
         </YStack>
       </Modal>
 
-      <Screen backgroundColor="$primary">
+      <PrimaryScreen>
         <ScrollView showsVerticalScrollIndicator={false}>
           <YStack px="$4" py="$4" gap="$4" paddingBottom="$8">
             <PageHeader
@@ -206,7 +209,7 @@ export default function Account() {
               subtitle="Manage your account and budgets"
               action={
                 <TouchableOpacity onPress={() => setModalVisible(true)}>
-                  <Feather name="edit" size={22} color="white" />
+                  <Feather name="edit" size={22} color={colors.onPrimary} />
                 </TouchableOpacity>
               }
             />
@@ -215,6 +218,7 @@ export default function Account() {
               profilePic={profilePic}
               Email={Email}
             />
+            <ThemeToggle />
             <SettingList
               list={Category.map((c) => ({
                 ...c,
@@ -225,7 +229,7 @@ export default function Account() {
             <LogOutButton />
           </YStack>
         </ScrollView>
-      </Screen>
+      </PrimaryScreen>
     </>
   );
 }

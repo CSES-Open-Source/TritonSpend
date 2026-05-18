@@ -44,12 +44,13 @@ export const tamaguiConfig = createTamagui({
   },
   themes: {
     light: {
-      background: "#F7F9FA", // soft off-white from design
+      background: "#F7F9FA",
       color: tokens.color.text,
       primary: tokens.color.primary,
       tint: tokens.color.primary,
       icon: tokens.color.lightIcon,
       borderColor: tokens.color.border,
+      border: tokens.color.border,
       shadowColor: tokens.color.black,
       textMuted: tokens.color.textMuted,
 
@@ -60,20 +61,21 @@ export const tamaguiConfig = createTamagui({
       surfaceTintYellow: tokens.color.surfaceTintYellow,
     },
     dark: {
-      background: tokens.color.darkBackground,
-      color: tokens.color.darkText,
-      primary: tokens.color.primary,
-      tint: tokens.color.darkTint,
-      icon: tokens.color.darkIcon,
-      borderColor: tokens.color.textMuted,
-      shadowColor: tokens.color.white,
-      textMuted: tokens.color.textMuted,
+      background: "#0D1218",
+      color: "#F0F4F8",
+      primary: "#6B9DB8",
+      tint: "#8BB4D0",
+      icon: "#9BA8B5",
+      borderColor: "#3A4550",
+      border: "#3A4550",
+      shadowColor: tokens.color.black,
+      textMuted: "#9BA8B5",
 
-      surface: tokens.color.darkSurfaceDefault,
-      surfaceDefault: tokens.color.darkSurfaceDefault,
-      surfaceTintBlue: tokens.color.darkSurfaceTintBlue,
-      surfaceTintGreen: tokens.color.darkSurfaceTintGreen,
-      surfaceTintYellow: tokens.color.darkSurfaceTintGreen, // fallback
+      surface: "#1C242C",
+      surfaceDefault: "#1C242C",
+      surfaceTintBlue: "#1A2D3D",
+      surfaceTintGreen: "#1A2E22",
+      surfaceTintYellow: "#2A2818",
     },
   },
   shorthands: {

@@ -13,7 +13,7 @@ import { AppInput } from "@/components/primitives/AppInput";
 import { AppButton } from "@/components/primitives/AppButton";
 import { Card } from "@/components/primitives/Card";
 import { DatePickerField } from "@/components/primitives/DatePickerField";
-import { GOAL_CARD_BACKGROUND, GOAL_CARD_TEXT } from "@/constants/goalStyles";
+import { useAppTheme } from "@/context/themeContext";
 
 interface GoalsRowProps {
   id: number;
@@ -32,6 +32,7 @@ export default function GoalsRow({
   editGoal,
   deleteGoal,
 }: GoalsRowProps) {
+  const { colors } = useAppTheme();
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
@@ -61,30 +62,28 @@ export default function GoalsRow({
     <>
       <Animated.View style={{ height: expand, width: "100%" }}>
         <Card
-          backgroundColor={GOAL_CARD_BACKGROUND}
+          backgroundColor="$surfaceTintBlue"
           flexDirection="row"
           alignItems="center"
           justifyContent="space-between"
           height="100%"
           padding="$3"
+          borderRadius="$4"
+          marginBottom="$2"
         >
           <Pressable
             onPress={toggle}
             onLongPress={() => setModalVisible(true)}
             style={{ flex: 1, height: "100%", justifyContent: "center" }}
           >
-            <AppText
-              variant="subtitle"
-              fontWeight="bold"
-              color={GOAL_CARD_TEXT}
-            >
+            <AppText variant="subtitle" fontWeight="bold" color="$color">
               {title}
             </AppText>
-            <AppText variant="caption" color={GOAL_CARD_TEXT} opacity={0.75}>
+            <AppText variant="caption" color="$textMuted">
               {date}
             </AppText>
             {expanded && (
-              <AppText variant="body" marginTop="$2" color={GOAL_CARD_TEXT}>
+              <AppText variant="body" marginTop="$2" color="$color">
                 {content}
               </AppText>
             )}
@@ -95,16 +94,12 @@ export default function GoalsRow({
               hitSlop={8}
               accessibilityLabel="Edit goal"
             >
-              <Ionicons
-                name="create-outline"
-                size={22}
-                color={GOAL_CARD_TEXT}
-              />
+              <Ionicons name="create-outline" size={22} color="$color" />
             </TouchableOpacity>
             <Ionicons
               name="checkmark-circle-outline"
               size={22}
-              color={GOAL_CARD_TEXT}
+              color="$color"
             />
           </XStack>
         </Card>
@@ -119,7 +114,7 @@ export default function GoalsRow({
         <YStack
           flex={1}
           justifyContent="center"
-          backgroundColor="rgba(0,0,0,0.5)"
+          backgroundColor={colors.modalOverlay}
           padding="$4"
         >
           <ScrollView
@@ -141,14 +136,12 @@ export default function GoalsRow({
                 placeholder="Title"
                 value={editTitle}
                 onChangeText={setEditTitle}
-                placeholderTextColor="#7B8A96"
               />
               <AppInput
                 multiline
                 placeholder="Details"
                 value={editContent}
                 onChangeText={setEditContent}
-                placeholderTextColor="#7B8A96"
               />
               <DatePickerField
                 compact

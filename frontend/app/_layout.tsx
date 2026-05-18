@@ -1,7 +1,7 @@
 import {
   DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -12,11 +12,13 @@ import Header from "@/components/Header/Header";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "@/context/authContext";
 import { useAuth } from "@/context/authContext";
+import { ThemeProvider as AppThemeProvider } from "@/context/themeContext";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import { BACKEND_PORT } from "@env";
 import { TamaguiProvider, Theme } from "tamagui";
 import tamaguiConfig from "../tamagui.config";
+import { useAppTheme } from "@/context/themeContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -45,7 +47,7 @@ function AuthCheck() {
       } catch (error) {
         console.error("Auth check failed:", error);
       } finally {
-        setChecking(false); // Even if failed, stop loading
+        setChecking(false);
       }
     };
     checkAuth();
@@ -54,13 +56,15 @@ function AuthCheck() {
   if (checking) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#395773" />
       </View>
     );
   }
   return (
     <>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <NavigationThemeProvider
+        value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+      >
         <Header />
         {!user ? (
           <Stack>
@@ -71,24 +75,37 @@ function AuthCheck() {
             />
           </Stack>
         ) : (
-          <>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              {/* <Stack.Screen
-                  name="Dashboard"
-                  options={{ title: "Dashboard", headerShown: false }}
-                /> */}
-            </Stack>
-          </>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
         )}
-      </ThemeProvider>
+      </NavigationThemeProvider>
       <Toast />
     </>
   );
 }
 
+function ThemedApp() {
+  const { colorScheme, isReady } = useAppTheme();
+
+  if (!isReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#395773" />
+      </View>
+    );
+  }
+
+  return (
+    <Theme name={colorScheme}>
+      <AuthProvider>
+        <AuthCheck />
+      </AuthProvider>
+    </Theme>
+  );
+}
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -105,11 +122,9 @@ export default function RootLayout() {
 
   return (
     <TamaguiProvider config={tamaguiConfig}>
-      <Theme name={colorScheme === "dark" ? "dark" : "light"}>
-        <AuthProvider>
-          <AuthCheck />
-        </AuthProvider>
-      </Theme>
+      <AppThemeProvider>
+        <ThemedApp />
+      </AppThemeProvider>
     </TamaguiProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Modal,
   TouchableOpacity,
@@ -10,7 +10,7 @@ import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import Toast from "react-native-toast-message";
 import { useFocusEffect } from "@react-navigation/native";
-import { Screen } from "@/components/primitives/Screen";
+import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import { PageHeader } from "@/components/primitives/PageHeader";
 import { Card } from "@/components/primitives/Card";
 import { SectionTitle } from "@/components/primitives/SectionTitle";
@@ -24,7 +24,8 @@ import {
   toYmd,
 } from "@/components/primitives/DatePickerField";
 import { XStack } from "tamagui";
-import { GOAL_CARD_BACKGROUND } from "@/constants/goalStyles";
+import { sortGoalsByTargetDate } from "@/constants/goalStyles";
+import { useAppTheme } from "@/context/themeContext";
 
 interface Goal {
   id: number;
@@ -36,6 +37,7 @@ interface Goal {
 
 export default function Goals() {
   const { userId } = useAuth();
+  const { colors } = useAppTheme();
   const [Goals, setGoals] = useState<Goal[]>([]);
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -53,7 +55,7 @@ export default function Goals() {
         },
       })
         .then((res) => res.json())
-        .then((data) => setGoals(data))
+        .then((data) => setGoals(sortGoalsByTargetDate(data)))
         .catch((error) => console.error("API Error:", error));
     }, [userId]),
   );
@@ -76,16 +78,18 @@ export default function Goals() {
       })
         .then(async (res) => {
           const data = await res.json();
-          setGoals([
-            ...Goals,
-            {
-              id: data.id,
-              title: newGoalTitle,
-              details: newGoalContent,
-              color: GOAL_CARD_BACKGROUND,
-              target_date: formattedDate,
-            },
-          ]);
+          setGoals(
+            sortGoalsByTargetDate([
+              ...Goals,
+              {
+                id: data.id,
+                title: newGoalTitle,
+                details: newGoalContent,
+                color: undefined,
+                target_date: formattedDate,
+              },
+            ]),
+          );
           setNewGoalTitle("");
           setNewGoalContent("");
           setSelectedDate(toYmd(new Date()));
@@ -123,8 +127,12 @@ export default function Goals() {
       })
         .then(() => {
           setGoals(
-            Goals.map((goal) =>
-              goal.id === id ? { ...goal, title, details, target_date } : goal,
+            sortGoalsByTargetDate(
+              Goals.map((goal) =>
+                goal.id === id
+                  ? { ...goal, title, details, target_date }
+                  : goal,
+              ),
             ),
           );
           Toast.show({ type: "success", text1: "Goal Updated" });
@@ -168,14 +176,19 @@ export default function Goals() {
       });
   }
 
-  const filteredGoals = Goals.filter(
-    (goal) =>
-      goal.title.toLowerCase().includes(search.toLowerCase()) ||
-      goal.details.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredGoals = useMemo(() => {
+    const q = search.toLowerCase();
+    return sortGoalsByTargetDate(
+      Goals.filter(
+        (goal) =>
+          goal.title.toLowerCase().includes(q) ||
+          goal.details.toLowerCase().includes(q),
+      ),
+    );
+  }, [Goals, search]);
 
   return (
-    <Screen backgroundColor="$primary">
+    <PrimaryScreen>
       <ScrollView showsVerticalScrollIndicator={false}>
         <YStack px="$4" py="$4" gap="$4" paddingBottom="$8">
           <PageHeader
@@ -225,7 +238,7 @@ export default function Goals() {
         <YStack
           flex={1}
           justifyContent="center"
-          backgroundColor="rgba(0,0,0,0.4)"
+          backgroundColor={colors.modalOverlay}
           padding="$4"
         >
           <RNScrollView
@@ -247,14 +260,12 @@ export default function Goals() {
                 placeholder="Title"
                 value={newGoalTitle}
                 onChangeText={setNewGoalTitle}
-                placeholderTextColor="#7B8A96"
               />
               <AppInput
                 multiline
                 placeholder="Details"
                 value={newGoalContent}
                 onChangeText={setNewGoalContent}
-                placeholderTextColor="#7B8A96"
               />
               <DatePickerField
                 compact
@@ -272,6 +283,6 @@ export default function Goals() {
           </RNScrollView>
         </YStack>
       </Modal>
-    </Screen>
+    </PrimaryScreen>
   );
 }

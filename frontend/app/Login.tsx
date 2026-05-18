@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/authContext";
 import React, { useEffect, useState } from "react";
 import { BACKEND_PORT } from "@env";
-import { Screen } from "@/components/primitives/Screen";
+import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import { Card } from "@/components/primitives/Card";
 import { AppText } from "@/components/primitives/AppText";
 import { AppButton } from "@/components/primitives/AppButton";
@@ -39,23 +39,21 @@ const LoginPage = () => {
   }, [isRedirected, login]);
 
   return (
-    <Screen
-      backgroundColor="$primary"
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Card width="90%" maxWidth={400} gap="$4" padding="$5">
-        <YStack gap="$2" alignItems="center">
-          <AppText variant="title" fontSize="$7" color="$primary">
-            TritonSpend
-          </AppText>
-          <AppText variant="subtitle" textAlign="center">
-            Sign in to access your account
-          </AppText>
-        </YStack>
-        <AppButton onPress={handleGoogleLogin}>Sign in with Google</AppButton>
-      </Card>
-    </Screen>
+    <PrimaryScreen tabBarInset={false}>
+      <YStack flex={1} justifyContent="center" alignItems="center" px="$4">
+        <Card elevated width="90%" maxWidth={400} gap="$4" padding="$5">
+          <YStack gap="$2" alignItems="center">
+            <AppText variant="title" fontSize="$8" color="$primary">
+              TritonSpend
+            </AppText>
+            <AppText variant="subtitle" textAlign="center">
+              Sign in to access your account
+            </AppText>
+          </YStack>
+          <AppButton onPress={handleGoogleLogin}>Sign in with Google</AppButton>
+        </Card>
+      </YStack>
+    </PrimaryScreen>
   );
 };
 

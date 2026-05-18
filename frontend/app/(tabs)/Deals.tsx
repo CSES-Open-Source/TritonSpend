@@ -11,13 +11,15 @@ import {
 import { XStack, YStack } from "tamagui";
 import { useFocusEffect } from "@react-navigation/native";
 import { BACKEND_PORT } from "@env";
-import { Screen } from "@/components/primitives/Screen";
+import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
+import { AccentStat } from "@/components/primitives/AccentStat";
 import { Card } from "@/components/primitives/Card";
 import { AppText } from "@/components/primitives/AppText";
 import { PageHeader } from "@/components/primitives/PageHeader";
 import { SectionTitle } from "@/components/primitives/SectionTitle";
 import { SearchField } from "@/components/primitives/SearchField";
 import { DealCard } from "@/components/Deals/DealCard";
+import { useAppTheme } from "@/context/themeContext";
 
 interface Deal {
   id: number;
@@ -55,6 +57,7 @@ function Pill({
   active: boolean;
   onPress: () => void;
 }) {
+  const { colors } = useAppTheme();
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePress = () => {
@@ -84,15 +87,22 @@ function Pill({
         activeOpacity={0.8}
         style={[
           styles.pill,
-          active && styles.pillActive,
-          isUcsd && !active && styles.pillUcsd,
+          { backgroundColor: colors.pillBg },
+          active && { backgroundColor: colors.pillActiveBg },
+          isUcsd &&
+            !active && {
+              backgroundColor: colors.pillUcsdBg,
+              borderWidth: 1,
+              borderColor: colors.pillUcsdBorder,
+            },
         ]}
       >
         <AppText
           style={[
             styles.pillText,
-            active && styles.pillTextActive,
-            isUcsd && !active && styles.pillTextUcsd,
+            { color: colors.pillText },
+            active && { color: colors.pillActiveText },
+            isUcsd && !active && { color: colors.pillUcsdText },
           ]}
         >
           {isUcsd ? "🔱 UCSD" : label}
@@ -102,37 +112,9 @@ function Pill({
   );
 }
 
-// ── Stat mini-card ───────────────────────────────────────────────────────────
-function MiniStat({
-  value,
-  label,
-  tint,
-}: {
-  value: string;
-  label: string;
-  tint?: string;
-}) {
-  return (
-    <YStack
-      flex={1}
-      backgroundColor={tint ?? "$surfaceTintBlue"}
-      borderRadius="$4"
-      padding="$3"
-      alignItems="center"
-      gap="$1"
-    >
-      <AppText variant="title" fontSize="$5" color="$primary">
-        {value}
-      </AppText>
-      <AppText variant="caption" color="$textMuted" textAlign="center">
-        {label}
-      </AppText>
-    </YStack>
-  );
-}
-
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function Deals() {
+  const { colors } = useAppTheme();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -178,20 +160,19 @@ export default function Deals() {
 
       {/* Stats row */}
       <XStack gap="$3">
-        <MiniStat value={`${deals.length}`} label="Total Deals" />
-        <MiniStat
+        <AccentStat value={`${deals.length}`} label="Total Deals" />
+        <AccentStat
           value={`${freeCount}`}
           label="Free"
-          tint="$surfaceTintGreen"
+          backgroundColor={colors.accentStatGreen}
         />
-        <MiniStat
+        <AccentStat
           value={`🔱 ${ucsdCount}`}
           label="UCSD Only"
-          tint="$surfaceTintYellow"
+          backgroundColor={colors.accentStatYellow}
         />
       </XStack>
 
-      {/* Search inside a Card */}
       <Card>
         <SectionTitle title="Search" />
         <SearchField
@@ -225,7 +206,12 @@ export default function Deals() {
 
       {/* Results label */}
       {!loading && (
-        <AppText fontSize="$2" color="white" opacity={0.75} fontWeight="600">
+        <AppText
+          fontSize="$2"
+          color={colors.onPrimary}
+          opacity={0.75}
+          fontWeight="600"
+        >
           {filtered.length} deal{filtered.length !== 1 ? "s" : ""}
           {activeCategory !== "All" ? `  ·  ${activeCategory}` : ""}
           {search ? `  ·  "${search}"` : ""}
@@ -235,13 +221,13 @@ export default function Deals() {
   );
 
   return (
-    <Screen backgroundColor="$primary">
+    <PrimaryScreen>
       {loading ? (
         <>
           {ListHeader}
           <YStack flex={1} alignItems="center" justifyContent="center" gap="$3">
-            <ActivityIndicator size="large" color="white" />
-            <AppText color="white" opacity={0.7}>
+            <ActivityIndicator size="large" color={colors.onPrimary} />
+            <AppText color={colors.onPrimary} opacity={0.7}>
               Loading deals…
             </AppText>
           </YStack>
@@ -263,37 +249,29 @@ export default function Deals() {
           ListEmptyComponent={
             <YStack alignItems="center" paddingTop={48} gap="$3" px="$4">
               <AppText style={{ fontSize: 48 }}>🎟️</AppText>
-              <AppText color="white" textAlign="center" opacity={0.8}>
+              <AppText
+                color={colors.onPrimary}
+                textAlign="center"
+                opacity={0.85}
+              >
                 No deals found.{"\n"}Try a different search or category.
               </AppText>
             </YStack>
           }
         />
       )}
-    </Screen>
+    </PrimaryScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  // Pills
   pillsScroll: { marginHorizontal: -4 },
   pill: {
-    backgroundColor: "#F3F4F6",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 999,
   },
-  pillActive: { backgroundColor: "#395773" },
-  pillUcsd: {
-    backgroundColor: "#FFFBEB",
-    borderWidth: 1,
-    borderColor: "#FCD34D",
-  },
-  pillText: { fontSize: 13, fontWeight: "600", color: "#6B7280" },
-  pillTextActive: { color: "#FFFFFF" },
-  pillTextUcsd: { color: "#92400E" },
-
-  // List
+  pillText: { fontSize: 13, fontWeight: "600" },
   cardWrap: { paddingHorizontal: 16 },
   listContent: { paddingBottom: 40 },
 });
