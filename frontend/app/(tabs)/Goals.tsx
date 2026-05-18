@@ -239,24 +239,33 @@ export default function Goals() {
           backgroundColor="rgba(0,0,0,0.4)"
           padding="$4"
         >
-          <Card width="100%" maxWidth={400} gap="$4">
-            <AppText variant="title" fontSize="$5">
+          <Card
+            width="100%"
+            maxWidth={400}
+            gap="$4"
+            backgroundColor="$surfaceDefault"
+          >
+            <AppText variant="title" fontSize="$5" color="$color">
               New Goal
             </AppText>
             <AppInput
               placeholder="Title"
               value={newGoalTitle}
               onChangeText={setNewGoalTitle}
+              placeholderTextColor="#7B8A96"
             />
             <AppInput
+              multiline
               placeholder="Details"
               value={newGoalContent}
               onChangeText={setNewGoalContent}
+              placeholderTextColor="#7B8A96"
             />
             <AppInput
               placeholder="Target Date (YYYY-MM-DD)"
               value={selectedDate}
               onChangeText={setSelectedDate}
+              placeholderTextColor="#7B8A96"
             />
             <XStack justifyContent="flex-end" gap="$3">
               <TouchableOpacity onPress={() => setModalVisible(false)}>

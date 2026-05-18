@@ -98,24 +98,28 @@ export default function GoalsRow({
           backgroundColor="rgba(0,0,0,0.5)"
           padding="$4"
         >
-          <Card gap="$3">
-            <AppText variant="title" fontSize="$5">
+          <Card gap="$3" backgroundColor="$surfaceDefault">
+            <AppText variant="title" fontSize="$5" color="$color">
               Edit Goal
             </AppText>
             <AppInput
               placeholder="Title"
               value={editTitle}
               onChangeText={setEditTitle}
+              placeholderTextColor="#7B8A96"
             />
             <AppInput
+              multiline
               placeholder="Details"
               value={editContent}
               onChangeText={setEditContent}
+              placeholderTextColor="#7B8A96"
             />
             <AppInput
               placeholder="Target Date (YYYY-MM-DD)"
               value={editDate}
               onChangeText={setEditDate}
+              placeholderTextColor="#7B8A96"
             />
             <XStack gap="$2" flexWrap="wrap">
               <AppButton

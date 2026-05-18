@@ -53,6 +53,7 @@ export const tamaguiConfig = createTamagui({
       shadowColor: tokens.color.black,
       textMuted: tokens.color.textMuted,
 
+      surface: tokens.color.surfaceDefault,
       surfaceDefault: tokens.color.surfaceDefault,
       surfaceTintBlue: tokens.color.surfaceTintBlue,
       surfaceTintGreen: tokens.color.surfaceTintGreen,
@@ -68,6 +69,7 @@ export const tamaguiConfig = createTamagui({
       shadowColor: tokens.color.white,
       textMuted: tokens.color.textMuted,
 
+      surface: tokens.color.darkSurfaceDefault,
       surfaceDefault: tokens.color.darkSurfaceDefault,
       surfaceTintBlue: tokens.color.darkSurfaceTintBlue,
       surfaceTintGreen: tokens.color.darkSurfaceTintGreen,

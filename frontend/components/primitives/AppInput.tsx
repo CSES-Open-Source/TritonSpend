@@ -1,18 +1,20 @@
 import { Input, styled } from "tamagui";
 
 export const AppInput = styled(Input, {
-  backgroundColor: "$surface",
-  borderColor: "$border",
+  backgroundColor: "$surfaceDefault",
+  borderColor: "$borderColor",
   borderWidth: 1,
   borderRadius: "$3",
   paddingHorizontal: "$3",
   paddingVertical: "$3",
-  color: "$text",
+  color: "$color",
   fontFamily: "$body",
+  placeholderTextColor: "$textMuted",
 
   focusStyle: {
     borderColor: "$primary",
     borderWidth: 2,
+    backgroundColor: "$surfaceDefault",
   },
 
   variants: {
@@ -28,6 +30,13 @@ export const AppInput = styled(Input, {
       large: {
         height: 56,
         fontSize: "$4",
+      },
+    },
+    multiline: {
+      true: {
+        minHeight: 88,
+        textAlignVertical: "top",
+        paddingVertical: "$3",
       },
     },
     error: {
