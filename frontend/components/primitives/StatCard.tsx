@@ -17,7 +17,6 @@ export const StatCard: React.FC<StatCardProps> = ({
   title,
   value,
   subtitle,
-  trend,
   icon,
   ...props
 }) => {

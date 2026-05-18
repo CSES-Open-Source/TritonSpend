@@ -1,8 +1,4 @@
-import { useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
-import { AntDesign } from "@expo/vector-icons";
-import SearchBar from "@/components/SearchBar/SearchBar";
+import { View, StyleSheet } from "react-native";
 import GoalsRow from "./GoalsRow";
 
 export default function GoalsList(props: any) {

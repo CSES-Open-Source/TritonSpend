@@ -59,7 +59,6 @@ export const tokens = createTokens({
     // Surface variants
     surfaceDefault: "#FFFFFF",
     surfaceTintBlue: "#E6F1F4", // daily spending / goals
-    surfaceSecondaryTintBlue: "#C9D8DE", // Icon circle
     surfaceTintGreen: "#EAEFE0", // weekly spending donut card
     surfaceTintYellow: "#F6F3E6", // quick actions save more
     darkSurfaceDefault: "#212325",

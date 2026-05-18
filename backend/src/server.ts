@@ -11,6 +11,7 @@ import "../src/googleAuth"; // Import the Google OAuth logic (this automatically
 import transactionRoutes from "../src/routes/transactions";
 import userRoutes from "../src/routes/user";
 import goalsRoutes from "../src/routes/goals";
+import dealsRoutes from "../src/routes/deals";
 const PORT = env.PORT;
 
 // Middleware for handling sessions
@@ -59,6 +60,7 @@ app.get("/auth/logout", (req, res) => {
 app.use("/transactions", transactionRoutes);
 app.use("/users", userRoutes);
 app.use("/goals", goalsRoutes);
+app.use("/deals", dealsRoutes);
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}.`);

@@ -76,7 +76,7 @@ export default function NewTransactionRow(props: Props) {
           width="$9"
           height="$9"
           borderRadius="$7"
-          backgroundColor="$surfaceSecondaryTintBlue"
+          backgroundColor="$border"
           justifyContent="center"
           alignItems="center"
         >

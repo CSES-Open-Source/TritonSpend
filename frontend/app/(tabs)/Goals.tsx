@@ -142,7 +142,7 @@ export default function Goals() {
           target_date: target_date,
         }),
       })
-        .then((res) => {
+        .then(() => {
           setGoals(
             Goals.map((goal) =>
               goal.id === id

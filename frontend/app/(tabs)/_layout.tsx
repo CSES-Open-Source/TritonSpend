@@ -2,10 +2,10 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Home from ".";
-import History from "./History"; // Import the History component
-// import LoginPage from "../Login";
+import History from "./History";
 import Account from "./Account";
 import Goals from "./Goals";
+import Deals from "./Deals";
 import { useAuth } from "@/context/authContext";
 import { Redirect } from "expo-router";
 const Tab = createBottomTabNavigator();
@@ -54,6 +54,15 @@ export default function TabLayout() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="rocket" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Deals"
+        component={Deals}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="pricetag-outline" size={size} color={color} />
           ),
         }}
       />

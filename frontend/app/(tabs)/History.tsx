@@ -8,7 +8,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import CustomLineChart from "@/components/Graphs/LineChart";
 import { useWindowDimensions } from "react-native";
 import { Screen } from "@/components/primitives/Screen";
-import { SegmentedControl } from "@/components/primitives/SegmentedControl";
 import Transaction, { Category } from "@/types/transaction";
 import { AppText } from "@/components/primitives/AppText";
 import { StatCard } from "@/components/primitives/StatCard";
@@ -229,8 +228,9 @@ export default function History() {
             height={300}
           />
 
-          <SegmentedControl
-            periods={["1M", "3M", "6M", "1Y"]}
+          <AppSelect
+            options={["1M", "3M", "6M", "1Y"]}
+            value={selectedTimeRange}
             onValueChange={setSelectedTimeRange}
           />
 
@@ -247,16 +247,13 @@ export default function History() {
           {showSettings && (
             <YStack gap="$4">
               <AppText variant="subtitle">Filter</AppText>
-              <XStack justifyContent="space-between" gap="$4">
-                <SegmentedControl
-                  value={filterType}
-                  periods={["All", "Month", "Category"]}
-                  defaultValue="All"
-                  onValueChange={(newValue) =>
-                    setFilterType(newValue as FilterOption)
-                  }
-                />
-              </XStack>
+              <AppSelect
+                options={["All", "Month", "Category"]}
+                value={filterType}
+                onValueChange={(newValue) =>
+                  setFilterType(newValue as FilterOption)
+                }
+              />
 
               {filterType === "Month" && (
                 <AppSelect
@@ -286,16 +283,11 @@ export default function History() {
                   </AppText>
                 </XStack>
               </XStack>
-              <XStack justifyContent="space-between">
-                <SegmentedControl
-                  value={sortBy}
-                  periods={["Date", "Amount", "Name"]}
-                  defaultValue="Date"
-                  onValueChange={(newValue) =>
-                    setSortBy(newValue as SortOption)
-                  }
-                />
-              </XStack>
+              <AppSelect
+                options={["Date", "Amount", "Name"]}
+                value={sortBy}
+                onValueChange={(newValue) => setSortBy(newValue as SortOption)}
+              />
               <AppButton onPress={resetFiltersAndSort}>Reset</AppButton>
             </YStack>
           )}
