@@ -1,31 +1,41 @@
 import { useCallback, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Button,
-  Modal,
-  TouchableOpacity,
-} from "react-native";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
-import SearchBar from "@/components/SearchBar/SearchBar";
+import { Modal, TouchableOpacity } from "react-native";
+import { ScrollView, YStack } from "tamagui";
 import GoalsList from "@/components/GoalsList/GoalsList";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
 import Toast from "react-native-toast-message";
 import { useFocusEffect } from "@react-navigation/native";
-/**
- * Goals page that lists perosnal goals that the user wants
- * Users are able to add, delete, edit their goals
- */
+import { Screen } from "@/components/primitives/Screen";
+import { PageHeader } from "@/components/primitives/PageHeader";
+import { Card } from "@/components/primitives/Card";
+import { SectionTitle } from "@/components/primitives/SectionTitle";
+import { SearchField } from "@/components/primitives/SearchField";
+import { AppButton } from "@/components/primitives/AppButton";
+import { AppInput } from "@/components/primitives/AppInput";
+import { AppText } from "@/components/primitives/AppText";
+import { XStack } from "tamagui";
+
+interface Goal {
+  id: number;
+  title: string;
+  details: string;
+  color: string;
+  target_date: string;
+}
+
+const colorOptions = [
+  "#ffadad",
+  "#ffd6a5",
+  "#fdffb6",
+  "#caffbf",
+  "#9bf6ff",
+  "#a0c4ff",
+  "#bdb2ff",
+  "#ffc6ff",
+];
+
 export default function Goals() {
-  interface Goal {
-    id: number;
-    title: string;
-    details: string;
-    color: string;
-    target_date: string;
-  }
   const { userId } = useAuth();
   const [Goals, setGoals] = useState<Goal[]>([]);
   const [search, setSearch] = useState("");
@@ -33,17 +43,7 @@ export default function Goals() {
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [newGoalContent, setNewGoalContent] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
-  const colorOptions = [
-    "#ffadad",
-    "#ffd6a5",
-    "#fdffb6",
-    "#caffbf",
-    "#9bf6ff",
-    "#a0c4ff",
-    "#bdb2ff",
-    "#ffc6ff",
-    "#fffffc",
-  ];
+
   useFocusEffect(
     useCallback(() => {
       fetch(`http://localhost:${BACKEND_PORT}/goals/getGoals/${userId}`, {
@@ -54,29 +54,27 @@ export default function Goals() {
         },
       })
         .then((res) => res.json())
-        .then((data) => {
-          setGoals(data);
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-        });
-    }, []),
+        .then((data) => setGoals(data))
+        .catch((error) => console.error("API Error:", error));
+    }, [userId]),
   );
+
   function getRandomColor() {
-    const randomIndex = Math.floor(Math.random() * colorOptions.length);
-    return colorOptions[randomIndex];
+    return colorOptions[Math.floor(Math.random() * colorOptions.length)];
   }
+
   function isValidDate(date: string): boolean {
-    const regex = /^\d{4}-\d{2}-\d{2}$/; // format for YYYY-MM-DD
-    return regex.test(date);
+    return /^\d{4}-\d{2}-\d{2}$/.test(date);
   }
+
   function formatDate(date: string) {
     const parsedDate = new Date(date);
     const year = parsedDate.getUTCFullYear();
     const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
     const day = String(parsedDate.getUTCDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`; // Format it as YYYY-MM-DD
+    return `${year}-${month}-${day}`;
   }
+
   function addGoal() {
     if (newGoalTitle.trim() && isValidDate(selectedDate)) {
       const formattedDate = formatDate(selectedDate);
@@ -105,22 +103,20 @@ export default function Goals() {
               target_date: formattedDate,
             },
           ]);
-          // setNextId(nextId + 1);
           setNewGoalTitle("");
           setNewGoalContent("");
           setSelectedDate("");
           setModalVisible(false);
           Toast.show({
             type: "success",
-            text1: "Goal Added ✅",
-            text2: "Your transaction has been recorded",
+            text1: "Goal Added",
+            text2: "Your goal has been saved.",
           });
         })
-        .catch((error) => {
-          console.error("API Error:", error);
-        });
+        .catch((error) => console.error("API Error:", error));
     }
   }
+
   function editGoal(
     id: number,
     title: string,
@@ -138,211 +134,139 @@ export default function Goals() {
           id,
           user_id: userId,
           title,
-          details: details,
-          target_date: target_date,
+          details,
+          target_date,
         }),
       })
         .then(() => {
           setGoals(
             Goals.map((goal) =>
-              goal.id === id
-                ? {
-                    ...goal,
-                    title: title,
-                    details: details,
-                    target_date: target_date,
-                  }
-                : goal,
+              goal.id === id ? { ...goal, title, details, target_date } : goal,
             ),
           );
-          Toast.show({
-            type: "success",
-            text1: "Goal Updated ✅",
-          });
+          Toast.show({ type: "success", text1: "Goal Updated" });
         })
-        .catch((error) => {
-          console.error("Edit Goal Error:", error);
+        .catch(() => {
           Toast.show({
             type: "error",
-            text1: "Update Failed ❌",
+            text1: "Update Failed",
             text2: "Could not update goal, try again.",
           });
         });
     } else {
       Toast.show({
         type: "error",
-        text1: "Update Failed ❌",
-        text2: "Could not update goal, try again.",
+        text1: "Update Failed",
+        text2: "Check the title and date format (YYYY-MM-DD).",
       });
     }
   }
+
   function deleteGoal(id: number) {
-    // setGoals(Goals.filter((goal) => goal.id !== id));
     fetch(`http://localhost:${BACKEND_PORT}/goals/deleteGoal`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        id,
-        user_id: userId,
-      }),
+      body: JSON.stringify({ id, user_id: userId }),
     })
       .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to delete goal");
-        }
+        if (!res.ok) throw new Error("Failed to delete goal");
         setGoals(Goals.filter((goal) => goal.id !== id));
-        Toast.show({
-          type: "success",
-          text1: "Goal Deleted ✅",
-        });
+        Toast.show({ type: "success", text1: "Goal Deleted" });
       })
-      .catch((error) => {
-        console.error("Delete Goal Error:", error);
+      .catch(() => {
         Toast.show({
           type: "error",
-          text1: "Deletion Failed ❌",
+          text1: "Deletion Failed",
           text2: "Could not delete goal, try again.",
         });
       });
   }
-  const filteredGoals = Goals.filter((goal) => {
-    return (
+
+  const filteredGoals = Goals.filter(
+    (goal) =>
       goal.title.toLowerCase().includes(search.toLowerCase()) ||
-      goal.details.toLowerCase().includes(search.toLowerCase())
-    );
-  });
+      goal.details.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
-    <View style={styles.GoalsContainer}>
-      <View style={styles.header}>
-        <Text style={styles.Title}>Goals</Text>
-      </View>
-      <SearchBar search={search} setSearch={setSearch} />
-      <View style={styles.addGoalButton}>
-        <Button title="Add Goal" onPress={() => setModalVisible(true)} />
-      </View>
-      <ScrollView style={styles.scroll}>
-        <GoalsList
-          Goals={filteredGoals}
-          setGoals={setGoals}
-          editGoal={editGoal}
-          deleteGoal={deleteGoal}
-        />
+    <Screen backgroundColor="$primary">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <YStack px="$4" py="$4" gap="$4" paddingBottom="$8">
+          <PageHeader
+            title="Goals"
+            subtitle="Track what you're working toward"
+          />
+
+          <Card>
+            <SectionTitle title="Search" />
+            <SearchField
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Search goals…"
+            />
+          </Card>
+
+          <AppButton onPress={() => setModalVisible(true)}>Add Goal</AppButton>
+
+          <Card>
+            <SectionTitle
+              title="Your Goals"
+              actionText={`${filteredGoals.length}`}
+            />
+            <GoalsList
+              Goals={filteredGoals}
+              setGoals={setGoals}
+              editGoal={editGoal}
+              deleteGoal={deleteGoal}
+            />
+          </Card>
+        </YStack>
       </ScrollView>
+
       <Modal
         animationType="fade"
-        transparent={true}
+        transparent
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Enter New Goal</Text>
-            <TextInput
-              style={styles.input}
+        <YStack
+          flex={1}
+          justifyContent="center"
+          alignItems="center"
+          backgroundColor="rgba(0,0,0,0.4)"
+          padding="$4"
+        >
+          <Card width="100%" maxWidth={400} gap="$4">
+            <AppText variant="title" fontSize="$5">
+              New Goal
+            </AppText>
+            <AppInput
               placeholder="Title"
               value={newGoalTitle}
               onChangeText={setNewGoalTitle}
-              placeholderTextColor="#888"
             />
-            <TextInput
-              style={styles.input}
+            <AppInput
               placeholder="Details"
               value={newGoalContent}
               onChangeText={setNewGoalContent}
-              placeholderTextColor="#888"
             />
-            <TextInput
-              style={styles.input}
+            <AppInput
               placeholder="Target Date (YYYY-MM-DD)"
               value={selectedDate}
               onChangeText={setSelectedDate}
-              placeholderTextColor="#888"
             />
-            <View style={styles.modalButtons}>
+            <XStack justifyContent="flex-end" gap="$3">
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelButton}>Cancel</Text>
+                <AppText color="$textMuted">Cancel</AppText>
               </TouchableOpacity>
-              <TouchableOpacity onPress={addGoal}>
-                <Text style={styles.addButton}>Add</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+              <AppButton onPress={addGoal}>Add</AppButton>
+            </XStack>
+          </Card>
+        </YStack>
       </Modal>
-    </View>
+    </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  GoalsContainer: {
-    flex: 1,
-    backgroundColor: "#00629B",
-    alignItems: "center",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    flexDirection: "column",
-    gap: 30,
-  },
-  header: {
-    flexDirection: "row",
-    width: "100%",
-    height: 50,
-  },
-  Title: {
-    fontWeight: "bold",
-    fontSize: 30,
-    width: "100%",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
-  scroll: {
-    width: "100%",
-    height: "100%",
-  },
-  addGoalButton: {
-    width: "100%",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.4)",
-  },
-  modalContent: {
-    backgroundColor: "#E6E6E6",
-    padding: 20,
-    width: "80%",
-    borderRadius: 10,
-    gap: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 6,
-    fontSize: 16,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 20,
-  },
-  cancelButton: {
-    fontSize: 16,
-    padding: 10,
-  },
-  addButton: {
-    fontSize: 16,
-    backgroundColor: "lightgreen",
-    padding: 10,
-    borderRadius: 10,
-  },
-});

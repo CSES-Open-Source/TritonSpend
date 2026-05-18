@@ -1,48 +1,53 @@
-import { View, StyleSheet } from "react-native";
+import { YStack } from "tamagui";
 import GoalsRow from "./GoalsRow";
 
-export default function GoalsList(props: any) {
+interface Goal {
+  id: number;
+  title: string;
+  details: string;
+  color: string;
+  target_date: string;
+}
+
+interface GoalsListProps {
+  Goals: Goal[];
+  setGoals: React.Dispatch<React.SetStateAction<Goal[]>>;
+  editGoal: (
+    id: number,
+    title: string,
+    details: string,
+    target_date: string,
+  ) => void;
+  deleteGoal: (id: number) => void;
+}
+
+export default function GoalsList({
+  Goals,
+  editGoal,
+  deleteGoal,
+}: GoalsListProps) {
   function formatDate(date: string) {
     const parsedDate = new Date(date);
     const year = parsedDate.getUTCFullYear();
     const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
     const day = String(parsedDate.getUTCDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`; // Format it as YYYY-MM-DD
+    return `${year}-${month}-${day}`;
   }
+
   return (
-    <View style={styles.GoalsListContainer}>
-      {props.Goals.map(
-        (goal: {
-          details: string;
-          title: string;
-          id: number;
-          color: string;
-          target_date: string;
-        }) => {
-          return (
-            <GoalsRow
-              key={goal.id}
-              title={goal.title}
-              date={formatDate(goal.target_date)}
-              content={goal.details}
-              deleteGoal={props.deleteGoal}
-              editGoal={props.editGoal}
-              id={goal.id}
-              color={goal.color}
-            />
-          );
-        },
-      )}
-    </View>
+    <YStack gap="$3" width="100%">
+      {Goals.map((goal) => (
+        <GoalsRow
+          key={goal.id}
+          title={goal.title}
+          date={formatDate(goal.target_date)}
+          content={goal.details}
+          deleteGoal={deleteGoal}
+          editGoal={editGoal}
+          id={goal.id}
+          color={goal.color}
+        />
+      ))}
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  GoalsListContainer: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    gap: 10,
-  },
-});

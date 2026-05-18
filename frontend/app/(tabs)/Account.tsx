@@ -1,76 +1,72 @@
 import LogOutButton from "@/components/LogoutButton/LogOutButton";
 import Profile from "@/components/Profile/Profile";
 import SettingList from "@/components/SettingSection/SettingList";
-import { EvilIcons, Feather } from "@expo/vector-icons";
+import { Feather, EvilIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
-  View,
-  StyleSheet,
-  Text,
   Modal,
-  TextInput,
-  Button,
   TouchableOpacity,
   Image,
-  ScrollView,
+  ScrollView as RNScrollView,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
+import { Screen } from "@/components/primitives/Screen";
+import { PageHeader } from "@/components/primitives/PageHeader";
+import { Card } from "@/components/primitives/Card";
+import { AppInput } from "@/components/primitives/AppInput";
+import { AppButton } from "@/components/primitives/AppButton";
+import { AppText } from "@/components/primitives/AppText";
+import { YStack, ScrollView, XStack } from "tamagui";
+
+interface CategoryBudget {
+  category_name: string;
+  max_category_budget: string;
+  id: number;
+}
 
 export default function Account() {
-  //variables to store values
   const [modalVisible, setModalVisible] = useState(false);
   const [userName, setUserName] = useState("");
   const [Email, setEmail] = useState("");
   const [totalBudget, setTotalBudget] = useState("");
   const [profilePic, setProfilePic] = useState("");
-  const [Category, setCategory] = useState<any>([]);
+  const [Category, setCategory] = useState<CategoryBudget[]>([]);
   const { userId } = useAuth();
-  //fetch values
+
   useEffect(() => {
     fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
       method: "GET",
     })
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
         setUserName(data.username);
         setEmail(data.email);
-        console.log(data.email);
         setTotalBudget(data.total_budget);
         setProfilePic(data.profile_picture);
       })
-      .catch((error) => {
-        console.error("API Error:", error);
-      });
+      .catch((error) => console.error("API Error:", error));
 
     fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
       method: "GET",
     })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setCategory(data);
-      })
-      .catch((error) => {
-        console.error("API Error:", error);
-      });
-  }, [modalVisible]);
-  //function to handle Category Change
+      .then((res) => res.json())
+      .then((data) => setCategory(data))
+      .catch((error) => console.error("API Error:", error));
+  }, [modalVisible, userId]);
+
   function handleCategoryChange(id: number, value: string) {
-    setCategory((prev: any) =>
-      prev.map((category: any) =>
+    setCategory((prev) =>
+      prev.map((category) =>
         category.id === id
           ? { ...category, max_category_budget: value }
           : category,
       ),
     );
   }
-  //saves all data that user wants to edit
+
   function Save() {
     setModalVisible(false);
     const formData = new FormData();
@@ -80,9 +76,8 @@ export default function Account() {
     formData.append("categories", JSON.stringify(Category));
     if (userId) {
       formData.append("id", userId);
-    } else {
-      console.error("User ID is null");
     }
+
     fetch(`http://localhost:${BACKEND_PORT}/users/updateSettings`, {
       method: "PUT",
       body: formData,
@@ -92,42 +87,37 @@ export default function Account() {
           return res.json().then((err) => {
             Toast.show({
               type: "error",
-              text1: "Transaction Unsuccessful ❌",
+              text1: "Update Failed",
               text2: "One or more fields are invalid, try again",
             });
-
             throw new Error(err.error || "Something went wrong");
           });
         }
         Toast.show({
           type: "success",
-          text1: "Account Info Updated ✅",
-          text2: "Your account information has been updated!",
+          text1: "Account Updated",
+          text2: "Your account information has been updated.",
         });
         return res.json();
       })
-      .catch((error) => {
-        console.error("API Error:", error);
-      });
+      .catch((error) => console.error("API Error:", error));
   }
-  //function for user to choose profile pic
+
   async function pickImage() {
-    // Request permission to access gallery
-    let permissionResult =
+    const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
       alert("Permission to access gallery is required!");
       return;
     }
 
-    // Open image picker
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
     });
-    //if not canceled, set profile pic
+
     if (!result.canceled) {
       setProfilePic(result.assets[0].uri);
     }
@@ -135,185 +125,107 @@ export default function Account() {
 
   return (
     <>
-      {/* Modal(popup) for editing profile */}
-      <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <View style={styles.header}>
-          <Text style={styles.modalTitle}>Edit Settings</Text>
-          <EvilIcons
-            name="close"
-            size={30}
-            color="black"
-            onPress={() => setModalVisible(false)}
-          />
-        </View>
-        <ScrollView>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <View style={styles.profileSection}>
-                <TouchableOpacity
-                  onPress={pickImage}
-                  style={styles.profileSection}
-                >
+      <Modal animationType="slide" visible={modalVisible}>
+        <YStack flex={1} backgroundColor="$background">
+          <XStack
+            paddingHorizontal="$4"
+            paddingVertical="$3"
+            justifyContent="space-between"
+            alignItems="center"
+            backgroundColor="$surfaceDefault"
+            borderBottomWidth={1}
+            borderColor="$border"
+          >
+            <AppText variant="title" fontSize="$5">
+              Edit Settings
+            </AppText>
+            <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <EvilIcons name="close" size={30} color="#395773" />
+            </TouchableOpacity>
+          </XStack>
+          <RNScrollView>
+            <YStack padding="$4" gap="$4">
+              <Card alignItems="center" gap="$3">
+                <TouchableOpacity onPress={pickImage}>
                   <Image
                     source={profilePic ? { uri: profilePic } : {}}
-                    style={styles.profileImage}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50,
+                      backgroundColor: "#DBD7D7",
+                    }}
                   />
-                  <Text style={styles.editText}>Edit Profile Picture</Text>
+                  <AppText color="$primary" marginTop="$2">
+                    Edit Profile Picture
+                  </AppText>
                 </TouchableOpacity>
-              </View>
-              <View style={styles.inputSection}>
-                <Text>User Name:</Text>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={(e) => setUserName(e)}
-                  value={userName}
-                />
-              </View>
-              <View style={styles.inputSection}>
-                <Text>Total Budget:</Text>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={(e) => {
-                    if (/^\d*\.?\d*$/.test(e)) {
-                      setTotalBudget(e);
-                    }
-                  }}
+              </Card>
+
+              <Card gap="$3">
+                <AppText variant="subtitle">User Name</AppText>
+                <AppInput value={userName} onChangeText={setUserName} />
+              </Card>
+
+              <Card gap="$3">
+                <AppText variant="subtitle">Total Budget</AppText>
+                <AppInput
                   value={totalBudget}
+                  onChangeText={(e) => {
+                    if (/^\d*\.?\d*$/.test(e)) setTotalBudget(e);
+                  }}
                   keyboardType="numeric"
                 />
-              </View>
-              <View style={styles.inputSection}>
-                <Text>Budget Per Category:</Text>
-                {Category.map(
-                  (section: {
-                    category_name: string;
-                    max_category_budget: string;
-                    id: number;
-                    icon: string;
-                  }) => (
-                    <View key={section.id} style={{ width: "100%" }}>
-                      <Text>{section.category_name}:</Text>
-                      <TextInput
-                        style={styles.input}
-                        onChangeText={(e) =>
-                          handleCategoryChange(section.id, e)
-                        }
-                        keyboardType="numeric"
-                      />
-                    </View>
-                  ),
-                )}
-              </View>
+              </Card>
 
-              <Button title="Save" onPress={() => Save()} />
-            </View>
-          </View>
-        </ScrollView>
+              <Card gap="$3">
+                <AppText variant="subtitle">Budget Per Category</AppText>
+                {Category.map((section) => (
+                  <YStack key={section.id} gap="$2">
+                    <AppText variant="caption">{section.category_name}</AppText>
+                    <AppInput
+                      defaultValue={String(section.max_category_budget)}
+                      onChangeText={(e) => handleCategoryChange(section.id, e)}
+                      keyboardType="numeric"
+                    />
+                  </YStack>
+                ))}
+              </Card>
+
+              <AppButton onPress={Save}>Save</AppButton>
+            </YStack>
+          </RNScrollView>
+        </YStack>
       </Modal>
-      <View style={styles.AccountContainer}>
-        <View style={styles.header}>
-          <Text style={styles.Title}>Settings</Text>
-          <Feather
-            color="#E6E6E6"
-            name="edit"
-            size={25}
-            onPress={() => setModalVisible(true)}
-          />
-        </View>
-        <Profile userName={userName} profilePic={profilePic} Email={Email} />
-        <SettingList list={Category} totalBudget={totalBudget} />
-        <LogOutButton />
-      </View>
+
+      <Screen backgroundColor="$primary">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <YStack px="$4" py="$4" gap="$4" paddingBottom="$8">
+            <PageHeader
+              title="Settings"
+              subtitle="Manage your account and budgets"
+              action={
+                <TouchableOpacity onPress={() => setModalVisible(true)}>
+                  <Feather name="edit" size={22} color="white" />
+                </TouchableOpacity>
+              }
+            />
+            <Profile
+              userName={userName}
+              profilePic={profilePic}
+              Email={Email}
+            />
+            <SettingList
+              list={Category.map((c) => ({
+                ...c,
+                max_category_budget: parseFloat(String(c.max_category_budget)),
+              }))}
+              totalBudget={totalBudget}
+            />
+            <LogOutButton />
+          </YStack>
+        </ScrollView>
+      </Screen>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  AccountContainer: {
-    flex: 1,
-    backgroundColor: "#00629B",
-    alignItems: "center",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    flexDirection: "column",
-    gap: 30,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    height: 50,
-    paddingHorizontal: 10,
-  },
-  separator: {
-    width: "100%",
-    height: 2,
-    backgroundColor: "black",
-    opacity: 0.2,
-    borderRadius: 2,
-    marginTop: 10,
-  },
-  Title: {
-    fontWeight: "bold",
-    fontSize: 30,
-    width: "100%",
-    color: "#FFFFFF",
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "#E6E6E6",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    flex: 1,
-    width: "100%",
-    backgroundColor: "#E6E6E6",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    gap: 20,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-  },
-  modalTitle: {
-    fontSize: 17,
-    fontWeight: "bold",
-  },
-  input: {
-    width: "100%",
-    height: 30,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "black",
-    padding: 15,
-  },
-  inputTitle: {
-    fontWeight: "500",
-    fontSize: 20,
-  },
-  inputSection: {
-    gap: 10,
-    width: "100%",
-    alignItems: "flex-start",
-  },
-  profileSection: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 15,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#DBD7D7",
-  },
-  editText: {
-    color: "blue",
-    marginTop: 5,
-  },
-});

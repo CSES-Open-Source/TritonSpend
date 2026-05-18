@@ -4,19 +4,19 @@ import {
   FlatList,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
   ActivityIndicator,
 } from "react-native";
 import { XStack, YStack } from "tamagui";
 import { useFocusEffect } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 import { BACKEND_PORT } from "@env";
 import { Screen } from "@/components/primitives/Screen";
 import { Card } from "@/components/primitives/Card";
 import { AppText } from "@/components/primitives/AppText";
+import { PageHeader } from "@/components/primitives/PageHeader";
 import { SectionTitle } from "@/components/primitives/SectionTitle";
+import { SearchField } from "@/components/primitives/SearchField";
 import { DealCard } from "@/components/Deals/DealCard";
 
 interface Deal {
@@ -137,8 +137,6 @@ export default function Deals() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setCategory] = useState("All");
-  const [focused, setFocused] = useState(false);
-  const borderAnim = useRef(new Animated.Value(0)).current;
 
   useFocusEffect(
     useCallback(() => {
@@ -152,30 +150,6 @@ export default function Deals() {
         .catch(() => setLoading(false));
     }, []),
   );
-
-  const onFocus = () => {
-    setFocused(true);
-    Animated.spring(borderAnim, {
-      toValue: 1,
-      useNativeDriver: false,
-      tension: 100,
-      friction: 8,
-    }).start();
-  };
-  const onBlur = () => {
-    setFocused(false);
-    Animated.spring(borderAnim, {
-      toValue: 0,
-      useNativeDriver: false,
-      tension: 100,
-      friction: 8,
-    }).start();
-  };
-
-  const borderColor = borderAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["#C6C6C8", "#395773"],
-  });
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -197,15 +171,10 @@ export default function Deals() {
   // ── List header (everything above the cards) ──
   const ListHeader = (
     <YStack px="$4" pt="$4" gap="$4" pb="$2">
-      {/* Page title */}
-      <YStack gap="$1">
-        <AppText variant="title" fontSize="$7" color="white">
-          Deals & Offers
-        </AppText>
-        <AppText fontSize="$3" color="white" opacity={0.7}>
-          Exclusive savings for UCSD students
-        </AppText>
-      </YStack>
+      <PageHeader
+        title="Deals & Offers"
+        subtitle="Exclusive savings for UCSD students"
+      />
 
       {/* Stats row */}
       <XStack gap="$3">
@@ -225,31 +194,12 @@ export default function Deals() {
       {/* Search inside a Card */}
       <Card>
         <SectionTitle title="Search" />
-        <Animated.View style={[styles.searchRow, { borderColor }]}>
-          <Ionicons
-            name="search"
-            size={17}
-            color={focused ? "#395773" : "#7B8A96"}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search deals, apps, discounts…"
-            placeholderTextColor="#9CA3AF"
-            value={search}
-            onChangeText={setSearch}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            returnKeyType="search"
-          />
-          {search.length > 0 && (
-            <TouchableOpacity
-              onPress={() => setSearch("")}
-              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            >
-              <Ionicons name="close-circle" size={17} color="#9CA3AF" />
-            </TouchableOpacity>
-          )}
-        </Animated.View>
+        <SearchField
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search deals, apps, discounts…"
+          onClear={() => setSearch("")}
+        />
       </Card>
 
       {/* Category pills inside a Card */}
@@ -325,24 +275,6 @@ export default function Deals() {
 }
 
 const styles = StyleSheet.create({
-  // Search
-  searchRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    backgroundColor: "#F7F9FA",
-    borderRadius: 12,
-    borderWidth: 1.5,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 14,
-    color: "#1C252E",
-    paddingVertical: 0,
-  },
-
   // Pills
   pillsScroll: { marginHorizontal: -4 },
   pill: {

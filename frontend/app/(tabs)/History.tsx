@@ -14,11 +14,15 @@ import { Screen } from "@/components/primitives/Screen";
 import Transaction, { Category } from "@/types/transaction";
 import { AppText } from "@/components/primitives/AppText";
 import { StatCard } from "@/components/primitives/StatCard";
+import { Card } from "@/components/primitives/Card";
+import { PageHeader } from "@/components/primitives/PageHeader";
+import { SectionTitle } from "@/components/primitives/SectionTitle";
 import { Ionicons } from "@expo/vector-icons";
 import { XStack, YStack } from "tamagui";
 import { AppSelect } from "@/components/primitives/AppSelect";
 import { AppSwitch } from "@/components/primitives/AppSwitch";
 import { AppButton } from "@/components/primitives/AppButton";
+import { categoryColors } from "@/constants/categoryColors";
 
 type SortOption = "Date" | "Amount" | "Name";
 type FilterOption = "All" | "Month" | "Category";
@@ -35,14 +39,6 @@ const RANGE_CONFIG: Record<
   "1Y": { period: "weekly", months: 12 },
 };
 
-const categoryColors = new Map<string, string>([
-  ["Food", "#b8b8ff"],
-  ["Shopping", "#fff3b0"],
-  ["Transportation", "#588157"],
-  ["Subscriptions", "#ff9b85"],
-  ["Other", "#2b2d42"],
-]);
-
 interface ChartCategory {
   id: number;
   category_name: string;
@@ -51,23 +47,18 @@ interface ChartCategory {
   user_id: number;
 }
 
-// Page for showing full Expense History along with the user's budget and how much they spent compared to their budget
 export default function History() {
-  // YYYY-MM format
   const currentMonth = new Date().toISOString().substring(0, 7);
 
-  // Sorting State
   const [sortBy, setSortBy] = useState<SortOption>("Date");
   const [sortIsAscending, setSortIsAscending] = useState(false);
   const [AllTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const { userId } = useAuth();
 
-  // Filter State
   const [filterType, setFilterType] = useState<FilterOption>("All");
   const [selectedMonth, setSelectedMonth] = useState<string>(currentMonth);
   const [selectedCategory, setSelectedCategory] = useState<string>("Food");
 
-  // Chart switcher state
   const [chartType, setChartType] = useState<ChartType>("pie");
   const [range, setRange] = useState<Range>("3M");
   const [lineData, setLineData] = useState<{ date: string; total: number }[]>(
@@ -75,12 +66,10 @@ export default function History() {
   );
   const [barData, setBarData] = useState<{ name: string; value: number }[]>([]);
   const [chartCategories, setChartCategories] = useState<ChartCategory[]>([]);
-
-  // Edit State
   const [showSettings, setShowSettings] = useState(false);
 
   const screenWidth = useWindowDimensions().width;
-  const chartWidth = screenWidth * 0.75;
+  const chartCardWidth = screenWidth - 64;
 
   const categoryIconMapping: Map<
     Category,
@@ -105,7 +94,6 @@ export default function History() {
     "Other",
   ];
 
-  // Get unique months from transactions
   const months = useMemo(() => {
     const months = [
       ...new Set(
@@ -115,17 +103,15 @@ export default function History() {
       ),
     ]
       .sort()
-      .reverse(); // Sort in descending order
+      .reverse();
 
     if (months.length == 0 || months[0] !== currentMonth) {
       return [currentMonth, ...months];
     }
 
     return months;
-  }, [AllTransactions]);
+  }, [AllTransactions, currentMonth]);
 
-  //our app only loads once and does not load again even if we change tabs. This is why we cant use useEffect
-  //we use useFocusEffect to detect if our tab is in focus rather than using useEffect
   useFocusEffect(
     useCallback(() => {
       fetch(
@@ -139,13 +125,8 @@ export default function History() {
         },
       )
         .then((res) => res.json())
-        .then((data) => {
-          setAllTransactions(data);
-          console.log(data);
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-        });
+        .then((data) => setAllTransactions(data))
+        .catch((error) => console.error("API Error:", error));
 
       fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
         method: "GET",
@@ -155,12 +136,8 @@ export default function History() {
         },
       })
         .then((res) => res.json())
-        .then((data) => {
-          setChartCategories(data);
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-        });
+        .then((data) => setChartCategories(data))
+        .catch((error) => console.error("API Error:", error));
 
       if (chartType === "line") {
         const { period, months } = RANGE_CONFIG[range];
@@ -176,9 +153,7 @@ export default function History() {
         )
           .then((res) => res.json())
           .then((data) => setLineData(data))
-          .catch((error) => {
-            console.error("API Error:", error);
-          });
+          .catch((error) => console.error("API Error:", error));
       }
 
       if (chartType === "bar") {
@@ -195,11 +170,9 @@ export default function History() {
             }));
             setBarData(mapped.slice(-months));
           })
-          .catch((error) => {
-            console.error("API Error:", error);
-          });
+          .catch((error) => console.error("API Error:", error));
       }
-    }, [chartType, range]),
+    }, [chartType, range, userId]),
   );
 
   const pieData = chartCategories.map((category) => ({
@@ -210,38 +183,26 @@ export default function History() {
   }));
   const pieTotal = pieData.reduce((sum, d) => sum + d.value, 0);
 
-  const toggleSettings = () => {
-    setShowSettings(!showSettings);
-  };
-
-  // Reset filters & sort
   const resetFiltersAndSort = () => {
     setFilterType("All");
     setSortBy("Date");
     setSortIsAscending(false);
   };
 
-  // Filtering Logic
   const filteredTransactions = AllTransactions.filter((transaction) => {
     if (filterType === "All") return true;
-
     if (filterType === "Month") {
       const transactionDate = new Date(transaction.date)
         .toISOString()
         .substring(0, 7);
       return transactionDate === selectedMonth;
     }
-
     if (filterType === "Category") {
-      // Handle case where transaction might not have a category
-      const transactionCategory = transaction.category_name || "";
-      return transactionCategory === selectedCategory;
+      return (transaction.category_name || "") === selectedCategory;
     }
-
     return true;
   });
 
-  // Sorting Logic
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
     let result = 0;
     if (sortBy === "Date") {
@@ -254,14 +215,12 @@ export default function History() {
     return sortIsAscending ? result : -result;
   });
 
-  // Calculate total from filtered transactions
   const totalAmount = useMemo(() => {
     return (
       filterType == "Month" ? filteredTransactions : AllTransactions
     ).reduce((sum, transaction) => sum + parseFloat(transaction.amount), 0);
-  }, [filterType, filteredTransactions]);
+  }, [filterType, filteredTransactions, AllTransactions]);
 
-  // Calculate total for each category, in descending order
   const categoryTotals = useMemo(() => {
     const initialTotals = categories.reduce(
       (map, category) => map.set(category, 0),
@@ -282,19 +241,25 @@ export default function History() {
       ),
     ];
     totals.sort((a, b) => b[1] - a[1]);
-
-    return totals.filter(([_, number]) => number > 0);
-  }, [filterType, filteredTransactions, categories]);
+    return totals.filter(([, amount]) => amount > 0);
+  }, [filterType, filteredTransactions, AllTransactions, categories]);
 
   return (
-    <Screen backgroundColor="$lightBackground" paddingHorizontal="$4">
+    <Screen backgroundColor="$primary">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <YStack gap="$4">
-          <AppText variant="title" fontSize="$6" alignSelf="center">
-            Spending
-          </AppText>
+        <YStack px="$4" py="$4" gap="$4">
+          <PageHeader
+            title="Spending"
+            subtitle="Track trends and transactions"
+            action={
+              <TouchableOpacity onPress={() => setShowSettings(!showSettings)}>
+                <Ionicons name="settings-outline" size={25} color="white" />
+              </TouchableOpacity>
+            }
+          />
 
-          <YStack gap="$3">
+          <Card elevated>
+            <SectionTitle title="Total Spending" />
             <SegmentedControl
               value={chartType}
               onValueChange={setChartType}
@@ -304,44 +269,43 @@ export default function History() {
                 { label: "Bar", value: "bar" },
               ]}
             />
-
             {chartType !== "pie" && (
-              <SegmentedControl
-                value={range}
-                onValueChange={setRange}
-                options={[
-                  { label: "1M", value: "1M" },
-                  { label: "3M", value: "3M" },
-                  { label: "6M", value: "6M" },
-                  { label: "1Y", value: "1Y" },
-                ]}
-              />
+              <YStack marginTop="$3">
+                <SegmentedControl
+                  value={range}
+                  onValueChange={setRange}
+                  options={[
+                    { label: "1M", value: "1M" },
+                    { label: "3M", value: "3M" },
+                    { label: "6M", value: "6M" },
+                    { label: "1Y", value: "1Y" },
+                  ]}
+                />
+              </YStack>
             )}
-
-            <YStack alignItems="center">
+            <YStack marginTop="$3" alignItems="center">
               {chartType === "pie" && (
                 <CustomPieChart data={pieData} size={250} total={pieTotal} />
               )}
               {chartType === "line" && (
                 <CustomLineChart
                   data={lineData}
-                  width={chartWidth}
-                  height={300}
+                  width={chartCardWidth}
+                  height={260}
                   total={lineData.reduce((sum, d) => sum + d.total, 0)}
                 />
               )}
               {chartType === "bar" && (
                 <CustomBarChart
                   data={barData}
-                  width={chartWidth}
-                  height={300}
+                  width={chartCardWidth}
+                  height={260}
                   total={barData.reduce((sum, d) => sum + d.value, 0)}
                 />
               )}
             </YStack>
-
             {chartType === "pie" && (
-              <XStack flexWrap="wrap" gap="$2">
+              <XStack flexWrap="wrap" gap="$2" marginTop="$2">
                 {pieData.map((category) => (
                   <XStack key={category.id} alignItems="center" gap="$2">
                     <YStack
@@ -355,85 +319,84 @@ export default function History() {
                 ))}
               </XStack>
             )}
-          </YStack>
+          </Card>
 
-          <XStack alignItems="center" justifyContent="space-between">
-            <AppText variant="body" fontSize="$6">
-              Top Categories
-            </AppText>
-            <TouchableOpacity onPress={toggleSettings}>
-              <Ionicons name="settings-outline" size={25} color="#395773" />
-            </TouchableOpacity>
-          </XStack>
-
-          {/* Filter Selection UI */}
           {showSettings && (
-            <YStack gap="$4">
-              <AppText variant="subtitle">Filter</AppText>
-              <AppSelect
-                options={["All", "Month", "Category"]}
-                value={filterType}
-                onValueChange={(newValue) =>
-                  setFilterType(newValue as FilterOption)
-                }
-              />
-
-              {filterType === "Month" && (
+            <Card>
+              <SectionTitle title="Filter & Sort" />
+              <YStack gap="$4">
+                <AppText variant="subtitle">Filter</AppText>
                 <AppSelect
-                  options={months}
-                  value={selectedMonth}
-                  onValueChange={setSelectedMonth}
+                  options={["All", "Month", "Category"]}
+                  value={filterType}
+                  onValueChange={(newValue) =>
+                    setFilterType(newValue as FilterOption)
+                  }
                 />
-              )}
-
-              {filterType === "Category" && (
-                <AppSelect
-                  options={categories}
-                  value={selectedCategory}
-                  onValueChange={setSelectedCategory}
-                />
-              )}
-
-              <XStack justifyContent="space-between" alignItems="center">
-                <AppText variant="subtitle">Sort</AppText>
-                <XStack gap="$2" width={148} justifyContent="space-between">
-                  <AppSwitch
-                    checked={sortIsAscending}
-                    onCheckedChange={setSortIsAscending}
-                  ></AppSwitch>
-                  <AppText alignSelf="center">
-                    {sortIsAscending ? "Ascending" : "Descending"}
-                  </AppText>
+                {filterType === "Month" && (
+                  <AppSelect
+                    options={months}
+                    value={selectedMonth}
+                    onValueChange={setSelectedMonth}
+                  />
+                )}
+                {filterType === "Category" && (
+                  <AppSelect
+                    options={categories}
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  />
+                )}
+                <XStack justifyContent="space-between" alignItems="center">
+                  <AppText variant="subtitle">Sort</AppText>
+                  <XStack gap="$2" width={148} justifyContent="space-between">
+                    <AppSwitch
+                      checked={sortIsAscending}
+                      onCheckedChange={setSortIsAscending}
+                    />
+                    <AppText alignSelf="center">
+                      {sortIsAscending ? "Ascending" : "Descending"}
+                    </AppText>
+                  </XStack>
                 </XStack>
-              </XStack>
-              <AppSelect
-                options={["Date", "Amount", "Name"]}
-                value={sortBy}
-                onValueChange={(newValue) => setSortBy(newValue as SortOption)}
-              />
-              <AppButton onPress={resetFiltersAndSort}>Reset</AppButton>
-            </YStack>
+                <AppSelect
+                  options={["Date", "Amount", "Name"]}
+                  value={sortBy}
+                  onValueChange={(newValue) =>
+                    setSortBy(newValue as SortOption)
+                  }
+                />
+                <AppButton onPress={resetFiltersAndSort}>Reset</AppButton>
+              </YStack>
+            </Card>
           )}
 
-          <XStack gap="$3">
-            {categoryTotals.slice(0, 2).map((category) => (
-              <StatCard
-                key={category[0]}
-                title={category[0]}
-                subtitle={`${((category[1] / totalAmount) * 100).toFixed(0)}% of total`}
-                value={`$${category[1].toFixed(0)}`}
-                icon={
-                  <Ionicons
-                    name={categoryIconMapping.get(category[0])!}
-                    size={16}
-                    color="#395773"
-                  />
-                }
-                flexBasis={0}
-              />
-            ))}
-          </XStack>
-          <FullTransactionHistory list={sortedTransactions} />
+          <Card>
+            <SectionTitle title="Top Categories" />
+            <XStack gap="$3">
+              {categoryTotals.slice(0, 2).map((category) => (
+                <StatCard
+                  key={category[0]}
+                  title={category[0]}
+                  subtitle={`${totalAmount > 0 ? ((category[1] / totalAmount) * 100).toFixed(0) : 0}% of total`}
+                  value={`$${category[1].toFixed(0)}`}
+                  icon={
+                    <Ionicons
+                      name={categoryIconMapping.get(category[0])!}
+                      size={16}
+                      color="#395773"
+                    />
+                  }
+                  flexBasis={0}
+                />
+              ))}
+            </XStack>
+          </Card>
+
+          <Card>
+            <SectionTitle title="All Transactions" />
+            <FullTransactionHistory list={sortedTransactions} />
+          </Card>
         </YStack>
       </ScrollView>
     </Screen>

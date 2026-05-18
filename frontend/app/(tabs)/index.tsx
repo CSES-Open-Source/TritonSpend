@@ -6,8 +6,10 @@ import { useAuth } from "@/context/authContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { Screen } from "@/components/primitives/Screen";
 import { AppText } from "@/components/primitives/AppText";
+import { PageHeader } from "@/components/primitives/PageHeader";
 import { Card } from "@/components/primitives/Card";
 import { SectionTitle } from "@/components/primitives/SectionTitle";
+import { categoryColors } from "@/constants/categoryColors";
 import { SegmentedControl } from "@/components/primitives/SegmentedControl";
 import { QuickActionsSection } from "@/components/Home/QuickActionsSection";
 import { WeeklySpendingSection } from "@/components/Home/WeeklySpendingSection";
@@ -45,14 +47,6 @@ const RANGE_CONFIG: Record<
   "6M": { period: "weekly", months: 6 },
   "1Y": { period: "weekly", months: 12 },
 };
-
-const categoryColors = new Map<string, string>([
-  ["Food", "#b8b8ff"],
-  ["Shopping", "#fff3b0"],
-  ["Transportation", "#588157"],
-  ["Subscriptions", "#ff9b85"],
-  ["Other", "#2b2d42"],
-]);
 
 export default function Home() {
   const [ThreeTransactions, setThreeTransactions] = useState([]);
@@ -172,9 +166,10 @@ export default function Home() {
     <Screen backgroundColor="$primary">
       <ScrollView>
         <YStack px="$4" py="$4" gap="$4">
-          <AppText variant="title" fontSize="$7" color="white">
-            Hello {username}
-          </AppText>
+          <PageHeader
+            title={`Hello ${username}`}
+            subtitle="Your spending overview"
+          />
 
           <Card elevated>
             <SectionTitle title="Total Spending" />

@@ -1,75 +1,52 @@
-import { View, StyleSheet, Text } from "react-native";
+import { YStack } from "tamagui";
 import TransactionRow from "../TransactionHistory/TransactionRow";
+import { AppText } from "@/components/primitives/AppText";
+import { Card } from "@/components/primitives/Card";
+import { SectionTitle } from "@/components/primitives/SectionTitle";
+import { XStack } from "tamagui";
 
-/*
-  this is the container for the different Categories of budgets in the settings page. The name is weird
-  because I meant this to be something else
-
-  props - this component takes props for the total budget and the list of categories
-
- */
-export default function SettingList(props: any) {
-  return (
-    <View style={styles.settingList}>
-      <View style={styles.header}>
-        <Text style={styles.Title}>Total Budget</Text>
-        <Text style={styles.Title}>${props.totalBudget}</Text>
-      </View>
-      <Text style={styles.Title}>Budget per Cateogry</Text>
-      <View>
-        {props.list.map(
-          (
-            section: {
-              category_name: string;
-              max_category_budget: number;
-              id: number;
-              icon: number;
-            },
-            index: any,
-          ) => (
-            <View key={section.id}>
-              <TransactionRow
-                name={section.category_name}
-                amount={section.max_category_budget}
-                icon={section.id}
-              />
-              {/* Put a separater between elements excpet for the last one */}
-              {index < props.list.length - 1 && (
-                <View style={styles.separator} />
-              )}
-            </View>
-          ),
-        )}
-      </View>
-    </View>
-  );
+interface CategoryBudget {
+  category_name: string;
+  max_category_budget: number;
+  id: number;
 }
 
-const styles = StyleSheet.create({
-  settingList: {
-    flexDirection: "column",
-    width: "100%",
-    backgroundColor: "#E6E6E6",
-    borderRadius: 10,
-    padding: 25,
-    gap: 20,
-    shadowRadius: 12,
-    shadowOpacity: 0.4,
-  },
+interface SettingListProps {
+  list: CategoryBudget[];
+  totalBudget: string;
+}
 
-  separator: {
-    width: "100%",
-    height: 2,
-    backgroundColor: "black",
-    opacity: 0.2,
-    borderRadius: 2,
-  },
-  Title: {
-    fontSize: 20,
-    fontWeight: "400",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-});
+export default function SettingList({ list, totalBudget }: SettingListProps) {
+  return (
+    <Card gap="$4">
+      <XStack justifyContent="space-between" alignItems="center">
+        <AppText variant="subtitle">Total Budget</AppText>
+        <AppText variant="title" fontSize="$6" color="$primary">
+          ${totalBudget}
+        </AppText>
+      </XStack>
+
+      <SectionTitle title="Budget per Category" />
+
+      <YStack gap="$2">
+        {list.map((section, index) => (
+          <YStack key={section.id}>
+            <TransactionRow
+              name={section.category_name}
+              amount={section.max_category_budget}
+              icon={section.id}
+            />
+            {index < list.length - 1 && (
+              <YStack
+                height={1}
+                backgroundColor="$border"
+                marginVertical="$2"
+                opacity={0.5}
+              />
+            )}
+          </YStack>
+        ))}
+      </YStack>
+    </Card>
+  );
+}

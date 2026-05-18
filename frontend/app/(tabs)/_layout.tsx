@@ -18,7 +18,20 @@ export default function TabLayout() {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: "#395773",
+        tabBarInactiveTintColor: "#7B8A96",
+        tabBarStyle: {
+          backgroundColor: "#FFFFFF",
+          borderTopColor: "#C6C6C8",
+          paddingTop: 4,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+        },
+      }}
     >
       {/* Home Tab */}
       <Tab.Screen

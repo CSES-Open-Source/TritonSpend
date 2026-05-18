@@ -1,64 +1,34 @@
-import { View, StyleSheet, Text, Image } from "react-native";
+import { Image } from "react-native";
+import { XStack, YStack } from "tamagui";
+import { AppText } from "@/components/primitives/AppText";
+import { Card } from "@/components/primitives/Card";
 
-/*
-  this is the profile section in the settings/accounts tab.
-
-  props - this component takes props for the name, profile picture, and username
-
- */
-export default function Profile(props: any) {
-  return (
-    <View style={styles.Profile}>
-      <View style={styles.ProfileInfo}>
-        <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-          {props.userName}
-        </Text>
-        <Text style={{ fontWeight: 500, fontSize: 15, opacity: 0.5 }}>
-          @{props.Email}
-        </Text>
-      </View>
-      <View style={styles.profilePic}>
-        <Image
-          source={props.profilePic ? { uri: props.profilePic } : {}}
-          style={styles.profileImage}
-        />
-      </View>
-    </View>
-  );
+interface ProfileProps {
+  userName: string;
+  profilePic: string;
+  Email: string;
 }
 
-const styles = StyleSheet.create({
-  Profile: {
-    width: "100%",
-    height: 100,
-    backgroundColor: "#E6E6E6",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    borderRadius: 15,
-    shadowRadius: 12,
-    shadowOpacity: 0.4,
-  },
-
-  ProfileInfo: {
-    flexDirection: "column",
-    gap: 10,
-  },
-  Title: {
-    fontSize: 20,
-    fontWeight: "400",
-  },
-  profilePic: {
-    backgroundColor: "#E6E6E6",
-    borderRadius: 50,
-    width: 75,
-    height: 75,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 50,
-  },
-});
+export default function Profile({ userName, profilePic, Email }: ProfileProps) {
+  return (
+    <Card>
+      <XStack justifyContent="space-between" alignItems="center" width="100%">
+        <YStack gap="$2" flex={1}>
+          <AppText variant="title" fontSize="$5">
+            {userName}
+          </AppText>
+          <AppText variant="caption">@{Email}</AppText>
+        </YStack>
+        <Image
+          source={profilePic ? { uri: profilePic } : {}}
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 36,
+            backgroundColor: "#DBD7D7",
+          }}
+        />
+      </XStack>
+    </Card>
+  );
+}

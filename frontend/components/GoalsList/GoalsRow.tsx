@@ -1,202 +1,153 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Animated,
-  Pressable,
-  TextInput,
-  TouchableOpacity,
-  Modal,
-} from "react-native";
-export default function GoalsRow(props: any) {
-  const [inputVisible, setInputVisible] = useState(false);
+import { Animated, Pressable, Modal, TouchableOpacity } from "react-native";
+import { XStack, YStack } from "tamagui";
+import { AppText } from "@/components/primitives/AppText";
+import { AppInput } from "@/components/primitives/AppInput";
+import { AppButton } from "@/components/primitives/AppButton";
+import { Card } from "@/components/primitives/Card";
+
+interface GoalsRowProps {
+  id: number;
+  title: string;
+  date: string;
+  content: string;
+  color: string;
+  editGoal: (id: number, title: string, content: string, date: string) => void;
+  deleteGoal: (id: number) => void;
+}
+
+export default function GoalsRow({
+  id,
+  title,
+  date,
+  content,
+  color,
+  editGoal,
+  deleteGoal,
+}: GoalsRowProps) {
+  const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editTitle, setEditTitle] = useState(props.title);
-  const [editContent, setEditContent] = useState(props.content);
-  const [editDate, setEditDate] = useState(props.date);
+  const [editTitle, setEditTitle] = useState(title);
+  const [editContent, setEditContent] = useState(content);
+  const [editDate, setEditDate] = useState(date);
   const expand = useRef(new Animated.Value(70)).current;
-  const animatedOpacity = useRef(new Animated.Value(0)).current;
-  const inputShow = useRef(new Animated.Value(-20)).current;
+
   function toggle() {
-    setInputVisible(!inputVisible);
+    const next = !expanded;
+    setExpanded(next);
     Animated.spring(expand, {
-      toValue: inputVisible ? 70 : 150,
+      toValue: next ? 150 : 70,
       tension: 40,
       useNativeDriver: false,
     }).start();
-    Animated.timing(inputShow, {
-      toValue: inputVisible ? -20 : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-    Animated.timing(animatedOpacity, {
-      toValue: inputVisible ? 0 : 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
   }
+
   return (
     <>
-      <Animated.View
-        style={[
-          styles.GoalsContainer,
-          { height: expand, backgroundColor: props.color },
-        ]}
-      >
-        <Pressable
-          onPress={toggle}
-          onLongPress={() => setModalVisible(true)}
-          style={{ height: "100%", width: "70%" }}
+      <Animated.View style={{ height: expand, width: "100%" }}>
+        <Card
+          backgroundColor={color}
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+          height="100%"
+          padding="$3"
         >
-          <Text style={styles.title}>{props.title}</Text>
-          <Text>{props.date}</Text>
-          {inputVisible ? (
-            <Animated.View
-              style={[
-                styles.content,
-                {
-                  transform: [{ translateY: inputShow }],
-                  opacity: animatedOpacity,
-                },
-              ]}
-            >
-              <Text>{props.content}</Text>
-            </Animated.View>
-          ) : null}
-        </Pressable>
-        <View style={styles.iconRow}>
-          <TouchableOpacity
-            onPress={() => setModalVisible(true)}
-            hitSlop={8}
-            accessibilityLabel="Edit goal"
+          <Pressable
+            onPress={toggle}
+            onLongPress={() => setModalVisible(true)}
+            style={{ flex: 1, height: "100%", justifyContent: "center" }}
           >
-            <Ionicons name="create-outline" size={25} />
-          </TouchableOpacity>
-          <Ionicons name="checkmark-circle-outline" size={25} />
-        </View>
+            <AppText variant="subtitle" fontWeight="bold">
+              {title}
+            </AppText>
+            <AppText variant="caption">{date}</AppText>
+            {expanded && (
+              <AppText variant="body" marginTop="$2">
+                {content}
+              </AppText>
+            )}
+          </Pressable>
+          <XStack gap="$2" alignItems="center">
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              hitSlop={8}
+              accessibilityLabel="Edit goal"
+            >
+              <Ionicons name="create-outline" size={22} color="#395773" />
+            </TouchableOpacity>
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={22}
+              color="#395773"
+            />
+          </XStack>
+        </Card>
       </Animated.View>
+
       <Modal
         visible={modalVisible}
         animationType="fade"
-        transparent={true}
+        transparent
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Edit Goal</Text>
-            <TextInput
-              style={styles.input}
+        <YStack
+          flex={1}
+          justifyContent="center"
+          backgroundColor="rgba(0,0,0,0.5)"
+          padding="$4"
+        >
+          <Card gap="$3">
+            <AppText variant="title" fontSize="$5">
+              Edit Goal
+            </AppText>
+            <AppInput
               placeholder="Title"
               value={editTitle}
               onChangeText={setEditTitle}
             />
-            <TextInput
-              style={[styles.input, { height: 80 }]}
-              placeholder="Content"
-              multiline
+            <AppInput
+              placeholder="Details"
               value={editContent}
               onChangeText={setEditContent}
             />
-            <TextInput
-              style={styles.input}
+            <AppInput
               placeholder="Target Date (YYYY-MM-DD)"
               value={editDate}
               onChangeText={setEditDate}
-              placeholderTextColor="#888"
             />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
+            <XStack gap="$2" flexWrap="wrap">
+              <AppButton
+                flex={1}
                 onPress={() => {
-                  props.editGoal(props.id, editTitle, editContent, editDate);
+                  editGoal(id, editTitle, editContent, editDate);
                   setModalVisible(false);
                 }}
-                style={styles.modalButton}
               >
-                <Text>Save</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+                Save
+              </AppButton>
+              <AppButton
+                flex={1}
+                variant="outline"
                 onPress={() => {
-                  props.deleteGoal(props.id);
+                  deleteGoal(id);
                   setModalVisible(false);
                 }}
-                style={[styles.modalButton, { backgroundColor: "#f99" }]}
               >
-                <Text>Delete</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+                Delete
+              </AppButton>
+              <AppButton
+                flex={1}
+                variant="outline"
                 onPress={() => setModalVisible(false)}
-                style={styles.modalButton}
               >
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+                Cancel
+              </AppButton>
+            </XStack>
+          </Card>
+        </YStack>
       </Modal>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  GoalsContainer: {
-    width: "100%",
-    height: 70,
-    backgroundColor: "#E6E6E6",
-    alignItems: "center",
-    justifyContent: "space-between",
-    display: "flex",
-    flexDirection: "row",
-    padding: 10,
-    borderRadius: 10,
-    cursor: "pointer",
-  },
-  title: {
-    fontSize: 20,
-  },
-  content: {
-    display: "flex",
-    height: "60%",
-    width: "100%",
-    justifyContent: "center",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContainer: {
-    margin: 30,
-    padding: 20,
-    borderRadius: 10,
-    backgroundColor: "#E6E6E6",
-  },
-  modalTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  input: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 8,
-    marginBottom: 10,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  modalButton: {
-    backgroundColor: "#ddd",
-    padding: 10,
-    borderRadius: 5,
-    minWidth: 70,
-    alignItems: "center",
-  },
-  iconRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-});
