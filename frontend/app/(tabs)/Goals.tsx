@@ -14,6 +14,11 @@ import { SearchField } from "@/components/primitives/SearchField";
 import { AppButton } from "@/components/primitives/AppButton";
 import { AppInput } from "@/components/primitives/AppInput";
 import { AppText } from "@/components/primitives/AppText";
+import {
+  DatePickerField,
+  isValidYmd,
+  toYmd,
+} from "@/components/primitives/DatePickerField";
 import { XStack } from "tamagui";
 
 interface Goal {
@@ -42,7 +47,7 @@ export default function Goals() {
   const [modalVisible, setModalVisible] = useState(false);
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [newGoalContent, setNewGoalContent] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(() => toYmd(new Date()));
 
   useFocusEffect(
     useCallback(() => {
@@ -63,21 +68,9 @@ export default function Goals() {
     return colorOptions[Math.floor(Math.random() * colorOptions.length)];
   }
 
-  function isValidDate(date: string): boolean {
-    return /^\d{4}-\d{2}-\d{2}$/.test(date);
-  }
-
-  function formatDate(date: string) {
-    const parsedDate = new Date(date);
-    const year = parsedDate.getUTCFullYear();
-    const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(parsedDate.getUTCDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
-
   function addGoal() {
-    if (newGoalTitle.trim() && isValidDate(selectedDate)) {
-      const formattedDate = formatDate(selectedDate);
+    if (newGoalTitle.trim() && isValidYmd(selectedDate)) {
+      const formattedDate = selectedDate;
       fetch(`http://localhost:${BACKEND_PORT}/goals/addGoal`, {
         method: "POST",
         headers: {
@@ -105,7 +98,7 @@ export default function Goals() {
           ]);
           setNewGoalTitle("");
           setNewGoalContent("");
-          setSelectedDate("");
+          setSelectedDate(toYmd(new Date()));
           setModalVisible(false);
           Toast.show({
             type: "success",
@@ -123,7 +116,7 @@ export default function Goals() {
     details: string,
     target_date: string,
   ) {
-    if (title.trim() && isValidDate(target_date)) {
+    if (title.trim() && isValidYmd(target_date)) {
       fetch(`http://localhost:${BACKEND_PORT}/goals/editGoal`, {
         method: "PUT",
         headers: {
@@ -157,7 +150,7 @@ export default function Goals() {
       Toast.show({
         type: "error",
         text1: "Update Failed",
-        text2: "Check the title and date format (YYYY-MM-DD).",
+        text2: "Check the title and pick a valid target date.",
       });
     }
   }
@@ -209,7 +202,14 @@ export default function Goals() {
             />
           </Card>
 
-          <AppButton onPress={() => setModalVisible(true)}>Add Goal</AppButton>
+          <AppButton
+            onPress={() => {
+              setSelectedDate(toYmd(new Date()));
+              setModalVisible(true);
+            }}
+          >
+            Add Goal
+          </AppButton>
 
           <Card>
             <SectionTitle
@@ -261,11 +261,11 @@ export default function Goals() {
               onChangeText={setNewGoalContent}
               placeholderTextColor="#7B8A96"
             />
-            <AppInput
-              placeholder="Target Date (YYYY-MM-DD)"
+            <DatePickerField
+              inline
               value={selectedDate}
-              onChangeText={setSelectedDate}
-              placeholderTextColor="#7B8A96"
+              onChange={setSelectedDate}
+              minimumDate={new Date()}
             />
             <XStack justifyContent="flex-end" gap="$3">
               <TouchableOpacity onPress={() => setModalVisible(false)}>

@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, Modal, TouchableOpacity } from "react-native";
 import { XStack, YStack } from "tamagui";
 import { AppText } from "@/components/primitives/AppText";
 import { AppInput } from "@/components/primitives/AppInput";
 import { AppButton } from "@/components/primitives/AppButton";
 import { Card } from "@/components/primitives/Card";
+import { DatePickerField } from "@/components/primitives/DatePickerField";
 
 interface GoalsRowProps {
   id: number;
@@ -32,6 +33,14 @@ export default function GoalsRow({
   const [editContent, setEditContent] = useState(content);
   const [editDate, setEditDate] = useState(date);
   const expand = useRef(new Animated.Value(70)).current;
+
+  useEffect(() => {
+    if (modalVisible) {
+      setEditTitle(title);
+      setEditContent(content);
+      setEditDate(date);
+    }
+  }, [modalVisible, title, content, date]);
 
   function toggle() {
     const next = !expanded;
@@ -115,12 +124,7 @@ export default function GoalsRow({
               onChangeText={setEditContent}
               placeholderTextColor="#7B8A96"
             />
-            <AppInput
-              placeholder="Target Date (YYYY-MM-DD)"
-              value={editDate}
-              onChangeText={setEditDate}
-              placeholderTextColor="#7B8A96"
-            />
+            <DatePickerField inline value={editDate} onChange={setEditDate} />
             <XStack gap="$2" flexWrap="wrap">
               <AppButton
                 flex={1}
