@@ -5,7 +5,6 @@ interface Goal {
   id: number;
   title: string;
   details: string;
-  color: string;
   target_date: string;
 }
 
@@ -45,7 +44,6 @@ export default function GoalsList({
           deleteGoal={deleteGoal}
           editGoal={editGoal}
           id={goal.id}
-          color={goal.color}
         />
       ))}
     </YStack>

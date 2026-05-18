@@ -1,5 +1,9 @@
 import { useCallback, useState } from "react";
-import { Modal, TouchableOpacity } from "react-native";
+import {
+  Modal,
+  TouchableOpacity,
+  ScrollView as RNScrollView,
+} from "react-native";
 import { ScrollView, YStack } from "tamagui";
 import GoalsList from "@/components/GoalsList/GoalsList";
 import { BACKEND_PORT } from "@env";
@@ -20,25 +24,15 @@ import {
   toYmd,
 } from "@/components/primitives/DatePickerField";
 import { XStack } from "tamagui";
+import { GOAL_CARD_BACKGROUND } from "@/constants/goalStyles";
 
 interface Goal {
   id: number;
   title: string;
   details: string;
-  color: string;
+  color?: string;
   target_date: string;
 }
-
-const colorOptions = [
-  "#ffadad",
-  "#ffd6a5",
-  "#fdffb6",
-  "#caffbf",
-  "#9bf6ff",
-  "#a0c4ff",
-  "#bdb2ff",
-  "#ffc6ff",
-];
 
 export default function Goals() {
   const { userId } = useAuth();
@@ -64,10 +58,6 @@ export default function Goals() {
     }, [userId]),
   );
 
-  function getRandomColor() {
-    return colorOptions[Math.floor(Math.random() * colorOptions.length)];
-  }
-
   function addGoal() {
     if (newGoalTitle.trim() && isValidYmd(selectedDate)) {
       const formattedDate = selectedDate;
@@ -92,7 +82,7 @@ export default function Goals() {
               id: data.id,
               title: newGoalTitle,
               details: newGoalContent,
-              color: getRandomColor(),
+              color: GOAL_CARD_BACKGROUND,
               target_date: formattedDate,
             },
           ]);
@@ -235,45 +225,51 @@ export default function Goals() {
         <YStack
           flex={1}
           justifyContent="center"
-          alignItems="center"
           backgroundColor="rgba(0,0,0,0.4)"
           padding="$4"
         >
-          <Card
-            width="100%"
-            maxWidth={400}
-            gap="$4"
-            backgroundColor="$surfaceDefault"
+          <RNScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            showsVerticalScrollIndicator={false}
           >
-            <AppText variant="title" fontSize="$5" color="$color">
-              New Goal
-            </AppText>
-            <AppInput
-              placeholder="Title"
-              value={newGoalTitle}
-              onChangeText={setNewGoalTitle}
-              placeholderTextColor="#7B8A96"
-            />
-            <AppInput
-              multiline
-              placeholder="Details"
-              value={newGoalContent}
-              onChangeText={setNewGoalContent}
-              placeholderTextColor="#7B8A96"
-            />
-            <DatePickerField
-              inline
-              value={selectedDate}
-              onChange={setSelectedDate}
-              minimumDate={new Date()}
-            />
-            <XStack justifyContent="flex-end" gap="$3">
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <AppText color="$textMuted">Cancel</AppText>
-              </TouchableOpacity>
-              <AppButton onPress={addGoal}>Add</AppButton>
-            </XStack>
-          </Card>
+            <Card
+              width="100%"
+              maxWidth={400}
+              gap="$4"
+              backgroundColor="$surfaceDefault"
+              alignSelf="center"
+            >
+              <AppText variant="title" fontSize="$5" color="$color">
+                New Goal
+              </AppText>
+              <AppInput
+                placeholder="Title"
+                value={newGoalTitle}
+                onChangeText={setNewGoalTitle}
+                placeholderTextColor="#7B8A96"
+              />
+              <AppInput
+                multiline
+                placeholder="Details"
+                value={newGoalContent}
+                onChangeText={setNewGoalContent}
+                placeholderTextColor="#7B8A96"
+              />
+              <DatePickerField
+                compact
+                value={selectedDate}
+                onChange={setSelectedDate}
+                minimumDate={new Date()}
+              />
+              <XStack justifyContent="flex-end" gap="$3">
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <AppText color="$textMuted">Cancel</AppText>
+                </TouchableOpacity>
+                <AppButton onPress={addGoal}>Add</AppButton>
+              </XStack>
+            </Card>
+          </RNScrollView>
         </YStack>
       </Modal>
     </Screen>

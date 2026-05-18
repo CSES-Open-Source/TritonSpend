@@ -6,7 +6,6 @@ import DateTimePicker, {
 import { Ionicons } from "@expo/vector-icons";
 import { XStack, YStack } from "tamagui";
 import { AppText } from "./AppText";
-import { AppButton } from "./AppButton";
 
 export function toYmd(date: Date): string {
   const y = date.getFullYear();
@@ -31,8 +30,7 @@ function formatDisplay(ymd: string): string {
   if (!ymd || !isValidYmd(ymd)) return "Select target date";
   const [y, m, d] = ymd.split("-").map(Number);
   return new Date(y, m - 1, d).toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "long",
+    month: "short",
     day: "numeric",
     year: "numeric",
   });
@@ -42,8 +40,8 @@ interface DatePickerFieldProps {
   value: string;
   onChange: (date: string) => void;
   label?: string;
-  /** Always show the calendar (best inside modals). */
-  inline?: boolean;
+  /** Compact layout for modals — tap row to pick, stays inside the card. */
+  compact?: boolean;
   minimumDate?: Date;
 }
 
@@ -51,14 +49,14 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
   value,
   onChange,
   label = "Target Date",
-  inline = false,
+  compact = false,
   minimumDate,
 }) => {
-  const [showPicker, setShowPicker] = useState(inline);
+  const [showPicker, setShowPicker] = useState(false);
   const pickerDate = parseYmd(value);
 
   const handleChange = (event: DateTimePickerEvent, selected?: Date) => {
-    if (Platform.OS === "android" && !inline) {
+    if (Platform.OS === "android") {
       setShowPicker(false);
     }
     if (event.type === "dismissed") {
@@ -67,12 +65,15 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
     }
     if (selected) {
       onChange(toYmd(selected));
+      if (Platform.OS === "ios" && compact) {
+        setShowPicker(false);
+      }
     }
   };
 
   if (Platform.OS === "web") {
     return (
-      <YStack gap="$2">
+      <YStack gap="$2" width="100%">
         <AppText variant="caption" color="$textMuted">
           {label}
         </AppText>
@@ -93,71 +94,86 @@ export const DatePickerField: React.FC<DatePickerFieldProps> = ({
             backgroundColor: "#FFFFFF",
             color: "#1C252E",
             fontFamily: "Inter, Helvetica, Arial, sans-serif",
+            boxSizing: "border-box",
           }}
         />
       </YStack>
     );
   }
 
-  const pickerDisplay = Platform.OS === "ios" ? "inline" : "calendar";
-
   return (
-    <YStack gap="$2">
+    <YStack gap="$2" width="100%">
       <AppText variant="caption" color="$textMuted">
         {label}
       </AppText>
 
-      {!inline && (
-        <TouchableOpacity onPress={() => setShowPicker((v) => !v)}>
-          <XStack
-            alignItems="center"
-            justifyContent="space-between"
-            backgroundColor="$surfaceDefault"
-            borderRadius="$3"
-            borderWidth={1}
-            borderColor="$borderColor"
-            paddingHorizontal="$3"
-            paddingVertical="$3"
-          >
-            <AppText color={value ? "$color" : "$textMuted"} flex={1}>
-              {formatDisplay(value)}
-            </AppText>
-            <Ionicons name="calendar-outline" size={20} color="#395773" />
-          </XStack>
-        </TouchableOpacity>
-      )}
-
-      {inline && (
-        <AppText variant="body" fontWeight="600" color="$primary">
-          {formatDisplay(value)}
-        </AppText>
-      )}
-
-      {(inline || showPicker) && (
-        <YStack
+      <TouchableOpacity onPress={() => setShowPicker(true)} activeOpacity={0.8}>
+        <XStack
+          alignItems="center"
+          justifyContent="space-between"
           backgroundColor="$surfaceDefault"
           borderRadius="$3"
           borderWidth={1}
           borderColor="$borderColor"
+          paddingHorizontal="$3"
+          paddingVertical="$3"
+          width="100%"
+        >
+          <AppText
+            color={value ? "$color" : "$textMuted"}
+            flex={1}
+            fontSize="$3"
+          >
+            {formatDisplay(value)}
+          </AppText>
+          <Ionicons name="calendar-outline" size={20} color="#395773" />
+        </XStack>
+      </TouchableOpacity>
+
+      {showPicker && (
+        <YStack
+          width="100%"
+          maxWidth="100%"
           overflow="hidden"
-          alignItems="center"
+          alignItems="stretch"
+          borderRadius="$3"
+          borderWidth={1}
+          borderColor="$borderColor"
+          backgroundColor="$surfaceDefault"
         >
           <DateTimePicker
             value={pickerDate}
             mode="date"
-            display={pickerDisplay}
+            display={
+              Platform.OS === "ios"
+                ? compact
+                  ? "spinner"
+                  : "inline"
+                : "calendar"
+            }
             onChange={handleChange}
             minimumDate={minimumDate}
             themeVariant="light"
+            style={
+              Platform.OS === "ios"
+                ? { width: "100%", height: compact ? 180 : undefined }
+                : undefined
+            }
           />
-          {Platform.OS === "ios" && !inline && (
-            <AppButton
-              width="100%"
-              borderRadius={0}
+          {Platform.OS === "ios" && (
+            <TouchableOpacity
               onPress={() => setShowPicker(false)}
+              style={{
+                paddingVertical: 10,
+                alignItems: "center",
+                borderTopWidth: 1,
+                borderTopColor: "#C6C6C8",
+              }}
             >
-              Done
-            </AppButton>
+              <AppText color="$primary" fontWeight="600">
+                Done
+              </AppText>
+            </TouchableOpacity>
           )}
         </YStack>
       )}

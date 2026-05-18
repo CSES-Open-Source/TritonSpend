@@ -1,19 +1,25 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
-import { Animated, Pressable, Modal, TouchableOpacity } from "react-native";
+import {
+  Animated,
+  Pressable,
+  Modal,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { XStack, YStack } from "tamagui";
 import { AppText } from "@/components/primitives/AppText";
 import { AppInput } from "@/components/primitives/AppInput";
 import { AppButton } from "@/components/primitives/AppButton";
 import { Card } from "@/components/primitives/Card";
 import { DatePickerField } from "@/components/primitives/DatePickerField";
+import { GOAL_CARD_BACKGROUND, GOAL_CARD_TEXT } from "@/constants/goalStyles";
 
 interface GoalsRowProps {
   id: number;
   title: string;
   date: string;
   content: string;
-  color: string;
   editGoal: (id: number, title: string, content: string, date: string) => void;
   deleteGoal: (id: number) => void;
 }
@@ -23,7 +29,6 @@ export default function GoalsRow({
   title,
   date,
   content,
-  color,
   editGoal,
   deleteGoal,
 }: GoalsRowProps) {
@@ -56,7 +61,7 @@ export default function GoalsRow({
     <>
       <Animated.View style={{ height: expand, width: "100%" }}>
         <Card
-          backgroundColor={color}
+          backgroundColor={GOAL_CARD_BACKGROUND}
           flexDirection="row"
           alignItems="center"
           justifyContent="space-between"
@@ -68,12 +73,18 @@ export default function GoalsRow({
             onLongPress={() => setModalVisible(true)}
             style={{ flex: 1, height: "100%", justifyContent: "center" }}
           >
-            <AppText variant="subtitle" fontWeight="bold">
+            <AppText
+              variant="subtitle"
+              fontWeight="bold"
+              color={GOAL_CARD_TEXT}
+            >
               {title}
             </AppText>
-            <AppText variant="caption">{date}</AppText>
+            <AppText variant="caption" color={GOAL_CARD_TEXT} opacity={0.75}>
+              {date}
+            </AppText>
             {expanded && (
-              <AppText variant="body" marginTop="$2">
+              <AppText variant="body" marginTop="$2" color={GOAL_CARD_TEXT}>
                 {content}
               </AppText>
             )}
@@ -84,12 +95,16 @@ export default function GoalsRow({
               hitSlop={8}
               accessibilityLabel="Edit goal"
             >
-              <Ionicons name="create-outline" size={22} color="#395773" />
+              <Ionicons
+                name="create-outline"
+                size={22}
+                color={GOAL_CARD_TEXT}
+              />
             </TouchableOpacity>
             <Ionicons
               name="checkmark-circle-outline"
               size={22}
-              color="#395773"
+              color={GOAL_CARD_TEXT}
             />
           </XStack>
         </Card>
@@ -107,53 +122,69 @@ export default function GoalsRow({
           backgroundColor="rgba(0,0,0,0.5)"
           padding="$4"
         >
-          <Card gap="$3" backgroundColor="$surfaceDefault">
-            <AppText variant="title" fontSize="$5" color="$color">
-              Edit Goal
-            </AppText>
-            <AppInput
-              placeholder="Title"
-              value={editTitle}
-              onChangeText={setEditTitle}
-              placeholderTextColor="#7B8A96"
-            />
-            <AppInput
-              multiline
-              placeholder="Details"
-              value={editContent}
-              onChangeText={setEditContent}
-              placeholderTextColor="#7B8A96"
-            />
-            <DatePickerField inline value={editDate} onChange={setEditDate} />
-            <XStack gap="$2" flexWrap="wrap">
-              <AppButton
-                flex={1}
-                onPress={() => {
-                  editGoal(id, editTitle, editContent, editDate);
-                  setModalVisible(false);
-                }}
-              >
-                Save
-              </AppButton>
-              <AppButton
-                flex={1}
-                variant="outline"
-                onPress={() => {
-                  deleteGoal(id);
-                  setModalVisible(false);
-                }}
-              >
-                Delete
-              </AppButton>
-              <AppButton
-                flex={1}
-                variant="outline"
-                onPress={() => setModalVisible(false)}
-              >
-                Cancel
-              </AppButton>
-            </XStack>
-          </Card>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            showsVerticalScrollIndicator={false}
+          >
+            <Card
+              gap="$3"
+              backgroundColor="$surfaceDefault"
+              width="100%"
+              maxWidth={400}
+              alignSelf="center"
+            >
+              <AppText variant="title" fontSize="$5" color="$color">
+                Edit Goal
+              </AppText>
+              <AppInput
+                placeholder="Title"
+                value={editTitle}
+                onChangeText={setEditTitle}
+                placeholderTextColor="#7B8A96"
+              />
+              <AppInput
+                multiline
+                placeholder="Details"
+                value={editContent}
+                onChangeText={setEditContent}
+                placeholderTextColor="#7B8A96"
+              />
+              <DatePickerField
+                compact
+                value={editDate}
+                onChange={setEditDate}
+              />
+              <XStack gap="$2" flexWrap="wrap">
+                <AppButton
+                  flex={1}
+                  onPress={() => {
+                    editGoal(id, editTitle, editContent, editDate);
+                    setModalVisible(false);
+                  }}
+                >
+                  Save
+                </AppButton>
+                <AppButton
+                  flex={1}
+                  variant="outline"
+                  onPress={() => {
+                    deleteGoal(id);
+                    setModalVisible(false);
+                  }}
+                >
+                  Delete
+                </AppButton>
+                <AppButton
+                  flex={1}
+                  variant="outline"
+                  onPress={() => setModalVisible(false)}
+                >
+                  Cancel
+                </AppButton>
+              </XStack>
+            </Card>
+          </ScrollView>
         </YStack>
       </Modal>
     </>
