@@ -7,15 +7,15 @@ import passport from "passport";
 import session from "express-session";
 import env from "src/util/validateEnv"; // Importing environment variables
 import app from "src/app"; // The express app
-import "../src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
-import transactionRoutes from "../src/routes/transactions";
-import userRoutes from "../src/routes/user";
-import goalsRoutes from "../src/routes/goals";
-import dealsRoutes from "../src/routes/deals";
+import "src/googleAuth"; // Import the Google OAuth logic (this automatically sets up passport)
+import transactionRoutes from "src/routes/transactions";
+import userRoutes from "src/routes/user";
+import goalsRoutes from "src/routes/goals";
+import dealsRoutes from "src/routes/deals";
 const PORT = env.PORT;
 
 // Middleware for handling sessions
-app.use(session({ secret: "your_secret_key", resave: false, saveUninitialized: true }));
+app.use(session({ secret: process.env.SESSION_SECRET || "your_secret_key", resave: false, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -28,7 +28,7 @@ app.get(
 // Google callback route
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "http://localhost:8081/NotAuthorized" }),
+  passport.authenticate("google", { failureRedirect: `${process.env.FRONTEND_ORIGIN}/NotAuthorized` }),
   (req, res, next) => {
     if (!req.user) {
       console.error("User is undefined during login.");
@@ -41,7 +41,7 @@ app.get(
       }
       console.log("User logged in:", req.user); // Debug log
       console.log("Session data:", req.session); // Debug log
-      res.redirect("http://localhost:8081/"); // Redirect after successful login
+      res.redirect(`${process.env.FRONTEND_ORIGIN}/`); // Redirect after successful login
     });
   },
 );
