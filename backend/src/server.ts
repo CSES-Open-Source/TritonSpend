@@ -15,7 +15,16 @@ import dealsRoutes from "src/routes/deals";
 const PORT = env.PORT;
 
 // Middleware for handling sessions
-app.use(session({ secret: process.env.SESSION_SECRET || "your_secret_key", resave: false, saveUninitialized: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || "your_secret_key",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    sameSite: "none",
+    secure: true,
+    httpOnly: true,
+  }
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
