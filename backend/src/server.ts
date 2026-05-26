@@ -50,7 +50,14 @@ app.get(
       }
       console.log("User logged in:", req.user); // Debug log
       console.log("Session data:", req.session); // Debug log
-      res.redirect(`${process.env.FRONTEND_ORIGIN}/`); // Redirect after successful login
+      // Encode user data in URL to avoid cross-origin cookie issues
+      const userPayload = Buffer.from(JSON.stringify({
+        id: (req.user as any).id,
+        displayName: (req.user as any).displayName,
+        email: (req.user as any).emails?.[0]?.value,
+        photos: (req.user as any).photos,
+      })).toString("base64");
+      res.redirect(`${process.env.FRONTEND_ORIGIN}/?auth=${userPayload}`); // Redirect after successful login
     });
   },
 );

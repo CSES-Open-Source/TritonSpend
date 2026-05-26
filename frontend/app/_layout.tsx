@@ -15,7 +15,7 @@ import { useAuth } from "@/context/authContext";
 import { ThemeProvider as AppThemeProvider } from "@/context/themeContext";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { TamaguiProvider, Theme } from "tamagui";
 import tamaguiConfig from "../tamagui.config";
 import { useAppTheme } from "@/context/themeContext";
@@ -23,7 +23,7 @@ import { useAppTheme } from "@/context/themeContext";
 SplashScreen.preventAutoHideAsync();
 
 function AuthCheck() {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const router = useRouter();
   const colorScheme = useColorScheme();
   const [checking, setChecking] = useState(true);
@@ -31,8 +31,21 @@ function AuthCheck() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Check for auth payload in URL (passed after Google OAuth redirect)
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search);
+          const authParam = urlParams.get("auth");
+          if (authParam) {
+            const userData = JSON.parse(atob(authParam));
+            window.history.replaceState({}, "", "/");
+            await login(userData);
+            setChecking(false);
+            return;
+          }
+        }
+
         const response = await fetch(
-          `http://localhost:${BACKEND_PORT}/auth/me`,
+          `${BACKEND_URL}/auth/me`,
           {
             credentials: "include",
           },
