@@ -7,6 +7,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 interface Props {
   name: string;
   category: string;
+  paymentSource?: string;
   date: string;
   amount: string;
   deleteCallback: () => void;
@@ -98,7 +99,9 @@ export default function NewTransactionRow(props: Props) {
             whiteSpace="nowrap"
             overflow="hidden"
             textOverflow="ellipsis"
-          >{`${props.category} • ${relativeDate}`}</AppText>
+          >{`${props.category}${
+            props.paymentSource ? ` • ${props.paymentSource}` : ""
+          } • ${relativeDate}`}</AppText>
         </YStack>
       </XStack>
       <XStack gap="$3">

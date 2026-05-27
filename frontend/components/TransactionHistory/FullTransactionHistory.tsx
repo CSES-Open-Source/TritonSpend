@@ -41,6 +41,7 @@ export default function FullTransactionHistory(props: any) {
           name={transaction.item_name}
           amount={transaction.amount}
           category={transaction.category_name}
+          paymentSource={transaction.payment_source}
           date={transaction.date}
           deleteCallback={() => handleDelete(transaction.id)}
           key={transaction.id}

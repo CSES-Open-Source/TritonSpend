@@ -24,8 +24,13 @@ CREATE TABLE transactions (
     item_name VARCHAR(255) NOT NULL,           -- Item Name
     amount DECIMAL(10,2) NOT NULL,             -- Amount of the Transaction
     category_name VARCHAR(100) NOT NULL,  -- Category Name
+    payment_source VARCHAR(32) NOT NULL DEFAULT 'CARD', -- UCSD-specific funding source
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Date of Transaction
 );
+
+-- If the table already exists (dev DB), add the column safely
+ALTER TABLE transactions
+ADD COLUMN IF NOT EXISTS payment_source VARCHAR(32) NOT NULL DEFAULT 'CARD';
 
 -- Create Goals Table
 CREATE TABLE goals (

@@ -1,5 +1,5 @@
 import { ScrollView, XStack, YStack } from "tamagui";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { BACKEND_PORT } from "@env";
 import { useAuth } from "@/context/authContext";
@@ -19,24 +19,18 @@ import CustomPieChart from "@/components/Graphs/PieChart";
 import CustomLineChart from "@/components/Graphs/LineChart";
 import CustomBarChart from "@/components/Graphs/BarChart";
 
-interface Category {
-  id: number;
-  category_name: string;
-  category_expense: string;
-  max_category_budget: string;
-  user_id: number;
-}
-
 interface Transaction {
   id: number;
   item_name: string;
   amount: string;
   category_name: string;
+  payment_source?: "DINING_DOLLARS" | "TRITON_CASH" | "CARD";
   date: string;
 }
 
 type ChartType = "pie" | "line" | "bar";
 type Range = "1M" | "3M" | "6M" | "1Y";
+type PaymentFilter = "ALL" | "DINING_DOLLARS" | "TRITON_CASH" | "CARD";
 
 const RANGE_CONFIG: Record<
   Range,
@@ -52,13 +46,12 @@ export default function Home() {
   const [ThreeTransactions, setThreeTransactions] = useState([]);
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [updateRecent, setUpdateRecent] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [username, setUsername] = useState("");
   const [forceOpenTransaction, setForceOpenTransaction] = useState(false);
 
   const [chartType, setChartType] = useState<ChartType>("pie");
   const [range, setRange] = useState<Range>("3M");
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>("ALL");
   const [lineData, setLineData] = useState<{ date: string; total: number }[]>(
     [],
   );
@@ -101,28 +94,12 @@ export default function Home() {
           console.error("API Error:", error);
         });
 
-      fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setCategories(data);
-          setTotal(
-            data.reduce(
-              (sum: number, category: { category_expense: string }) =>
-                sum + parseFloat(category.category_expense),
-              0,
-            ),
-          );
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-        });
-
       if (chartType === "line") {
         const { period, months } = RANGE_CONFIG[range];
+        const paymentParam =
+          paymentFilter === "ALL" ? "" : `&payment_source=${paymentFilter}`;
         fetch(
-          `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${period}&months=${months}`,
+          `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${period}&months=${months}${paymentParam}`,
           { method: "GET" },
         )
           .then((res) => res.json())
@@ -134,8 +111,10 @@ export default function Home() {
 
       if (chartType === "bar") {
         const { months } = RANGE_CONFIG[range];
+        const paymentParam =
+          paymentFilter === "ALL" ? "" : `?payment_source=${paymentFilter}`;
         fetch(
-          `http://localhost:${BACKEND_PORT}/transactions/monthly/${userId}`,
+          `http://localhost:${BACKEND_PORT}/transactions/monthly/${userId}${paymentParam}`,
           {
             method: "GET",
           },
@@ -152,15 +131,37 @@ export default function Home() {
             console.error("API Error:", error);
           });
       }
-    }, [updateRecent, chartType, range]),
+    }, [updateRecent, chartType, range, paymentFilter]),
   );
 
-  const pieData = categories.map((category) => ({
-    value: parseFloat(category.category_expense),
-    color: categoryColors.get(category.category_name) || "#cccccc",
-    name: category.category_name,
-    id: category.id,
-  }));
+  const paymentFilteredTransactions = useMemo(() => {
+    if (paymentFilter === "ALL") return allTransactions;
+    return allTransactions.filter((t) => t.payment_source === paymentFilter);
+  }, [allTransactions, paymentFilter]);
+
+  const pieData = useMemo(() => {
+    const totals = new Map<string, number>();
+    for (const transaction of paymentFilteredTransactions) {
+      totals.set(
+        transaction.category_name,
+        (totals.get(transaction.category_name) || 0) +
+          parseFloat(transaction.amount),
+      );
+    }
+    return [...totals.entries()]
+      .filter(([, value]) => value > 0)
+      .map(([name, value]) => ({
+        value,
+        color: categoryColors.get(name) || "#cccccc",
+        name,
+        id: name,
+      }));
+  }, [paymentFilteredTransactions]);
+
+  const pieTotal = useMemo(
+    () => pieData.reduce((sum, category) => sum + category.value, 0),
+    [pieData],
+  );
 
   return (
     <PrimaryScreen>
@@ -183,6 +184,18 @@ export default function Home() {
                 { label: "Bar", value: "bar" },
               ]}
             />
+            <YStack marginTop="$3">
+              <SegmentedControl
+                value={paymentFilter}
+                onValueChange={setPaymentFilter}
+                options={[
+                  { label: "All", value: "ALL" },
+                  { label: "Dining", value: "DINING_DOLLARS" },
+                  { label: "Triton", value: "TRITON_CASH" },
+                  { label: "Card", value: "CARD" },
+                ]}
+              />
+            </YStack>
 
             {chartType !== "pie" && (
               <YStack marginTop="$3">
@@ -201,7 +214,7 @@ export default function Home() {
 
             <YStack marginTop="$3" alignItems="center">
               {chartType === "pie" && (
-                <CustomPieChart data={pieData} size={250} total={total} />
+                <CustomPieChart data={pieData} size={250} total={pieTotal} />
               )}
               {chartType === "line" && (
                 <CustomLineChart

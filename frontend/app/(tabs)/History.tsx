@@ -11,7 +11,7 @@ import CustomPieChart from "@/components/Graphs/PieChart";
 import { SegmentedControl } from "@/components/primitives/SegmentedControl";
 import { useWindowDimensions } from "react-native";
 import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
-import Transaction, { Category } from "@/types/transaction";
+import Transaction, { Category, PaymentSource } from "@/types/transaction";
 import { AppText } from "@/components/primitives/AppText";
 import { StatCard } from "@/components/primitives/StatCard";
 import { Card } from "@/components/primitives/Card";
@@ -29,6 +29,7 @@ type SortOption = "Date" | "Amount" | "Name";
 type FilterOption = "All" | "Month" | "Category";
 type ChartType = "pie" | "line" | "bar";
 type Range = "1M" | "3M" | "6M" | "1Y";
+type PaymentFilter = "ALL" | PaymentSource;
 
 const RANGE_CONFIG: Record<
   Range,
@@ -62,6 +63,7 @@ export default function History() {
 
   const [chartType, setChartType] = useState<ChartType>("pie");
   const [range, setRange] = useState<Range>("3M");
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>("ALL");
   const [lineData, setLineData] = useState<{ date: string; total: number }[]>(
     [],
   );
@@ -143,8 +145,10 @@ export default function History() {
 
       if (chartType === "line") {
         const { period, months } = RANGE_CONFIG[range];
+        const paymentParam =
+          paymentFilter === "ALL" ? "" : `&payment_source=${paymentFilter}`;
         fetch(
-          `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${period}&months=${months}`,
+          `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${period}&months=${months}${paymentParam}`,
           {
             method: "GET",
             headers: {
@@ -160,8 +164,10 @@ export default function History() {
 
       if (chartType === "bar") {
         const { months } = RANGE_CONFIG[range];
+        const paymentParam =
+          paymentFilter === "ALL" ? "" : `?payment_source=${paymentFilter}`;
         fetch(
-          `http://localhost:${BACKEND_PORT}/transactions/monthly/${userId}`,
+          `http://localhost:${BACKEND_PORT}/transactions/monthly/${userId}${paymentParam}`,
           { method: "GET" },
         )
           .then((res) => res.json())
@@ -174,16 +180,39 @@ export default function History() {
           })
           .catch((error) => console.error("API Error:", error));
       }
-    }, [chartType, range, userId]),
+    }, [chartType, range, userId, paymentFilter]),
   );
 
-  const pieData = chartCategories.map((category) => ({
-    value: parseFloat(category.category_expense),
-    color: categoryColors.get(category.category_name) || "#cccccc",
-    name: category.category_name,
-    id: category.id,
-  }));
-  const pieTotal = pieData.reduce((sum, d) => sum + d.value, 0);
+  const paymentFilteredTransactions = useMemo(() => {
+    if (paymentFilter === "ALL") return AllTransactions;
+    return AllTransactions.filter((t) => t.payment_source === paymentFilter);
+  }, [AllTransactions, paymentFilter]);
+
+  const pieData = useMemo(() => {
+    const totals = categories.reduce(
+      (map, category) => map.set(category, 0),
+      new Map<Category, number>(),
+    );
+    for (const t of paymentFilteredTransactions) {
+      totals.set(
+        t.category_name,
+        (totals.get(t.category_name) as number) + parseFloat(t.amount),
+      );
+    }
+    return [...totals.entries()]
+      .filter(([, value]) => value > 0)
+      .map(([name, value]) => ({
+        value,
+        color: categoryColors.get(name) || "#cccccc",
+        name,
+        id: name,
+      }));
+  }, [paymentFilteredTransactions, categories]);
+
+  const pieTotal = useMemo(
+    () => pieData.reduce((sum, d) => sum + d.value, 0),
+    [pieData],
+  );
 
   const resetFiltersAndSort = () => {
     setFilterType("All");
@@ -275,6 +304,33 @@ export default function History() {
                 { label: "Bar", value: "bar" },
               ]}
             />
+            <YStack marginTop="$3">
+              <AppSelect
+                options={[
+                  "All payments",
+                  "Dining Dollars",
+                  "Triton Cash",
+                  "Cash/Credit/Debit",
+                ]}
+                value={
+                  paymentFilter === "ALL"
+                    ? "All payments"
+                    : paymentFilter === "DINING_DOLLARS"
+                      ? "Dining Dollars"
+                      : paymentFilter === "TRITON_CASH"
+                        ? "Triton Cash"
+                        : "Cash/Credit/Debit"
+                }
+                onValueChange={(val) => {
+                  if (val === "All payments") return setPaymentFilter("ALL");
+                  if (val === "Dining Dollars")
+                    return setPaymentFilter("DINING_DOLLARS");
+                  if (val === "Triton Cash")
+                    return setPaymentFilter("TRITON_CASH");
+                  return setPaymentFilter("CARD");
+                }}
+              />
+            </YStack>
             {chartType !== "pie" && (
               <YStack marginTop="$3">
                 <SegmentedControl

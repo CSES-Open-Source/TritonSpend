@@ -4,11 +4,11 @@ import client from "../db/db"; // Import PostgreSQL client
 //adding new transaction
 export const addTransaction: RequestHandler = async (req, res) => {
   const newTransaction =
-    "INSERT INTO transactions(user_id, item_name, amount, category_name) VALUES ($1,$2,$3,$4);";
+    "INSERT INTO transactions(user_id, item_name, amount, category_name, payment_source) VALUES ($1,$2,$3,$4,$5);";
   //try/catch any errors
   try {
     //retrieve data from body
-    const { user_id, item_name, amount, category_name } = req.body;
+    const { user_id, item_name, amount, category_name, payment_source } = req.body;
     //checking for edge cases and validating data
 
     if (!user_id || !item_name || !amount || item_name.length == 0 || amount <= 0) {
@@ -18,13 +18,23 @@ export const addTransaction: RequestHandler = async (req, res) => {
       typeof user_id !== "number" ||
       typeof item_name !== "string" ||
       typeof amount !== "number" ||
-      (category_name !== null && typeof category_name !== "string")
+      (category_name !== null && typeof category_name !== "string") ||
+      (payment_source !== undefined && typeof payment_source !== "string")
     ) {
       return res.status(400).json({ error: "Invalid data types" });
     }
 
+    const normalizedPaymentSource =
+      typeof payment_source === "string" && payment_source.length > 0 ? payment_source : "CARD";
+
     // Only insert the transaction - let the database trigger handle category_expense update
-    await client.query(newTransaction, [user_id, item_name, amount, category_name]);
+    await client.query(newTransaction, [
+      user_id,
+      item_name,
+      amount,
+      category_name,
+      normalizedPaymentSource,
+    ]);
 
     res.status(200).json({ message: "New Transaction Created!" });
   } catch (error) {
@@ -78,6 +88,7 @@ export const getSpendingTrend: RequestHandler = async (req, res) => {
     const { user_id } = req.params;
     const periodParam = req.query.period as string;
     const monthsParam = req.query.months as string;
+    const paymentSourceParam = req.query.payment_source as string | undefined;
 
     const period = periodParam || "weekly";
     const months = monthsParam ? parseInt(monthsParam) : 3;
@@ -95,6 +106,13 @@ export const getSpendingTrend: RequestHandler = async (req, res) => {
 
     // Build query
     let getSpendingTrend: string;
+    const params: (string | number)[] = [user_id, months];
+    const shouldFilterByPaymentSource =
+      typeof paymentSourceParam === "string" && paymentSourceParam !== "ALL";
+    const paymentFilterClause = shouldFilterByPaymentSource ? " AND payment_source = $3" : "";
+    if (shouldFilterByPaymentSource) {
+      params.push(paymentSourceParam);
+    }
 
     if (period === "weekly") {
       getSpendingTrend = `
@@ -104,6 +122,7 @@ export const getSpendingTrend: RequestHandler = async (req, res) => {
         FROM transactions
         WHERE user_id = $1 
           AND date >= NOW() - INTERVAL '1 month' * $2
+          ${paymentFilterClause}
         GROUP BY date_trunc('week', date)
         ORDER BY date ASC;
       `;
@@ -115,12 +134,13 @@ export const getSpendingTrend: RequestHandler = async (req, res) => {
         FROM transactions
         WHERE user_id = $1 
           AND date >= NOW() - INTERVAL '1 month' * $2
+          ${paymentFilterClause}
         GROUP BY date::date
         ORDER BY date ASC;
       `;
     }
 
-    const result = await client.query(getSpendingTrend, [user_id, months]);
+    const result = await client.query(getSpendingTrend, params);
 
     const formattedRows = result.rows.map((row) => ({
       date: new Date(row.date).toISOString().split("T")[0], // Format as YYYY-MM-DD
@@ -136,6 +156,14 @@ export const getSpendingTrend: RequestHandler = async (req, res) => {
 
 export const getMonthlySpending: RequestHandler = async (req, res) => {
   const { user_id } = req.params;
+  const paymentSourceParam = req.query.payment_source as string | undefined;
+  const params: (string | number)[] = [user_id];
+  const shouldFilterByPaymentSource =
+    typeof paymentSourceParam === "string" && paymentSourceParam !== "ALL";
+  const paymentFilterClause = shouldFilterByPaymentSource ? " AND payment_source = $2" : "";
+  if (shouldFilterByPaymentSource) {
+    params.push(paymentSourceParam);
+  }
 
   const query = `
     SELECT 
@@ -143,12 +171,13 @@ export const getMonthlySpending: RequestHandler = async (req, res) => {
       SUM(amount) AS total
     FROM transactions
     WHERE user_id = $1
+    ${paymentFilterClause}
     GROUP BY month
     ORDER BY month ASC;
   `;
 
   try {
-    const result = await client.query(query, [user_id]);
+    const result = await client.query(query, params);
     res.status(200).json(result.rows);
   } catch (error) {
     console.error("Error fetching monthly data:", error);
