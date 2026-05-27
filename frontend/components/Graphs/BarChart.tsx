@@ -33,10 +33,20 @@ export default function BarChart({
   const maxValue = Math.max(...data.map((d) => d.value), 1);
   const drawableHeight = height - topPadding - bottomPadding;
 
-  const formatMonth = (monthStr: string) => {
-    const [year, month] = monthStr.split("-").map(Number);
-    const date = new Date(year, month - 1);
-    return date.toLocaleString("default", { month: "short" });
+  const formatLabel = (label: string) => {
+    // Daily/weekly buckets are YYYY-MM-DD -> show "May 26"
+    if (/^\d{4}-\d{2}-\d{2}$/.test(label)) {
+      const [year, month, day] = label.split("-").map(Number);
+      const date = new Date(year, month - 1, day);
+      return date.toLocaleString("default", { month: "short", day: "numeric" });
+    }
+    // Monthly/yearly buckets are YYYY-MM -> show "May"
+    if (/^\d{4}-\d{2}$/.test(label)) {
+      const [year, month] = label.split("-").map(Number);
+      const date = new Date(year, month - 1);
+      return date.toLocaleString("default", { month: "short" });
+    }
+    return label;
   };
 
   return (
@@ -80,7 +90,7 @@ export default function BarChart({
                 fontFamily="Inter, Helvetica, Arial, sans-serif"
                 fontWeight="600"
               >
-                {formatMonth(item.name)}
+                {formatLabel(item.name)}
               </SvgText>
             </React.Fragment>
           );

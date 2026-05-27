@@ -28,26 +28,8 @@ import { useAppTheme } from "@/context/themeContext";
 type SortOption = "Date" | "Amount" | "Name";
 type FilterOption = "All" | "Month" | "Category";
 type ChartType = "pie" | "line" | "bar";
-type Range = "1M" | "3M" | "6M" | "1Y";
+type Period = "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 type PaymentFilter = "ALL" | PaymentSource;
-
-const RANGE_CONFIG: Record<
-  Range,
-  { period: "daily" | "weekly"; months: number }
-> = {
-  "1M": { period: "daily", months: 1 },
-  "3M": { period: "weekly", months: 3 },
-  "6M": { period: "weekly", months: 6 },
-  "1Y": { period: "weekly", months: 12 },
-};
-
-interface ChartCategory {
-  id: number;
-  category_name: string;
-  category_expense: string;
-  max_category_budget: string;
-  user_id: number;
-}
 
 export default function History() {
   const currentMonth = new Date().toISOString().substring(0, 7);
@@ -62,13 +44,8 @@ export default function History() {
   const [selectedCategory, setSelectedCategory] = useState<string>("Food");
 
   const [chartType, setChartType] = useState<ChartType>("pie");
-  const [range, setRange] = useState<Range>("3M");
+  const [period, setPeriod] = useState<Period>("YEARLY");
   const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>("ALL");
-  const [lineData, setLineData] = useState<{ date: string; total: number }[]>(
-    [],
-  );
-  const [barData, setBarData] = useState<{ name: string; value: number }[]>([]);
-  const [chartCategories, setChartCategories] = useState<ChartCategory[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const { colors } = useAppTheme();
 
@@ -131,56 +108,7 @@ export default function History() {
         .then((res) => res.json())
         .then((data) => setAllTransactions(data))
         .catch((error) => console.error("API Error:", error));
-
-      fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => setChartCategories(data))
-        .catch((error) => console.error("API Error:", error));
-
-      if (chartType === "line") {
-        const { period, months } = RANGE_CONFIG[range];
-        const paymentParam =
-          paymentFilter === "ALL" ? "" : `&payment_source=${paymentFilter}`;
-        fetch(
-          `http://localhost:${BACKEND_PORT}/transactions/spendingTrend/${userId}?period=${period}&months=${months}${paymentParam}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          },
-        )
-          .then((res) => res.json())
-          .then((data) => setLineData(data))
-          .catch((error) => console.error("API Error:", error));
-      }
-
-      if (chartType === "bar") {
-        const { months } = RANGE_CONFIG[range];
-        const paymentParam =
-          paymentFilter === "ALL" ? "" : `?payment_source=${paymentFilter}`;
-        fetch(
-          `http://localhost:${BACKEND_PORT}/transactions/monthly/${userId}${paymentParam}`,
-          { method: "GET" },
-        )
-          .then((res) => res.json())
-          .then((data: { month: string; total: number | string }[]) => {
-            const mapped = data.map((d) => ({
-              name: d.month,
-              value: parseFloat(String(d.total)),
-            }));
-            setBarData(mapped.slice(-months));
-          })
-          .catch((error) => console.error("API Error:", error));
-      }
-    }, [chartType, range, userId, paymentFilter]),
+    }, [userId]),
   );
 
   const paymentFilteredTransactions = useMemo(() => {
@@ -188,12 +116,28 @@ export default function History() {
     return AllTransactions.filter((t) => t.payment_source === paymentFilter);
   }, [AllTransactions, paymentFilter]);
 
+  const pieTransactions = useMemo(() => {
+    const now = Date.now();
+    if (period === "YEARLY") {
+      return paymentFilteredTransactions;
+    }
+    const msByPeriod: Record<Exclude<Period, "YEARLY">, number> = {
+      DAILY: 24 * 60 * 60 * 1000,
+      WEEKLY: 7 * 24 * 60 * 60 * 1000,
+      MONTHLY: 30 * 24 * 60 * 60 * 1000,
+    };
+    const cutoff = now - msByPeriod[period];
+    return paymentFilteredTransactions.filter(
+      (t) => new Date(t.date).getTime() >= cutoff,
+    );
+  }, [paymentFilteredTransactions, period]);
+
   const pieData = useMemo(() => {
     const totals = categories.reduce(
       (map, category) => map.set(category, 0),
       new Map<Category, number>(),
     );
-    for (const t of paymentFilteredTransactions) {
+    for (const t of pieTransactions) {
       totals.set(
         t.category_name,
         (totals.get(t.category_name) as number) + parseFloat(t.amount),
@@ -207,12 +151,108 @@ export default function History() {
         name,
         id: name,
       }));
-  }, [paymentFilteredTransactions, categories]);
+  }, [pieTransactions, categories]);
 
   const pieTotal = useMemo(
     () => pieData.reduce((sum, d) => sum + d.value, 0),
     [pieData],
   );
+
+  const lineData = useMemo(() => {
+    const totalsByBucket = new Map<string, number>();
+    for (const transaction of paymentFilteredTransactions) {
+      const date = new Date(transaction.date);
+      let bucket = "";
+      if (period === "YEARLY") {
+        bucket = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      } else if (period === "MONTHLY") {
+        const startOfWeek = new Date(date);
+        startOfWeek.setDate(date.getDate() - date.getDay());
+        bucket = startOfWeek.toISOString().split("T")[0];
+      } else {
+        bucket = date.toISOString().split("T")[0];
+      }
+      totalsByBucket.set(
+        bucket,
+        (totalsByBucket.get(bucket) || 0) + parseFloat(transaction.amount),
+      );
+    }
+    return [...totalsByBucket.entries()]
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([date, total]) => ({ date, total }));
+  }, [paymentFilteredTransactions, period]);
+
+  const barData = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (period === "DAILY") {
+      const byDate = new Map<string, number>();
+      for (const transaction of paymentFilteredTransactions) {
+        const d = new Date(transaction.date);
+        d.setHours(0, 0, 0, 0);
+        const key = d.toISOString().split("T")[0];
+        byDate.set(
+          key,
+          (byDate.get(key) || 0) + parseFloat(transaction.amount),
+        );
+      }
+
+      return Array.from({ length: 30 }, (_, i) => {
+        const d = new Date(today);
+        d.setDate(today.getDate() - (29 - i));
+        const key = d.toISOString().split("T")[0];
+        return { name: key, value: byDate.get(key) || 0 };
+      });
+    }
+
+    if (period === "WEEKLY") {
+      return Array.from({ length: 4 }, (_, i) => {
+        const end = new Date(today);
+        end.setDate(today.getDate() - (3 - i) * 7);
+        const start = new Date(end);
+        start.setDate(end.getDate() - 6);
+
+        let total = 0;
+        for (const transaction of paymentFilteredTransactions) {
+          const d = new Date(transaction.date);
+          d.setHours(0, 0, 0, 0);
+          if (d >= start && d <= end) {
+            total += parseFloat(transaction.amount);
+          }
+        }
+
+        const startLabel = start.toLocaleString("default", {
+          month: "short",
+          day: "numeric",
+        });
+        const endLabel = end.toLocaleString("default", {
+          month: "short",
+          day: "numeric",
+        });
+        return { name: `${startLabel}-${endLabel}`, value: total };
+      });
+    }
+
+    if (period === "MONTHLY") {
+      const monthlyTotals = new Map<string, number>();
+      for (const transaction of paymentFilteredTransactions) {
+        const date = new Date(transaction.date);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        monthlyTotals.set(
+          key,
+          (monthlyTotals.get(key) || 0) + parseFloat(transaction.amount),
+        );
+      }
+      return Array.from({ length: 6 }, (_, i) => {
+        const d = new Date(today.getFullYear(), today.getMonth() - (5 - i), 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        return { name: key, value: monthlyTotals.get(key) || 0 };
+      });
+    }
+
+    return lineData.map((d) => ({ name: d.date, value: d.total }));
+  }, [lineData, period, paymentFilteredTransactions]);
 
   const resetFiltersAndSort = () => {
     setFilterType("All");
@@ -305,46 +345,29 @@ export default function History() {
               ]}
             />
             <YStack marginTop="$3">
-              <AppSelect
+              <SegmentedControl
+                value={paymentFilter}
+                onValueChange={setPaymentFilter}
                 options={[
-                  "All payments",
-                  "Dining Dollars",
-                  "Triton Cash",
-                  "Cash/Credit/Debit",
+                  { label: "All", value: "ALL" },
+                  { label: "Dining", value: "DINING_DOLLARS" },
+                  { label: "Triton", value: "TRITON_CASH" },
+                  { label: "Card", value: "CARD" },
                 ]}
-                value={
-                  paymentFilter === "ALL"
-                    ? "All payments"
-                    : paymentFilter === "DINING_DOLLARS"
-                      ? "Dining Dollars"
-                      : paymentFilter === "TRITON_CASH"
-                        ? "Triton Cash"
-                        : "Cash/Credit/Debit"
-                }
-                onValueChange={(val) => {
-                  if (val === "All payments") return setPaymentFilter("ALL");
-                  if (val === "Dining Dollars")
-                    return setPaymentFilter("DINING_DOLLARS");
-                  if (val === "Triton Cash")
-                    return setPaymentFilter("TRITON_CASH");
-                  return setPaymentFilter("CARD");
-                }}
               />
             </YStack>
-            {chartType !== "pie" && (
-              <YStack marginTop="$3">
-                <SegmentedControl
-                  value={range}
-                  onValueChange={setRange}
-                  options={[
-                    { label: "1M", value: "1M" },
-                    { label: "3M", value: "3M" },
-                    { label: "6M", value: "6M" },
-                    { label: "1Y", value: "1Y" },
-                  ]}
-                />
-              </YStack>
-            )}
+            <YStack marginTop="$3">
+              <SegmentedControl
+                value={period}
+                onValueChange={setPeriod}
+                options={[
+                  { label: "Daily", value: "DAILY" },
+                  { label: "Weekly", value: "WEEKLY" },
+                  { label: "Monthly", value: "MONTHLY" },
+                  { label: "Total", value: "YEARLY" },
+                ]}
+              />
+            </YStack>
             <YStack marginTop="$3" alignItems="center">
               {chartType === "pie" && (
                 <CustomPieChart data={pieData} size={250} total={pieTotal} />
