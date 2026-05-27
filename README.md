@@ -5,6 +5,7 @@ TritonSpend is an intelligent finance management application designed specifical
 ## 🚀 Features
 
 ### Current Features (MVP)
+
 - **Budget Tracking & Analytics**: Monitor spending across customizable categories with real-time budget tracking
 - **Expense Categorization**: Organize expenses into categories (Food, Shopping, Transportation, Subscriptions, Others) for better financial insights
 - **Financial Goals Management**: Set, track, and manage financial goals with target dates and progress monitoring
@@ -14,6 +15,7 @@ TritonSpend is an intelligent finance management application designed specifical
 - **Responsive Design**: Mobile-first React Native interface optimized for student use
 
 ### Upcoming Features (Roadmap 2.0)
+
 - **🤖 AI Finance Chatbot**: Intelligent financial advisor powered by LangChain and Gemini/OpenAI
 - **🔒 Enhanced Security**: End-to-end encryption, audit logging, and privacy controls
 - **📊 Advanced Analytics**: Time-based trends, income vs expense charts, goal completion timelines
@@ -24,6 +26,7 @@ TritonSpend is an intelligent finance management application designed specifical
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **Framework**: React Native with Expo
 - **Language**: TypeScript
 - **Navigation**: Expo Router
@@ -33,6 +36,7 @@ TritonSpend is an intelligent finance management application designed specifical
 - **Authentication**: Google OAuth integration
 
 ### Backend
+
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript
 - **Database**: PostgreSQL with advanced triggers and functions
@@ -42,6 +46,7 @@ TritonSpend is an intelligent finance management application designed specifical
 - **File Upload**: Multer
 
 ### Database Schema
+
 - **Users**: Profile management with budget tracking
 - **Categories**: Customizable spending categories with budget limits
 - **Transactions**: Complete transaction history with automatic categorization
@@ -51,6 +56,7 @@ TritonSpend is an intelligent finance management application designed specifical
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js v18.20.4 (recommended)
 - PostgreSQL
 - Git
@@ -59,23 +65,26 @@ TritonSpend is an intelligent finance management application designed specifical
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/CSES-Open-Source/TritonSpend.git
    cd TritonSpend
    ```
 
 2. **Install dependencies**
+
    ```bash
    # Backend dependencies
    cd backend
    npm install
-   
+
    # Frontend dependencies
    cd ../frontend
    npm install
    ```
 
 3. **Set up the database**
+
    ```bash
    cd backend
    npm run setup-db
@@ -86,16 +95,16 @@ TritonSpend is an intelligent finance management application designed specifical
    - Add your Google OAuth credentials and database connection strings
 
 5. **Run the application**
+
    ```bash
    # Start backend server
    cd backend
    npm start
-   
+
    # Start frontend (in new terminal)
    cd frontend
    npm start
    ```
-
 
 ## 🤝 Contributing
 
@@ -107,6 +116,7 @@ We welcome contributions from the UCSD community and beyond! Please see our [CON
 - Reporting bugs and suggesting features
 
 ### Quick Start for Contributors
+
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes and test thoroughly
@@ -138,10 +148,12 @@ TritonSpend/
 ## 🎯 Team
 
 ### Engineering Leadership
+
 - **Engineering Managers**: Himansi Gupta, Vedant Vardhaan
 - **Product Manager**: Sharvari Thekkate
 
 ### Development Team
+
 - 5 Full-Stack Developers
 - 2 UI/UX Designers
 
@@ -156,4 +168,3 @@ For questions, issues, or collaboration opportunities:
 - **Maintainer**: Vedant Vardhaan (vvardhaan@ucsd.edu), Himansi Gupta (h4gupta@ucsd.edu)
 - **Organization**: UC San Diego CSES (cses@ucsd.edu)
 - **GitHub**: [CSES-Open-Source/TritonSpend](https://github.com/CSES-Open-Source/TritonSpend)
-
