@@ -3,7 +3,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState, useRef, useEffect } from "react";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { useAuth } from "@/context/authContext";
 import { XStack } from "tamagui";
 import { AppText } from "@/components/primitives/AppText";
@@ -78,7 +78,7 @@ export default function NewTransactionButton({
   }, [forceOpen]);
 
   function addTransaction() {
-    fetch(`http://localhost:${BACKEND_PORT}/transactions/newTransaction`, {
+    fetch(`${BACKEND_URL}/transactions/newTransaction`, {
       method: "POST",
       headers: {
         Accept: "application/json",

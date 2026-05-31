@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { XStack, YStack } from "tamagui";
 import { useFocusEffect } from "@react-navigation/native";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import { AccentStat } from "@/components/primitives/AccentStat";
 import { Card } from "@/components/primitives/Card";
@@ -123,7 +123,7 @@ export default function Deals() {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
-      fetch(`http://localhost:${BACKEND_PORT}/deals`)
+      fetch(`${BACKEND_URL}/deals`)
         .then((r) => r.json())
         .then((data) => {
           setDeals(data);

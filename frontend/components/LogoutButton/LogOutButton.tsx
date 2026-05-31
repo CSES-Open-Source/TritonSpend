@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/authContext";
 import { router } from "expo-router";
 import Toast from "react-native-toast-message";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppButton } from "@/components/primitives/AppButton";
 
@@ -11,7 +11,7 @@ export default function LogOutButton() {
   const logoutUser = async () => {
     try {
       const response = await fetch(
-        `http://localhost:${BACKEND_PORT}/auth/logout`,
+        `${BACKEND_URL}/auth/logout`,
         {
           method: "GET",
           credentials: "include",

@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import { ScrollView, YStack } from "tamagui";
 import GoalsList from "@/components/GoalsList/GoalsList";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { useAuth } from "@/context/authContext";
 import Toast from "react-native-toast-message";
 import { useFocusEffect } from "@react-navigation/native";
@@ -47,7 +47,7 @@ export default function Goals() {
 
   useFocusEffect(
     useCallback(() => {
-      fetch(`http://localhost:${BACKEND_PORT}/goals/getGoals/${userId}`, {
+      fetch(`${BACKEND_URL}/goals/getGoals/${userId}`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -63,7 +63,7 @@ export default function Goals() {
   function addGoal() {
     if (newGoalTitle.trim() && isValidYmd(selectedDate)) {
       const formattedDate = selectedDate;
-      fetch(`http://localhost:${BACKEND_PORT}/goals/addGoal`, {
+      fetch(`${BACKEND_URL}/goals/addGoal`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -111,7 +111,7 @@ export default function Goals() {
     target_date: string,
   ) {
     if (title.trim() && isValidYmd(target_date)) {
-      fetch(`http://localhost:${BACKEND_PORT}/goals/editGoal`, {
+      fetch(`${BACKEND_URL}/goals/editGoal`, {
         method: "PUT",
         headers: {
           Accept: "application/json",
@@ -154,7 +154,7 @@ export default function Goals() {
   }
 
   function deleteGoal(id: number) {
-    fetch(`http://localhost:${BACKEND_PORT}/goals/deleteGoal`, {
+    fetch(`${BACKEND_URL}/goals/deleteGoal`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/authContext";
 import React, { useEffect, useState } from "react";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import { Card } from "@/components/primitives/Card";
 import { AppText } from "@/components/primitives/AppText";
@@ -12,14 +12,14 @@ const LoginPage = () => {
   const { login } = useAuth();
 
   const handleGoogleLogin = () => {
-    window.location.href = `http://localhost:${BACKEND_PORT}/auth/google`;
+    window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await fetch(
-          `http://localhost:${BACKEND_PORT}/auth/me`,
+          `${BACKEND_URL}/auth/me`,
           { credentials: "include" },
         );
 

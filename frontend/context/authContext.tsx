@@ -7,7 +7,7 @@ import {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 
 interface AuthContextType {
   user: any | null;
@@ -41,7 +41,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const userData = JSON.parse(storedUser);
 
           // Validate session with backend
-          const res = await fetch(`http://localhost:${BACKEND_PORT}/auth/me`, {
+          const res = await fetch(`${BACKEND_URL}/auth/me`, {
             credentials: "include",
           });
 

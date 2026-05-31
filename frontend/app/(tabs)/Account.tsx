@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { useAuth } from "@/context/authContext";
 import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
 import { PageHeader } from "@/components/primitives/PageHeader";
@@ -40,7 +40,7 @@ export default function Account() {
   const { colors } = useAppTheme();
 
   useEffect(() => {
-    fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
+    fetch(`${BACKEND_URL}/users/${userId}`, {
       method: "GET",
     })
       .then((res) => res.json())
@@ -52,7 +52,7 @@ export default function Account() {
       })
       .catch((error) => console.error("API Error:", error));
 
-    fetch(`http://localhost:${BACKEND_PORT}/users/category/${userId}`, {
+    fetch(`${BACKEND_URL}/users/category/${userId}`, {
       method: "GET",
     })
       .then((res) => res.json())
@@ -81,7 +81,7 @@ export default function Account() {
       formData.append("id", userId);
     }
 
-    fetch(`http://localhost:${BACKEND_PORT}/users/updateSettings`, {
+    fetch(`${BACKEND_URL}/users/updateSettings`, {
       method: "PUT",
       body: formData,
     })

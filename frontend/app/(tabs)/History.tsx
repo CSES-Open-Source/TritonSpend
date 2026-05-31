@@ -2,7 +2,7 @@ import { TouchableOpacity } from "react-native";
 import { useCallback, useMemo, useState } from "react";
 import FullTransactionHistory from "@/components/TransactionHistory/FullTransactionHistory";
 import { useFocusEffect } from "@react-navigation/native";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { useAuth } from "@/context/authContext";
 import { ScrollView } from "react-native-gesture-handler";
 import CustomLineChart from "@/components/Graphs/LineChart";
@@ -96,7 +96,7 @@ export default function History() {
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
+        `${BACKEND_URL}/transactions/getTransactions/${userId}`,
         {
           method: "GET",
           headers: {

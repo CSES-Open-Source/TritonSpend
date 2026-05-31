@@ -1,4 +1,4 @@
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import NewTransactionRow from "./NewTransactionRow";
 import { useState, useEffect } from "react";
 import { YStack } from "tamagui";
@@ -17,7 +17,7 @@ export default function FullTransactionHistory(props: any) {
   const handleDelete = async (transactionId: number) => {
     try {
       const res = await fetch(
-        `http://localhost:${BACKEND_PORT}/transactions/${userId}/${transactionId}`,
+        `${BACKEND_URL}/transactions/${userId}/${transactionId}`,
         { method: "DELETE" },
       );
 

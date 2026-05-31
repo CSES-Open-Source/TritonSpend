@@ -1,7 +1,7 @@
 import { ScrollView, XStack, YStack } from "tamagui";
 import { useState, useCallback, useMemo } from "react";
 import { useWindowDimensions } from "react-native";
-import { BACKEND_PORT } from "@env";
+import { BACKEND_URL } from "@env";
 import { useAuth } from "@/context/authContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { PrimaryScreen } from "@/components/primitives/PrimaryScreen";
@@ -51,7 +51,7 @@ export default function Home() {
   useFocusEffect(
     useCallback(() => {
       fetch(
-        `http://localhost:${BACKEND_PORT}/transactions/getTransactions/${userId}`,
+        `${BACKEND_URL}/transactions/getTransactions/${userId}`,
         {
           method: "GET",
           headers: {
@@ -69,7 +69,7 @@ export default function Home() {
           console.error("API Error:", error);
         });
 
-      fetch(`http://localhost:${BACKEND_PORT}/users/${userId}`, {
+      fetch(`${BACKEND_URL}/users/${userId}`, {
         method: "GET",
       })
         .then((res) => res.json())
