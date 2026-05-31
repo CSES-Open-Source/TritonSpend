@@ -9,6 +9,7 @@ import { XStack } from "tamagui";
 import { AppText } from "@/components/primitives/AppText";
 import { AppInput } from "@/components/primitives/AppInput";
 import { AppButton } from "@/components/primitives/AppButton";
+import { useAppTheme } from "@/context/themeContext";
 
 interface NewTransactionButtonProps {
   setUpdateRecent: (_val: boolean) => void; // eslint-disable-line no-unused-vars
@@ -29,6 +30,7 @@ export default function NewTransactionButton({
   const expand = useRef(new Animated.Value(50)).current;
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const { userId } = useAuth();
+  const { colors } = useAppTheme();
 
   const interpolate = rotation.interpolate({
     inputRange: [0, 1],
@@ -38,6 +40,9 @@ export default function NewTransactionButton({
   const [selectedCategory, setSelectedCategory] = useState("");
   const [transactionAmount, setTransactionAmount] = useState("");
   const [itemInformation, setItemInformation] = useState("");
+  const [paymentSource, setPaymentSource] = useState<
+    "DINING_DOLLARS" | "TRITON_CASH" | "CARD"
+  >("CARD");
 
   function toggle(forceExpand?: boolean) {
     const shouldOpen = forceExpand !== undefined ? forceExpand : !inputVisible;
@@ -84,6 +89,7 @@ export default function NewTransactionButton({
         item_name: itemInformation,
         amount: Number(transactionAmount),
         category_name: selectedCategory,
+        payment_source: paymentSource,
       }),
     })
       .then((res) => {
@@ -101,6 +107,7 @@ export default function NewTransactionButton({
         setItemInformation("");
         setTransactionAmount("");
         setSelectedCategory("");
+        setPaymentSource("CARD");
         Toast.show({
           type: "success",
           text1: "Transaction Successful ✅",
@@ -116,11 +123,13 @@ export default function NewTransactionButton({
   return (
     <Animated.View
       style={{
-        backgroundColor: "#E6E6E6",
+        backgroundColor: colors.searchBg,
         justifyContent: "flex-start",
         alignItems: "center",
         borderRadius: 10,
         width: "100%",
+        borderWidth: 1,
+        borderColor: colors.searchBorder,
         shadowRadius: 12,
         shadowOpacity: 0.4,
         height: expand,
@@ -135,11 +144,15 @@ export default function NewTransactionButton({
           paddingHorizontal="$3"
           gap="$5"
         >
-          <AppText variant="title" fontSize="$5">
+          <AppText variant="title" fontSize="$5" color={colors.searchText}>
             New Transaction
           </AppText>
           <Animated.View style={{ transform: [{ rotate: interpolate }] }}>
-            <MaterialIcons name="add-circle-outline" size={32} />
+            <MaterialIcons
+              name="add-circle-outline"
+              size={32}
+              color={colors.searchText}
+            />
           </Animated.View>
         </XStack>
       </Pressable>
@@ -155,13 +168,18 @@ export default function NewTransactionButton({
           <Picker
             selectedValue={selectedCategory}
             onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+            dropdownIconColor={colors.searchText}
             style={{
               width: "100%",
-              borderWidth: 3,
+              borderWidth: 1,
               borderRadius: 10,
               padding: 10,
-              borderColor: "#E5E5E5",
-              backgroundColor: "#fff",
+              borderColor: colors.searchBorder,
+              backgroundColor: colors.searchBg,
+              color: colors.searchText,
+            }}
+            itemStyle={{
+              color: colors.searchText,
             }}
           >
             <Picker.Item label="Select Category" value="" />
@@ -170,6 +188,31 @@ export default function NewTransactionButton({
             <Picker.Item label="Transportation" value="Transportation" />
             <Picker.Item label="Subscriptions" value="Subscriptions" />
             <Picker.Item label="Other" value="Other" />
+          </Picker>
+
+          <Picker
+            selectedValue={paymentSource}
+            onValueChange={(itemValue) => setPaymentSource(itemValue)}
+            dropdownIconColor={colors.searchText}
+            style={{
+              width: "100%",
+              borderWidth: 1,
+              borderRadius: 10,
+              padding: 10,
+              borderColor: colors.searchBorder,
+              backgroundColor: colors.searchBg,
+              color: colors.searchText,
+            }}
+            itemStyle={{
+              color: colors.searchText,
+            }}
+          >
+            <Picker.Item label="Payment: Cash/Credit/Debit" value="CARD" />
+            <Picker.Item
+              label="Payment: Dining Dollars"
+              value="DINING_DOLLARS"
+            />
+            <Picker.Item label="Payment: Triton Cash" value="TRITON_CASH" />
           </Picker>
 
           <AppInput

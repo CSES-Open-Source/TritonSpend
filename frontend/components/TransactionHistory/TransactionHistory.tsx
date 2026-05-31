@@ -10,10 +10,10 @@ export default function TransactionHistory(props: any) {
       {/* Link that re routes user to History */}
       <Link href={"/History"}>
         <View style={styles.header}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+          <Text style={{ fontWeight: "bold", fontSize: 20, color: "#111111" }}>
             Recent Transactions
           </Text>
-          <FontAwesome name="angle-right" size={20} />
+          <FontAwesome name="angle-right" size={20} color="#111111" />
         </View>
       </Link>
       <View style={styles.recentTranactions}>
@@ -26,6 +26,7 @@ export default function TransactionHistory(props: any) {
                 amount={row.amount}
                 key={row.id}
                 icon={row.category_name}
+                darkText
               />
               {/* Put a separater between elements excpet for the last one */}
               {index < props.list.length - 1 && (
@@ -41,7 +42,7 @@ export default function TransactionHistory(props: any) {
 
 const styles = StyleSheet.create({
   HistoryContainer: {
-    backgroundColor: "#E6E6E6",
+    backgroundColor: "#FFFFFF",
     width: "100%",
     height: 390,
     borderRadius: 15,
@@ -49,6 +50,8 @@ const styles = StyleSheet.create({
     gap: 5,
     shadowRadius: 12,
     shadowOpacity: 0.4,
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
   },
   header: {
     width: "100%",

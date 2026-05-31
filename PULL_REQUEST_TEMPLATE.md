@@ -7,6 +7,7 @@ Closes #(issue number) if applicable.
 ---
 
 ## Changes Made
+
 - [ ] Added a new feature
 - [ ] Updated existing functionality
 - [ ] Improved documentation
@@ -15,11 +16,9 @@ Closes #(issue number) if applicable.
 
 Briefly summarize the major changes:
 
--  
--  
 -
-
----
+-
+- ***
 
 ## Testing
 

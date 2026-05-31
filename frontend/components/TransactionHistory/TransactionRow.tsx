@@ -1,6 +1,8 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
+import { AppText } from "@/components/primitives/AppText";
+import { useAppTheme } from "@/context/themeContext";
 
 /*
   this is the container for every row in the transaction history, which includes the icon for the transaction,
@@ -9,8 +11,18 @@ import { useEffect, useState } from "react";
   props - this component takes props for the name, date, amount of the transactions
 
  */
-export default function TransactionRow(props: any) {
+interface TransactionRowProps {
+  name: string;
+  amount: number | string;
+  date?: string;
+  icon?: string | number;
+  darkText?: boolean;
+}
+
+export default function TransactionRow(props: TransactionRowProps) {
   const [icon, setIcon] = useState<any>("");
+  const { colors } = useAppTheme();
+  const primaryTextColor = props.darkText ? "#111111" : colors.searchText;
   const categoryIconMapping: { [key: string]: string } = {
     Food: "fast-food-outline",
     Shopping: "pricetag-outline",
@@ -19,7 +31,8 @@ export default function TransactionRow(props: any) {
   };
 
   useEffect(() => {
-    const iconName: string = categoryIconMapping[props.icon] || "card-outline";
+    const iconName: string =
+      categoryIconMapping[String(props.icon)] || "card-outline";
     setIcon(iconName);
   }, []);
   const formattedDate =
@@ -28,19 +41,24 @@ export default function TransactionRow(props: any) {
     <View style={styles.NewTransaction}>
       <View style={styles.iconAndInfo}>
         {/* place holder for transaction icon */}
-        <Ionicons name={icon} size={25} color={"#black"} />
+        <Ionicons name={icon} size={25} color={colors.tabBarActive} />
         <View>
-          <Text style={{ fontWeight: 500, fontSize: 20, paddingBottom: 4 }}>
+          <AppText
+            variant="title"
+            fontSize="$4"
+            color={primaryTextColor}
+            paddingBottom="$1"
+          >
             {props.name}
-          </Text>
-          <Text style={{ fontWeight: 500, opacity: 0.65 }}>
+          </AppText>
+          <AppText variant="caption" color={colors.searchPlaceholder}>
             {formattedDate}
-          </Text>
+          </AppText>
         </View>
       </View>
-      <Text style={{ fontWeight: 500, fontSize: 20, paddingVertical: 4 }}>
+      <AppText variant="title" fontSize="$4" color={primaryTextColor}>
         ${props.amount}
-      </Text>
+      </AppText>
     </View>
   );
 }
